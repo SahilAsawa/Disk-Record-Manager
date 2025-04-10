@@ -27,9 +27,6 @@ class BPlusTreeIndex
     struct BPlusTreeNode
     {
         //
-        // page_id_t id;
-
-        //
         NodeType type;
 
         //

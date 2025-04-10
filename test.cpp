@@ -52,32 +52,7 @@ int main()
     }
     std::cout << "Final B+ Tree:" << std::endl;
     std::cout << bptree << std::endl;
-
-    std::vector<KeyType> toremove{
-        "Srinivasan",
-        "Singh",
-        "Wu",
-        "Gold",
-        "Adams"
-    };
-
-    for(const auto &it: data)
-    {
-        bptree.remove(it.first);
-        std::cout << "Removed: " << it.first << std::endl;
-        std::cout << bptree << std::endl;
-        std::cerr << "Removing Done" << std::endl;
-    }
-
-
-    for(const auto &it: toremove)
-    {
-        bptree.remove(it);
-        std::cout << "Removed: " << it << std::endl;
-        std::cout << bptree << std::endl;
-        std::cerr << "Removing Done" << std::endl;
-    }
-
+    
     std::cout << "\nSearch Results:" << std::endl;
     for(const auto& [key, value] : data)
     {
@@ -128,6 +103,32 @@ int main()
             std::cout << std::endl;
         }
     }
+
+    std::vector<KeyType> toremove{
+        "Srinivasan",
+        "Singh",
+        "Wu",
+        "Gold",
+        "Adams"
+    };
+ 
+    for(const auto &it: data)
+    {
+        bptree.remove(it.first);
+        std::cout << "Removed: " << it.first << std::endl;
+        std::cout << bptree << std::endl;
+        std::cerr << "Removing Done" << std::endl;
+    }
+
+
+    for(const auto &it: toremove)
+    {
+        bptree.remove(it);
+        std::cout << "Removed: " << it << std::endl;
+        std::cout << bptree << std::endl;
+        std::cerr << "Removing Done" << std::endl;
+    }
+
     
     return 0;
 }
