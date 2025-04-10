@@ -6,17 +6,14 @@
     #include <vector>
     #include <optional>
     #include <string>
+    #include <cstdint>
 
-    #include "BufferPoolManager/BufferPoolManager.hpp"
-    #include "Storage/DiskManager/DiskManager.hpp"
-    #include "Replacer/Replacer.hpp"
-    #include "Utils/Common.hpp"
-    #include "Utils/Macros.hpp"
-
-constexpr auto INDEX_FILE_PATH = "./private/bptindex/";
-constexpr int ORDER = 4;  // Maximum number of children of a node
-using KeyType = uint32_t;            // Type of keys in the B+ tree
-using ValueType = page_id_t;    // Type of values in the B+ tree
+using page_id_t = long long;
+constexpr int ORDER = 4;        // Maximum number of children of a node
+// using KeyType = uint32_t;       // Type of keys in the B+ tree
+// using ValueType = page_id_t;    // Type of values in the B+ tree
+using KeyType = std::string;
+using ValueType = std::string;
 
 
 class BPlusTreeIndex
@@ -62,25 +59,14 @@ class BPlusTreeIndex
         }
     };
 
-    // 
-    PBufferPoolManager buffer_pool_manager;
-    PReplacer replacer;
-    PDiskManager disk_manager;
-
     //
-    // page_id_t root_id = 0;
     BPlusTreeNode *root;
     
     public:
-
-    CLASS_ALL_DEFAULT ( BPlusTreeIndex );
     
     //
-    BPlusTreeIndex ( PBufferPoolManager bpm, PReplacer replacer, PDiskManager disk_manager )
-        : buffer_pool_manager ( bpm ),
-          replacer( replacer ),
-          disk_manager ( disk_manager ),
-          root ( nullptr )
+    BPlusTreeIndex ( )
+        : root ( nullptr )
     {
     }
 
