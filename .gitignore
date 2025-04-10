@@ -1,2 +1,6 @@
 *.out
+<<<<<<< HEAD
 *.exe
+=======
+*.exe
+>>>>>>> dccf3abb87eec7ceb8835d24c4aba70a7e980f80
