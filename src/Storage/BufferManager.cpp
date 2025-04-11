@@ -117,3 +117,101 @@ auto BufferManager::getFrame ( page_id_t pageNumber ) -> std::optional< frame_id
 
     return std::nullopt;
 }
+
+
+auto BufferManager::readPage ( page_id_t pageNumber ) -> std::vector< std::byte >
+{
+    if( pageNumber >= disk->blockCount )
+    {
+        throw std::runtime_error( "Page number out of range");
+    }
+    auto frameNumber = getFrame( pageNumber );
+    if(frameNumber.has_value())
+    {
+        return bufferData[ frameNumber.value() ];
+    }
+    else
+    {
+        throw std::runtime_error( "Buffer space full");
+    }
+}
+
+auto BufferManager::writePage ( page_id_t pageNumber, const std::vector< std::byte > &data ) -> void
+{
+    if( pageNumber >= disk->blockCount )
+    {
+        throw std::runtime_error( "Page number out of range");
+    }
+    auto frameNumber = getFrame( pageNumber );
+    if(frameNumber.has_value())
+    {
+        bufferData[frameNumber.value()] = data;
+        isDirty[frameNumber.value()] = true;
+    }
+    else
+    {
+        throw std::runtime_error( "Buffer space full");
+    }
+}
+
+auto BufferManager::readAddress ( address_id_t address, size_t size ) -> std::vector< std::byte >
+{
+    auto pageNumber = address / disk->blockSize;
+    auto offset = address % disk->blockSize;
+
+    std::vector< std::byte > data( size );
+    auto firstFrame = readPage( pageNumber );
+
+    if( offset + size <= disk->blockSize )
+    {
+        std::copy( firstFrame.begin() + offset, firstFrame.begin() + offset + size, data.begin() );
+    }
+    else
+    {
+        std::copy( firstFrame.begin() + offset, firstFrame.end(), data.begin() );
+        
+        size_t remainingSize = size - ( disk->blockSize - offset );
+
+        while( remainingSize > 0 )
+        {
+            pageNumber++;
+            auto nextFrame = readPage( pageNumber );
+            size_t bytesToCopy = std::min( remainingSize, disk->blockSize );
+            std::copy( nextFrame.begin(), nextFrame.begin() + bytesToCopy, data.begin() + size - remainingSize );
+            remainingSize -= bytesToCopy;
+        }
+    }
+    return data;
+}
+
+auto BufferManager::writeAddress ( address_id_t address, const std::vector< std::byte > &data ) -> void
+{
+    auto pageNumber = address / disk->blockSize;
+    auto offset = address % disk->blockSize;
+
+    auto firstFrame = readPage( pageNumber );
+
+    if( offset + data.size() <= disk->blockSize )
+    {
+        std::copy( data.begin(), data.end(), firstFrame.begin() + offset );
+        writePage( pageNumber, firstFrame );
+    }
+    else
+    {
+        std::copy( data.begin(), data.end(), firstFrame.begin() + offset );
+        
+        size_t remainingSize = data.size() - ( disk->blockSize - offset );
+
+        while( remainingSize > 0 )
+        {
+            pageNumber++;
+            auto nextFrame = readPage( pageNumber );
+            size_t bytesToCopy = std::min( remainingSize, disk->blockSize );
+            std::copy( data.begin() + data.size() - remainingSize, data.begin() + data.size() - remainingSize + bytesToCopy, nextFrame.begin() );
+            remainingSize -= bytesToCopy;
+            
+            writePage( pageNumber, nextFrame );
+        }
+    }
+    return;
+}
