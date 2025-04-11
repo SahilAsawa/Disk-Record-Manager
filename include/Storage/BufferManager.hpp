@@ -4,6 +4,7 @@
     #define _BUFFER_MANAGER_HPP_
 
     #include <unordered_map>
+    #include <algorithm>
     #include <optional>
     #include <stack>
     #include <list>
@@ -28,8 +29,11 @@ class BufferManager
     // number of frames
     unsigned int numFrames;
 
-    // Global page table
+    // Global page table: Page ID -> Frame ID
     std::unordered_map< page_id_t, frame_id_t > pageTable {};
+
+    // Inverted page table: Frame ID -> Page ID
+    std::unordered_map< frame_id_t, page_id_t > invPageTable {};
 
     // actual buffer data
     std::vector< std::vector< std::byte > > bufferData;
@@ -40,7 +44,7 @@ class BufferManager
     // pin count for each frame
     std::vector< int > pinCount;
 
-    // list of frames in use
+    // list of frames in use, recently used at the end
     std::list< frame_id_t > busyFrames {};
 
     // map of frame id to list iterator
@@ -49,14 +53,38 @@ class BufferManager
     // dirty bit for each frame
     std::vector< bool > isDirty;
 
+    /**
+     * @brief Find a victim frame to replace using the specified replacement strategy.
+     * @returns The frame ID of the victim frame, or std::nullopt if no victim frame is found.
+     */
     auto findVictim ( ) -> std::optional< frame_id_t >;
 
+    /**
+     * @brief Find a free frame to use, frees a victim frame if no free frame is available.
+     * @returns The frame ID of the free frame, or std::nullopt if no free frame is found.
+     */
     auto findFreeFrame ( ) -> std::optional< frame_id_t >;
 
+    /**
+     * @brief Get the frame ID for a given page number, the page's data is present in buffer in this frame.
+     * @param pageNumber The page number to get the frame for.
+     * @returns The frame ID of the page, or std::nullopt if the page is not in the buffer.
+     * @note Pin count is not updated here, it should be done in the caller function.
+     */
     auto getFrame ( page_id_t pageNumber ) -> std::optional< frame_id_t >;
 
+    /**
+     * @brief Read data for a given page number.
+     * @param pageNumber The page number to get the data for.
+     * @returns The data for the page.
+     */
     auto readPage ( page_id_t pageNumber ) -> std::vector< std::byte >;
 
+    /**
+     * @brief Write data for a given page number.abort
+     * @param pageNumber The page number to update the data for.
+     * @param data The data to write for the page.
+     */
     auto writePage ( page_id_t pageNumber, const std::vector< std::byte > &data ) -> void;
 
     public:

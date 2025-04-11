@@ -37,11 +37,12 @@ auto BufferManager::findVictim ( ) -> std::optional< frame_id_t >
             {
                 if (isDirty[*it])
                 {
-                    // TODO: Need page number of this frame
-                    // disk->writeBlock( ..., bufferData[*it] );
+                    disk->writeBlock( invPageTable[*it], bufferData[*it] );
                 }
                 framePos.erase( *it );
                 busyFrames.erase( it );
+                pageTable.erase( invPageTable[*it] );
+                invPageTable.erase( *it );
                 return *it;
             }
         }
@@ -54,11 +55,12 @@ auto BufferManager::findVictim ( ) -> std::optional< frame_id_t >
             {
                 if (isDirty[*it])
                 {
-                    // TODO: Need page number of this frame
-                    // disk->writeBlock( ..., bufferData[*it] );
+                    disk->writeBlock( invPageTable[*it], bufferData[*it] );
                 }
                 framePos.erase( *it );
                 busyFrames.erase( std::next( it ).base() );
+                pageTable.erase( invPageTable[*it] );
+                invPageTable.erase( *it );
                 return *it;
             }
         }
@@ -83,18 +85,34 @@ auto BufferManager::findFreeFrame ( ) -> std::optional< frame_id_t >
 
 auto BufferManager::getFrame ( page_id_t pageNumber ) -> std::optional< frame_id_t >
 {
+    // Not present in buffer
     if ( pageTable.find( pageNumber ) == pageTable.end() )
     {
         auto frame = findFreeFrame();
         if ( frame.has_value() )
         {
             busyFrames.push_back( frame.value() );
+            framePos[frame.value()] = std::prev( busyFrames.end() );
             pageTable[pageNumber] = frame.value();
+            invPageTable[frame.value()] = pageNumber;
+            bufferData[frame.value()] = disk->readBlock( pageNumber );
         }
         else
         {
             return std::nullopt;
         }
+    }
+
+    frame_id_t frame = pageTable[pageNumber];
+
+    // Update the position of the frame in the busy list
+    auto it = framePos.find( frame );
+    if ( it != framePos.end() )
+    {
+        busyFrames.erase( it->second );
+        busyFrames.push_back( frame );
+        framePos[frame] = std::prev( busyFrames.end() );
+        return frame;
     }
 
     return std::nullopt;
