@@ -6,12 +6,10 @@
     #include <vector>
     #include <optional>
     #include <string>
-    #include <cstdint>
 
-using page_id_t = long long;
-constexpr int ORDER = 4;        // Maximum number of children of a node
-// using KeyType = uint32_t;       // Type of keys in the B+ tree
-// using ValueType = page_id_t;    // Type of values in the B+ tree
+    #include <Utils.hpp>
+
+
 using KeyType = std::string;
 using ValueType = std::string;
 
@@ -58,12 +56,15 @@ class BPlusTreeIndex
 
     //
     BPlusTreeNode *root;
+
+    //
+    const unsigned int order;
     
     public:
     
     //
-    BPlusTreeIndex ( )
-        : root ( nullptr )
+    BPlusTreeIndex ( int _order = 4 )
+        : root ( nullptr ), order ( std::max( 3, _order ) )
     {
     }
 

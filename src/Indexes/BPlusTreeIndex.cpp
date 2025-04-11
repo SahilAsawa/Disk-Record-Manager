@@ -95,7 +95,7 @@ auto BPlusTreeIndex::insert ( KeyType key, ValueType value ) -> bool
     leaf->values.insert( leaf->values.begin() + i, value );
 
     // Need to split the leaf if it is full
-    if( leaf->keys.size() == ORDER )
+    if( leaf->keys.size() == order )
     {
         BPlusTreeNode *newLeaf = createNode( NodeType::LEAF );
 
@@ -104,7 +104,7 @@ auto BPlusTreeIndex::insert ( KeyType key, ValueType value ) -> bool
         leaf->nextLeaf = newLeaf;
 
         // Split the keys and values: First half in original leaf, second half in new leaf
-        size_t mid = ORDER / 2;
+        size_t mid = order / 2;
         newLeaf->keys.assign( leaf->keys.begin() + mid, leaf->keys.end() );
         newLeaf->values.assign( leaf->values.begin() + mid, leaf->values.end() );
         leaf->keys.resize( mid );
@@ -143,12 +143,12 @@ auto BPlusTreeIndex::insertInternal ( BPlusTreeNode *left, KeyType key, BPlusTre
     parent->children.insert( parent->children.begin() + i + 1, right );
     right->parent = parent;
     
-    if(parent->keys.size() == ORDER)
+    if(parent->keys.size() == order)
     {
         // create new internal node
         BPlusTreeNode *newInternal = createNode(NodeType::INTERNAL);
 
-        size_t mid = ORDER / 2;
+        size_t mid = order / 2;
         newInternal->keys.assign( parent->keys.begin() + mid + 1, parent->keys.end() );
         newInternal->children.assign( parent->children.begin() + mid + 1, parent->children.end() );
         KeyType newKey = parent->keys[mid];
@@ -208,7 +208,7 @@ auto BPlusTreeIndex::removeEntry ( BPlusTreeNode *node, KeyType key, BPlusTreeNo
             delete node;
         }
     }
-    else if((!node->isLeaf() && node->children.size() <= ORDER / 2) || (node->isLeaf() && node->values.size() < ORDER / 2)) // if node has too few pointers
+    else if((!node->isLeaf() && node->children.size() <= order / 2) || (node->isLeaf() && node->values.size() < order / 2)) // if node has too few pointers
     {
         BPlusTreeNode *parent = node->parent;
         size_t i = std::find( parent->children.begin(), parent->children.end(), node ) - parent->children.begin();
@@ -228,7 +228,7 @@ auto BPlusTreeIndex::removeEntry ( BPlusTreeNode *node, KeyType key, BPlusTreeNo
         }
         else return true;
 
-        if((!node->isLeaf() && (node->children.size() + prev->children.size() <= ORDER)) || (node->isLeaf() && (node->keys.size() + prev->keys.size() < ORDER)))
+        if((!node->isLeaf() && (node->children.size() + prev->children.size() <= order)) || (node->isLeaf() && (node->keys.size() + prev->keys.size() < order)))
         {
             if(isPred) std::swap( node, prev );
 
@@ -342,6 +342,3 @@ std::ostream &operator<< ( std::ostream &os, const BPlusTreeIndex &tree )
     tree.printBPlusTree( os, tree.root );
     return os;
 }
-
-
-

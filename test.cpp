@@ -1,11 +1,10 @@
 #include <iostream>
 #include <vector>
-#include <string>
 #include <optional>
 #include <Indexes/BPlusTreeIndex.hpp>
+#include <Storage/Disk.hpp>
 
-
-int main()
+void BPlusTreeTest()
 {
     BPlusTreeIndex bptree;
     
@@ -117,7 +116,6 @@ int main()
         bptree.remove(it.first);
         std::cout << "Removed: " << it.first << std::endl;
         std::cout << bptree << std::endl;
-        std::cerr << "Removing Done" << std::endl;
     }
 
 
@@ -126,9 +124,40 @@ int main()
         bptree.remove(it);
         std::cout << "Removed: " << it << std::endl;
         std::cout << bptree << std::endl;
-        std::cerr << "Removing Done" << std::endl;
     }
 
     
-    return 0;
+    return;
+}
+
+void diskTest()
+{
+    Disk disk( RANDOM, 4096, 1024 );
+    std::cout << "Disk created with block size: " << disk.blockSize << " and block count: " << disk.blockCount << std::endl;
+
+    std::vector<int> data( disk.blockSize / sizeof(int), 0 );
+    for (size_t i = 0; i < data.size(); ++i)
+    {
+        data[i] = i;
+    }
+    disk.writeBlock( 1, std::vector<std::byte>( reinterpret_cast<std::byte*>( data.data() ), reinterpret_cast<std::byte*>( data.data() ) + disk.blockSize ) );
+    
+    std::cout << "Written block 0" << std::endl;
+    std::vector<std::byte> readData = disk.readBlock( 0 );
+    std::vector<int> readInts( disk.blockSize / sizeof(int) );
+    std::move( readData.begin(), readData.end(), reinterpret_cast<std::byte*>( readInts.data() ) );
+    std::cout << "Read block 0: ";
+    for (size_t i = 0; i < readInts.size(); ++i)
+    {
+        std::cout << readInts[i] << " ";
+    }
+    std::cout << std::endl;
+
+    std::cout << "Disk IO operations: " << disk.numIO << std::endl;
+    std::cout << "Disk IO cost: " << disk.costIO << std::endl;
+}
+
+int main()
+{
+    diskTest();
 }

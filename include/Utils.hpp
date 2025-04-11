@@ -1,0 +1,12 @@
+#pragma once
+#ifndef _UTILS_HPP_
+    #define _UTILS_HPP_
+    
+    using frame_id_t = unsigned long long;
+    using page_id_t = unsigned long long;
+    using block_id_t = unsigned long long;
+
+    class Disk;
+    class BufferManager;
+
+#endif // _UTILS_HPP_

@@ -6,15 +6,15 @@ BUILD_DIR = build
 LIB_DIR = lib
 
 # Source files
-DISK_SRC = src/DiskManager/DiskManager.cpp
+DISK_SRC = src/Storage/Disk.cpp
 INDEX_SRC = src/Indexes/BPlusTreeIndex.cpp
 
 # Header include paths (already covered by -Iinclude)
-DISK_HEADERS = include/DiskManager/DiskManager.hpp
+DISK_HEADERS = include/Storage/Disk.hpp
 INDEX_HEADERS = include/Indexes/BPlusTreeIndex.hpp include/Indexes/HashIndex.hpp
 
 # Object files
-DISK_OBJ = $(BUILD_DIR)/DiskManager.o
+DISK_OBJ = $(BUILD_DIR)/Disk.o
 INDEX_OBJ = $(BUILD_DIR)/BPlusTreeIndex.o
 
 # Static libraries
@@ -30,10 +30,10 @@ all: $(TEST)
 
 # Compile test.cpp and link with both static libs
 $(TEST): $(TEST_SRC) $(DISK_LIB) $(INDEX_LIB)
-	$(CXX) $(CXXFLAGS) -o $@ $(TEST_SRC) -L$(LIB_DIR) -ldiskmanager -lindexes
+	$(CXX) $(CXXFLAGS) -o $@ $(TEST_SRC) -L$(LIB_DIR) -lstorage -lindexes
 
 # Build object files
-$(BUILD_DIR)/%.o: src/DiskManager/%.cpp $(DISK_HEADERS)
+$(BUILD_DIR)/%.o: src/Storage/%.cpp $(DISK_HEADERS)
 	@mkdir -p $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
