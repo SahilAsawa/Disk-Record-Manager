@@ -4,6 +4,7 @@
     #define _BUFFER_MANAGER_HPP_
 
     #include <unordered_map>
+    #include <optional>
     #include <stack>
     #include <list>
 
@@ -48,7 +49,11 @@ class BufferManager
     // dirty bit for each frame
     std::vector< bool > isDirty;
 
-    auto findVictim ( ) -> frame_id_t;
+    auto findVictim ( ) -> std::optional< frame_id_t >;
+
+    auto findFreeFrame ( ) -> std::optional< frame_id_t >;
+
+    auto getFrame ( page_id_t pageNumber ) -> std::optional< frame_id_t >;
 
     auto readPage ( page_id_t pageNumber ) -> std::vector< std::byte >;
 
