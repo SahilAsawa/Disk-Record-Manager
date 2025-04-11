@@ -95,7 +95,20 @@ class BufferManager
     // Destructor
     ~BufferManager ();
 
-    
+    /**
+     * @brief Read data from a given address.
+     * @param address The address to read from.
+     * @param size The size of the data to read.
+     * @returns The data read from the address.
+     */
+    auto readAddress ( address_id_t address, size_t size ) -> std::vector< std::byte >;
+
+    /**
+     * @brief Write data to a given address.
+     * @param address The address to write to.
+     * @param data The data to write to the address.
+     */
+    auto writeAddress ( address_id_t address, const std::vector< std::byte > &data ) -> void;
 };
 
 #endif // _BUFFER_MANAGER_HPP_
