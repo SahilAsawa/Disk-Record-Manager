@@ -1,3 +1,4 @@
+#include "Storage/BufferManager.hpp"
 #include <iostream>
 #include <vector>
 #include <optional>
@@ -130,34 +131,64 @@ void BPlusTreeTest()
     return;
 }
 
-void diskTest()
-{
-    Disk disk( RANDOM, 4096, 1024 );
-    std::cout << "Disk created with block size: " << disk.blockSize << " and block count: " << disk.blockCount << std::endl;
+// void diskTest()
+// {
+//     Disk disk( RANDOM, 4096, 1024 );
+//     std::cout << "Disk created with block size: " << disk.blockSize << " and block count: " << disk.blockCount << std::endl;
 
-    std::vector<int> data( disk.blockSize / sizeof(int), 0 );
-    for (size_t i = 0; i < data.size(); ++i)
-    {
-        data[i] = i;
-    }
-    disk.writeBlock( 1, std::vector<std::byte>( reinterpret_cast<std::byte*>( data.data() ), reinterpret_cast<std::byte*>( data.data() ) + disk.blockSize ) );
+//     std::vector<int> data( disk.blockSize / sizeof(int), 0 );
+//     for (size_t i = 0; i < data.size(); ++i)
+//     {
+//         data[i] = i;
+//     }
+//     disk.writeBlock( 1, std::vector<std::byte>( reinterpret_cast<std::byte*>( data.data() ), reinterpret_cast<std::byte*>( data.data() ) + disk.blockSize ) );
     
-    std::cout << "Written block 0" << std::endl;
-    std::vector<std::byte> readData = disk.readBlock( 0 );
-    std::vector<int> readInts( disk.blockSize / sizeof(int) );
+//     std::cout << "Written block 0" << std::endl;
+//     std::vector<std::byte> readData = disk.readBlock( 0 );
+//     std::vector<int> readInts( disk.blockSize / sizeof(int) );
+//     std::move( readData.begin(), readData.end(), reinterpret_cast<std::byte*>( readInts.data() ) );
+//     std::cout << "Read block 0: ";
+//     for (size_t i = 0; i < readInts.size(); ++i)
+//     {
+//         std::cout << readInts[i] << " ";
+//     }
+//     std::cout << std::endl;
+
+//     std::cout << "Disk IO operations: " << disk.numIO << std::endl;
+//     std::cout << "Disk IO cost: " << disk.costIO << std::endl;
+// }
+
+void BufferManagerTest()
+{
+    int pageSize = 8;
+    Disk disk( RANDOM, pageSize, 1024 );
+    BufferManager bufferManager( &disk, LRU, 10 );
+    int n = 11;
+    std::vector<int> data( n );
+    for(int i = 0; i < n; ++i) data[i] = i;
+    std::vector<std::byte> byteData( reinterpret_cast<std::byte*>( data.data() ), reinterpret_cast<std::byte*>( data.data() ) + n * sizeof(int) );
+    for(int i = 0; i < byteData.size(); ++i)
+    {
+        std::cout << std::to_integer<int>( byteData[i] ) << " ";
+    }
+    std::cout << std::endl;
+    bufferManager.writeAddress( 0, byteData );
+    std::vector<std::byte> readData = bufferManager.readAddress( 8, 100 );
+    for(int i = 0; i < readData.size(); ++i)
+    {
+        std::cout << std::to_integer<int>( readData[i] ) << " ";
+    }
+
+    std::vector<int> readInts( readData.size() / sizeof(int) );
     std::move( readData.begin(), readData.end(), reinterpret_cast<std::byte*>( readInts.data() ) );
-    std::cout << "Read block 0: ";
+    std::cout << "Read data: ";
     for (size_t i = 0; i < readInts.size(); ++i)
     {
         std::cout << readInts[i] << " ";
     }
-    std::cout << std::endl;
-
-    std::cout << "Disk IO operations: " << disk.numIO << std::endl;
-    std::cout << "Disk IO cost: " << disk.costIO << std::endl;
 }
 
 int main()
 {
-    diskTest();
+    // BufferManagerTest();
 }

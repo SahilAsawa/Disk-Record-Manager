@@ -6,19 +6,21 @@ BUILD_DIR = build
 LIB_DIR = lib
 
 # Source files
+BUFFER_SRC = src/Storage/BufferManager.cpp
 DISK_SRC = src/Storage/Disk.cpp
-INDEX_SRC = src/Indexes/BPlusTreeIndex.cpp
+BPT_SRC = src/Indexes/BPlusTreeIndex.cpp
 
 # Header include paths (already covered by -Iinclude)
-DISK_HEADERS = include/Storage/Disk.hpp
+STORAGE_HEADERS = include/Storage/Disk.hpp include/Storage/BufferManager.hpp
 INDEX_HEADERS = include/Indexes/BPlusTreeIndex.hpp include/Indexes/HashIndex.hpp
 
 # Object files
+BUFFER_OBJ = $(BUILD_DIR)/BufferManager.o
 DISK_OBJ = $(BUILD_DIR)/Disk.o
-INDEX_OBJ = $(BUILD_DIR)/BPlusTreeIndex.o
+BPT_OBJ = $(BUILD_DIR)/BPlusTreeIndex.o
 
 # Static libraries
-DISK_LIB = $(LIB_DIR)/libdiskmanager.a
+STORAGE_LIB = $(LIB_DIR)/libstorage.a
 INDEX_LIB = $(LIB_DIR)/libindexes.a
 
 # Test
@@ -29,11 +31,11 @@ TEST_SRC = test.cpp
 all: $(TEST)
 
 # Compile test.cpp and link with both static libs
-$(TEST): $(TEST_SRC) $(DISK_LIB) $(INDEX_LIB)
+$(TEST): $(TEST_SRC) $(STORAGE_LIB) $(INDEX_LIB)
 	$(CXX) $(CXXFLAGS) -o $@ $(TEST_SRC) -L$(LIB_DIR) -lstorage -lindexes
 
 # Build object files
-$(BUILD_DIR)/%.o: src/Storage/%.cpp $(DISK_HEADERS)
+$(BUILD_DIR)/%.o: src/Storage/%.cpp $(STORAGE_HEADERS)
 	@mkdir -p $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
@@ -42,11 +44,11 @@ $(BUILD_DIR)/%.o: src/Indexes/%.cpp $(INDEX_HEADERS)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Create static libraries
-$(DISK_LIB): $(DISK_OBJ)
+$(STORAGE_LIB): $(DISK_OBJ) $(BUFFER_OBJ)
 	@mkdir -p $(LIB_DIR)
 	ar rcs $@ $^
 
-$(INDEX_LIB): $(INDEX_OBJ)
+$(INDEX_LIB): $(BPT_OBJ)
 	@mkdir -p $(LIB_DIR)
 	ar rcs $@ $^
 

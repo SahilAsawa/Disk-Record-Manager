@@ -109,6 +109,43 @@ class BufferManager
      * @param data The data to write to the address.
      */
     auto writeAddress ( address_id_t address, const std::vector< std::byte > &data ) -> void;
+
+    /**
+     * @brief Get the number of disk IO till now from creation of disk.
+     * @returns The number of disk IO.
+     */
+    auto getNumIO ( ) const -> unsigned long long
+    {
+        return disk->numIO;
+    }
+
+    /**
+     * @brief Get the cost of disk IO till now from creation of disk.
+     * @returns The cost of disk IO.
+     */
+    auto getCostIO ( ) const -> unsigned long long
+    {
+        return disk->costIO;
+    }
+
+    /**
+     * @brief Get the number of frames in the buffer manager.
+     * @returns The number of frames.
+     */
+    auto getNumFrames ( ) const -> unsigned int
+    {
+        return numFrames;
+    }
+
+    /**
+     * @brief Get the type of replacement strategy used.
+     * @returns The type of replacement strategy used, LRU or MRU macro.
+     * @note LRU = 0, MRU = 1
+     */
+    auto getReplaceStrategy ( ) const -> int
+    {
+        return replaceStrategy;
+    }
 };
 
 #endif // _BUFFER_MANAGER_HPP_

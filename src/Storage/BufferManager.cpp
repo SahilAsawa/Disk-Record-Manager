@@ -198,7 +198,8 @@ auto BufferManager::writeAddress ( address_id_t address, const std::vector< std:
     }
     else
     {
-        std::copy( data.begin(), data.end(), firstFrame.begin() + offset );
+        std::copy( data.begin(), data.begin() + disk->blockSize - offset, firstFrame.begin() + offset );
+        writePage( pageNumber, firstFrame );
         
         size_t remainingSize = data.size() - ( disk->blockSize - offset );
 
