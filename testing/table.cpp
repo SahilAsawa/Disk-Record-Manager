@@ -5,15 +5,13 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include <sys/stat.h> 
-#include <unistd.h>
-#include <cstdio>
 #include <Utilities/Utils.hpp>
 
 using Table = std::vector<std::vector<std::string>>;
 
 Table readCSV(const std::string &filename, char delim = ',')
 {
+    std::cout << "Reading file: " << filename << '\n';
     std::ifstream file{filename};
 
     std::istringstream sstr{};
@@ -46,18 +44,12 @@ Table readCSV(const std::string &filename, char delim = ',')
 
 int main()
 {
-    struct stat st;
-    if(stat("bin", &st) == -1) 
-    { 
-        if(mkdir("bin", 0755) != 0) perror("mkdir failed");
-    }
-    else if(S_ISDIR(st.st_mode));
     std::cout << "Size of Employee: " << sizeof(Employee) << '\n';
     std::cout << "Size of Company:  " << sizeof(Company) << '\n';
 
     try
     {
-        auto data = readCSV("./files/employee.csv", ',');
+        auto data = readCSV(CSV_DIR + "employee.csv", ',');
         std::cout << "employee.csv size : " << data.size() << '\n';
         std::cout << "Total Attributes : " << data[0].size() << '\n';
         std::vector<Employee> employees{};
@@ -74,7 +66,7 @@ int main()
             employees.emplace_back(employee);
         }
 
-        std::ofstream file{"./bin/employee.bin", std::ios::binary};
+        std::ofstream file{BIN_DIR + "employee.bin", std::ios::binary};
 
         for (const auto &employee : employees)
         {
@@ -87,7 +79,7 @@ int main()
 
         // Read employees.csv
 
-        data = readCSV("./files/company.csv", ';');
+        data = readCSV(CSV_DIR + "company.csv", ';');
         std::cout << "company.csv Size : " << data.size() << '\n';
         std::cout << "Total Attributes : " << data[0].size() << '\n';
         std::vector<Company> companys{};
@@ -102,7 +94,7 @@ int main()
             companys.emplace_back(company);
         }
 
-        file.open("./bin/company.bin", std::ios::binary);
+        file.open(BIN_DIR + "company.bin", std::ios::binary);
 
         for (const auto &company : companys)
         {

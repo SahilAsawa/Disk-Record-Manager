@@ -7,9 +7,6 @@
 #include <cassert>
 #include <cstring>
 #include <iomanip>
-#include <sys/stat.h> 
-#include <unistd.h>
-#include <cstdio>
 #include <Storage/Disk.hpp>
 #include <Storage/BufferManager.hpp>
 #include <Utilities/Utils.hpp>
@@ -61,7 +58,7 @@ auto loadData() -> std::tuple<address_id_t, address_id_t, address_id_t, address_
     Disk disk(RANDOM, BLOCK_SIZE, BLOCK_COUNT_DISK);
     BufferManager buffer(&disk, MRU, BLOCK_COUNT_BUFFER);
 
-    auto locationEmployee = loadFileInDisk(buffer, "./bin/employee.bin", 0);
+    auto locationEmployee = loadFileInDisk(buffer, BIN_DIR + "employee.bin", 0);
     if (!locationEmployee.has_value())
     {
         std::cerr << "Error loading Employee data" << std::endl;
@@ -69,7 +66,7 @@ auto loadData() -> std::tuple<address_id_t, address_id_t, address_id_t, address_
     }
     auto [StartAddressEmployee, EndAddressEmployee] = locationEmployee.value();
 
-    auto locationCompany = loadFileInDisk(buffer, "./bin/company.bin", EndAddressEmployee);
+    auto locationCompany = loadFileInDisk(buffer, BIN_DIR + "company.bin", EndAddressEmployee);
     if (!locationCompany.has_value())
     {
         std::cerr << "Error loading Company data" << std::endl;
@@ -148,19 +145,13 @@ auto testing(bool DiskAccessStrategy, int BufferReplacementStategy, bool Outer) 
     std::cout << "\t\tDisk Access Strategy: " << (DiskAccessStrategy == RANDOM ? "RANDOM" : "SEQUENTIAL") << std::endl;
 
     // store the result
-    storeResult<JoinEmployeeCompany>(buffer, StartJoin, EndJoin, "./NestedJoin/joined_result.csv");
+    storeResult<JoinEmployeeCompany>(buffer, StartJoin, EndJoin, RES_DIR + "nest_join_joined_result.csv");
 
     return;
 }
 
 int main()
 {
-    struct stat st;
-    if(stat("NestedJoin", &st) == -1) 
-    { 
-        if(mkdir("NestedJoin", 0755) != 0) perror("mkdir failed");
-    }
-    else if(S_ISDIR(st.st_mode));
     testing(RANDOM, LRU, EMPLOYEE);
     testing(RANDOM, MRU, EMPLOYEE);
     testing(SEQUENTIAL, LRU, EMPLOYEE);

@@ -42,14 +42,14 @@ int main() {
     Disk disk( RANDOM, 256, 1024 * 1024 );
     BufferManager bm ( &disk, MRU, 16 );
 
-    auto p = loadFileInDisk( bm, "files/employee.bin", 0);
+    auto p = loadFileInDisk( bm, BIN_DIR + "employee.bin", 0);
     if ( !p.has_value() ) {
         std::cerr << "Error loading employee.bin" << std::endl;
         return 1;
     }
     auto [employeeStartAddress, employeeEndAddress] = p.value();
 
-    p = loadFileInDisk( bm, "files/company.bin", employeeEndAddress );
+    p = loadFileInDisk( bm, BIN_DIR + "company.bin", employeeEndAddress );
     if ( !p.has_value() ) {
         std::cerr << "Error loading company.bin" << std::endl;
         return 1;
@@ -118,7 +118,7 @@ int main() {
         }
     }
     // Store the result in a file
-    storeResult<JoinEmployeeCompany>(bm, compEndIndex, joinAddr, "files/joined_data.csv");
+    storeResult<JoinEmployeeCompany>(bm, compEndIndex, joinAddr, RES_DIR + "bplus_index_joined_data.csv");
 
     std::cout << "\n\t========================================================\n" << std::endl;
     std::cout << "\t\tDisk IO operations: " << bm.getNumIO() << std::endl;

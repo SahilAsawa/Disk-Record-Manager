@@ -5,6 +5,9 @@ CXXFLAGS = -std=c++20 -Wall -Iinclude
 BUILD_DIR = build
 LIB_DIR = lib
 TESTING_DIR = testing
+BIN_DIR = bin
+RES_DIR = Results
+STATS_DIR = Stats
 
 # Source files
 BUFFER_SRC = src/Storage/BufferManager.cpp
@@ -44,8 +47,12 @@ TABLE_SRC = $(TESTING_DIR)/table.cpp
 ISORT = isort
 ISORT_SRC = $(TESTING_DIR)/IndexSort.cpp
 
+# Nested join
+NEST = nest
+NEST_SRC = $(TESTING_DIR)/nestedLoopJoin.cpp
+
 # Default target
-all: $(TEST) $(EMS) $(TABLE) $(ISORT)
+all: $(TEST) $(EMS) $(TABLE) $(ISORT) $(NEST)
 
 # Compile test.cpp and link with both static libs
 $(TEST): $(TEST_SRC) $(STORAGE_LIB) $(INDEX_LIB) $(UTILS_LIB)
@@ -63,6 +70,10 @@ $(TABLE): $(TABLE_SRC) $(STORAGE_LIB) $(INDEX_LIB) $(UTILS_LIB)
 $(ISORT): $(ISORT_SRC) $(STORAGE_LIB) $(INDEX_LIB) $(UTILS_LIB)
 	$(CXX) $(CXXFLAGS) -o $@ $(ISORT_SRC) -L$(LIB_DIR) -lstorage -lindexes -lutils
 
+# Compile nested loop join
+$(NEST): $(NEST_SRC) $(STORAGE_LIB) $(INDEX_LIB) $(UTILS_LIB)
+	$(CXX) $(CXXFLAGS) -o $@ $(NEST_SRC) -L$(LIB_DIR) -lstorage -lindexes -lutils
+
 # Build object files
 $(BUILD_DIR)/%.o: src/Storage/%.cpp $(STORAGE_HEADERS)
 	@mkdir -p $(BUILD_DIR)
@@ -73,7 +84,7 @@ $(BUILD_DIR)/%.o: src/Indexes/%.cpp $(INDEX_HEADERS)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(BUILD_DIR)/%.o: src/Utilities/%.cpp $(UTILS_HEADERS)
-	@mkdir -p $(BUILD_DIR)
+	@mkdir -p $(BIN_DIR) $(RES_DIR) $(STATS_DIR) $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Create static libraries
@@ -91,6 +102,6 @@ $(UTILS_LIB): $(UTILS_OBJ)
 
 # Clean build artifacts
 clean:
-	rm -rf $(BUILD_DIR) $(LIB_DIR) $(TEST) $(EMS) $(TABLE) $(ISORT) bin/*.bin MergeSort/*.csv
+	rm -rf $(BUILD_DIR) $(LIB_DIR) $(TEST) $(EMS) $(TABLE) $(ISORT) $(NEST) $(BIN_DIR) $(RES_DIR) $(STATS_DIR)
 
 .PHONY: all clean

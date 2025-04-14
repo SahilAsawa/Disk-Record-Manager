@@ -6,16 +6,13 @@
 #include <queue>
 #include <cassert>
 #include <iomanip>
-#include <sys/stat.h> 
-#include <unistd.h>
-#include <cstdio>
 #include <Storage/Disk.hpp>
 #include <Storage/BufferManager.hpp>
 #include <Utilities/Utils.hpp>
 
-int BLOCK_SIZE = 4096;
-int BLOCK_COUNT_DISK = 1024 * 1024;
-int BLOCK_COUNT_BUFFER = 16;
+block_id_t BLOCK_SIZE = 4096;
+size_t BLOCK_COUNT_DISK = 1024 * 1024;
+size_t BLOCK_COUNT_BUFFER = 16;
 
 auto getNextFreeFrame(int readBytes) -> int
 {
@@ -24,13 +21,13 @@ auto getNextFreeFrame(int readBytes) -> int
 }
 
 template <typename T>
-auto mergeRuns(BufferManager &buffer, const std::vector<std::pair<int, int>> &Runs, int NextUsableAddress) -> std::pair<int, int>
+auto mergeRuns(BufferManager &buffer, const std::vector<std::pair<address_id_t, address_id_t>> &Runs, address_id_t NextUsableAddress) -> std::pair<address_id_t, address_id_t>
 {
     const bool isEmployee = std::is_same_v<T, Employee>;
     const auto size = (isEmployee) ? EmployeeSize : CompanySize;
-    int baseAddress = NextUsableAddress;
+    address_id_t baseAddress = NextUsableAddress;
     size_t runCount = Runs.size();
-    std::priority_queue<std::tuple<T, size_t, int>, std::vector<std::tuple<T, size_t, int>>, std::greater<std::tuple<T, size_t, int>>> minHeap;
+    std::priority_queue<std::tuple<T, size_t, address_id_t>, std::vector<std::tuple<T, size_t, address_id_t>>, std::greater<std::tuple<T, size_t, address_id_t>>> minHeap;
     for (size_t i = 0; i < runCount; ++i)
     {
         minHeap.push({extractData<T>(buffer.readAddress(Runs[i].first, size)), i, Runs[i].first});
@@ -51,15 +48,15 @@ auto mergeRuns(BufferManager &buffer, const std::vector<std::pair<int, int>> &Ru
 }
 
 template <typename T>
-auto externalSort(BufferManager &buffer, int StartAddress, int EndAddress, int NextUsableAddress) -> std::pair<int, int> // Returns the Start and the End index of the final Sorted data
+auto externalSort(BufferManager &buffer, address_id_t StartAddress, address_id_t EndAddress, address_id_t NextUsableAddress) -> std::pair<int, int> // Returns the Start and the End index of the final Sorted data
 {
     const bool isEmployee = std::is_same_v<T, Employee>;
     const auto size = (isEmployee) ? EmployeeSize : CompanySize;
-    const int dataSize = EndAddress - StartAddress;
+    const address_id_t dataSize = EndAddress - StartAddress;
     // Sorting the Data and storing it in the same Blocks in Disk
     std::vector<T> dataInBlock;
-    std::vector<std::pair<int, int>> Runs;
-    for (int i = StartAddress; i < EndAddress; i += BLOCK_SIZE)
+    std::vector<std::pair<address_id_t, address_id_t>> Runs;
+    for (address_id_t i = StartAddress; i < EndAddress; i += BLOCK_SIZE)
     {
         Runs.push_back({i, std::min(EndAddress, i + BLOCK_SIZE)});
         auto data = buffer.readAddress(i, std::min(EndAddress, i + BLOCK_SIZE));
@@ -70,8 +67,8 @@ auto externalSort(BufferManager &buffer, int StartAddress, int EndAddress, int N
     }
 
     // Merging the Sorted Blocks
-    int usedFrameCnt = (EndAddress - StartAddress + BLOCK_SIZE - 1) / BLOCK_SIZE;
-    std::pair<int, int> result;
+    size_t usedFrameCnt = (EndAddress - StartAddress + BLOCK_SIZE - 1) / BLOCK_SIZE;
+    std::pair<address_id_t, address_id_t> result;
     if (usedFrameCnt < BLOCK_COUNT_BUFFER - 1)
     {
         //  Merged in a single Run
@@ -79,14 +76,14 @@ auto externalSort(BufferManager &buffer, int StartAddress, int EndAddress, int N
     }
     else
     {
-        std::vector<std::pair<int, int>> nextRuns;
+        std::vector<std::pair<address_id_t, address_id_t>> nextRuns;
         bool toUse = false; // if false use NextUsableAddress or use StartAddress replacably
         while (Runs.size() > BLOCK_COUNT_BUFFER - 1)
         {
-            int toFillIndex = (toUse) ? StartAddress : NextUsableAddress;
+            address_id_t toFillIndex = (toUse) ? StartAddress : NextUsableAddress;
             for (size_t i = 0; i < Runs.size(); i += (BLOCK_COUNT_BUFFER - 1))
             {
-                std::vector<std::pair<int, int>> tempRuns;
+                std::vector<std::pair<address_id_t, address_id_t>> tempRuns;
                 for (size_t j = i; j < i + (BLOCK_COUNT_BUFFER - 1) && j < Runs.size(); ++j)
                 {
                     tempRuns.push_back(Runs[j]);
@@ -99,14 +96,14 @@ auto externalSort(BufferManager &buffer, int StartAddress, int EndAddress, int N
             nextRuns.clear();
             toUse = !toUse;
         }
-        int toFillIndex = (toUse) ? StartAddress : NextUsableAddress;
+        address_id_t toFillIndex = (toUse) ? StartAddress : NextUsableAddress;
         result = mergeRuns<T>(buffer, Runs, toFillIndex);
     }
     if (result.first == NextUsableAddress)
     {
-        int readAddr = NextUsableAddress;
-        int writeAddr = StartAddress;
-        for (int i = readAddr; i < result.second; i += size)
+        address_id_t readAddr = NextUsableAddress;
+        address_id_t writeAddr = StartAddress;
+        for (address_id_t i = readAddr; i < result.second; i += size)
         {
             auto data = buffer.readAddress(i, size);
             buffer.writeAddress(writeAddr, data);
@@ -119,12 +116,12 @@ auto externalSort(BufferManager &buffer, int StartAddress, int EndAddress, int N
     return result;
 }
 
-auto mergeJoin(BufferManager &buffer, int startEmployee, int endEmployee, int startCompany, int endCompany, int NextUsableAddress) -> std::pair<int, int>
+auto mergeJoin(BufferManager &buffer, address_id_t startEmployee, address_id_t endEmployee, address_id_t startCompany, address_id_t endCompany, address_id_t NextUsableAddress) -> std::pair<address_id_t, address_id_t>
 {
     // Pinning and Not based implementation
-    int baseAddress = NextUsableAddress;
-    int employeePtr = startEmployee;
-    int companyPtr = startCompany;
+    address_id_t baseAddress = NextUsableAddress;
+    address_id_t employeePtr = startEmployee;
+    address_id_t companyPtr = startCompany;
     while (employeePtr < endEmployee && companyPtr < endCompany)
     {
         auto employeeData = extractData<Employee>(buffer.readAddress(employeePtr, EmployeeSize));
@@ -149,7 +146,7 @@ auto mergeJoin(BufferManager &buffer, int startEmployee, int endEmployee, int st
 }
 
 template <typename T>
-auto storeResult(BufferManager &buffer, int start, int end, std::string fileName) -> void
+auto storeResult(BufferManager &buffer, address_id_t start, address_id_t end, std::string fileName) -> void
 {
     T storeData;
     auto size = T::size;
@@ -159,7 +156,7 @@ auto storeResult(BufferManager &buffer, int start, int end, std::string fileName
         std::cerr << "Error opening file" << '\n';
         return;
     }
-    for (int i = start; i < end; i += size)
+    for (address_id_t i = start; i < end; i += size)
     {
         auto data = buffer.readAddress(i, size);
         storeData = extractData<T>(data);
@@ -174,7 +171,7 @@ auto loadData() -> std::tuple<address_id_t, address_id_t, address_id_t, address_
     Disk disk(RANDOM, BLOCK_SIZE, BLOCK_COUNT_DISK);
     BufferManager buffer(&disk, MRU, BLOCK_COUNT_BUFFER);
 
-    auto locationEmployee = loadFileInDisk(buffer, "./bin/employee.bin", 0);
+    auto locationEmployee = loadFileInDisk(buffer, BIN_DIR + "employee.bin", 0);
     if (!locationEmployee.has_value())
     {
         std::cerr << "Error loading Employee data" << std::endl;
@@ -182,7 +179,7 @@ auto loadData() -> std::tuple<address_id_t, address_id_t, address_id_t, address_
     }
     auto [StartAddressEmployee, EndAddressEmployee] = locationEmployee.value();
 
-    auto locationCompany = loadFileInDisk(buffer, "./bin/company.bin", EndAddressEmployee);
+    auto locationCompany = loadFileInDisk(buffer, BIN_DIR + "company.bin", EndAddressEmployee);
     if (!locationCompany.has_value())
     {
         std::cerr << "Error loading Company data" << std::endl;
@@ -224,21 +221,15 @@ auto testing(bool DiskAccessStrategy, int BufferReplacementStategy) -> void
     std::cout << "\t\tDisk Access Strategy: " << (DiskAccessStrategy == RANDOM ? "RANDOM" : "SEQUENTIAL") << std::endl;
     
     // Storing the sorted files for Demonstration
-    storeResult<Employee>(buffer, startEmployeeSorted, endEmployeeSorted, "./MergeSort/sorted_employee.csv");
-    storeResult<Company>(buffer, startCompanySorted, endCompanySorted, "./MergeSort/sorted_company.csv");
-    storeResult<JoinEmployeeCompany>(buffer, startJoin, endJoin, "./MergeSort/joined_result.csv");
+    storeResult<Employee>(buffer, startEmployeeSorted, endEmployeeSorted, RES_DIR + "merge_join_sorted_employee.csv");
+    storeResult<Company>(buffer, startCompanySorted, endCompanySorted, RES_DIR + "merge_join_sorted_company.csv");
+    storeResult<JoinEmployeeCompany>(buffer, startJoin, endJoin, RES_DIR + "merge_join_joined_result.csv");
 
     return;
 }
 
 int main()
 {
-    struct stat st;
-    if(stat("MergeSort", &st) == -1) 
-    { 
-        if(mkdir("MergeSort", 0755) != 0) perror("mkdir failed");
-    }
-    else if(S_ISDIR(st.st_mode));
     testing(RANDOM, LRU);
     testing(RANDOM, MRU);
     testing(SEQUENTIAL, LRU);
