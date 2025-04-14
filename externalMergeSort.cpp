@@ -14,7 +14,7 @@
 #include <Storage/BufferManager.hpp>
 #include <Utilities/Utils.hpp>
 
-int BLOCK_SIZE = 256;
+int BLOCK_SIZE = 4096;
 int BLOCK_COUNT_DISK = 1024 * 1024;
 int BLOCK_COUNT_BUFFER = 16;
 
@@ -160,8 +160,8 @@ auto mergeJoin(BufferManager &buffer, int startEmployee, int endEmployee, int st
 template <typename T>
 auto storeResult(BufferManager &buffer, int start, int end, std::string fileName) -> void
 {
-    T sortedData;
-    auto size = sortedData.size;
+    T storeData;
+    auto size = T::size;
     std::ofstream file(fileName);
     if (!file.is_open())
     {
@@ -171,8 +171,8 @@ auto storeResult(BufferManager &buffer, int start, int end, std::string fileName
     for (int i = start; i < end; i += size)
     {
         auto data = buffer.readAddress(i, size);
-        sortedData = extractData<T>(data);
-        file << sortedData.toString() << std::endl;
+        storeData = extractData<T>(data);
+        file << storeData.toString() << std::endl;
     }
     file.close();
     return;
@@ -211,22 +211,32 @@ auto testing(bool DiskAccessStrategy, int BufferReplacementStategy) -> void
     address_id_t NextUsableAddress = getNextFreeFrame(EndAddressCompany);
     auto [startEmployeeSorted, endEmployeeSorted] = externalSort<Employee>(buffer, StartAddressEmployee, EndAddressEmployee, NextUsableAddress);
     auto [startCompanySorted, endCompanySorted] = externalSort<Company>(buffer, StartAddressCompany, EndAddressCompany, NextUsableAddress);
-    
-    // Merge Join the Employee and Company data
-    auto [startJoin, endJoin] = mergeJoin(buffer, startEmployeeSorted, endEmployeeSorted, startCompanySorted, endCompanySorted, NextUsableAddress);
 
-    // Storing the sorted files for Demonstration
-    storeResult<Employee>(buffer, startEmployeeSorted, endEmployeeSorted, "./MergeSort/sorted_employee.csv");
-    storeResult<Company>(buffer, startCompanySorted, endCompanySorted, "./MergeSort/sorted_company.csv");
-    storeResult<JoinEmployeeCompany>(buffer, startJoin, endJoin, "./MergeSort/joined_result.csv");
-
-    // print statistics
-    std::cout << "\n\t========================================================\n" << std::endl;
+    std::cout << "\nStatistics of the External Sort" << std::endl;
+    std::cout << "\t========================================================" << std::endl;
     std::cout << "\t\tDisk IO operations: " << buffer.getNumIO() << std::endl;
     std::cout << "\t\tDisk IO cost: " << buffer.getCostIO() << std::endl;
     std::cout << "\t\tBuffer Manager Size: " << buffer.getNumFrames() << std::endl;
     std::cout << "\t\tBuffer Manager Replacement Strategy: " << (buffer.getReplaceStrategy() == LRU ? "LRU" : "MRU") << std::endl;
     std::cout << "\t\tDisk Access Strategy: " << (DiskAccessStrategy == RANDOM ? "RANDOM" : "SEQUENTIAL") << std::endl;
+    
+    // Merge Join the Employee and Company data
+    auto [startJoin, endJoin] = mergeJoin(buffer, startEmployeeSorted, endEmployeeSorted, startCompanySorted, endCompanySorted, NextUsableAddress);
+
+    // print statistics
+    std::cout << "\nStatistics of the Merge Join (including sorting)" << std::endl;
+    std::cout << "\t========================================================" << std::endl;
+    std::cout << "\t\tDisk IO operations: " << buffer.getNumIO() << std::endl;
+    std::cout << "\t\tDisk IO cost: " << buffer.getCostIO() << std::endl;
+    std::cout << "\t\tBuffer Manager Size: " << buffer.getNumFrames() << std::endl;
+    std::cout << "\t\tBuffer Manager Replacement Strategy: " << (buffer.getReplaceStrategy() == LRU ? "LRU" : "MRU") << std::endl;
+    std::cout << "\t\tDisk Access Strategy: " << (DiskAccessStrategy == RANDOM ? "RANDOM" : "SEQUENTIAL") << std::endl;
+    
+    // Storing the sorted files for Demonstration
+    storeResult<Employee>(buffer, startEmployeeSorted, endEmployeeSorted, "./MergeSort/sorted_employee.csv");
+    storeResult<Company>(buffer, startCompanySorted, endCompanySorted, "./MergeSort/sorted_company.csv");
+    storeResult<JoinEmployeeCompany>(buffer, startJoin, endJoin, "./MergeSort/joined_result.csv");
+
     return;
 }
 
@@ -242,6 +252,6 @@ int main()
     testing(RANDOM, MRU);
     testing(SEQUENTIAL, LRU);
     testing(SEQUENTIAL, MRU);
-    std::cout << "\n\t========================================================\n" << std::endl;
+    std::cout << "\t========================================================\n" << std::endl;
     return 0;
 }
