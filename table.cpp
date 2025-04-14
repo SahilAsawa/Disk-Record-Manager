@@ -68,7 +68,7 @@ int main()
             employees.emplace_back(employee);
         }
 
-        std::sort(std::begin(employees), std::end(employees));
+        // std::sort(std::begin(employees), std::end(employees));
 
         std::ofstream file{"./files/employee.bin", std::ios::binary};
 
@@ -98,7 +98,7 @@ int main()
             companys.emplace_back(company);
         }
 
-        std::sort(std::begin(companys), std::end(companys));
+        // std::sort(std::begin(companys), std::end(companys));
 
         file.open("./files/company.bin", std::ios::binary);
 

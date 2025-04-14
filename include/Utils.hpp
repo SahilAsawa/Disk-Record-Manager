@@ -12,6 +12,7 @@ using frame_id_t = unsigned long long;
 using page_id_t = unsigned long long;
 using block_id_t = unsigned long long;
 using address_id_t = unsigned long long;
+using node_id_t = long long;
 
 class Disk;
 class BufferManager;

@@ -10,9 +10,9 @@
 #include <Storage/BufferManager.hpp>
 #include <Utils.hpp>
 
-const int BLOCK_SIZE = 4096;
-const int BLOCK_COUNT_DISK = 1024;
-const int BLOCK_COUNT_BUFFER = 16;
+int BLOCK_SIZE = 4096;
+int BLOCK_COUNT_DISK = 1024;
+int BLOCK_COUNT_BUFFER = 16;
 
 auto getNextFreeFrame ( int readBytes ) -> int
 {
@@ -177,17 +177,17 @@ auto storeSortedResult ( BufferManager& buffer, int start, int end ) -> void
         T sortedData = extractData<T>( data );
         if ( isEmployee )
         {
-            // file << std::setw(3)  << sortedData.id       << " ;"
-            //      << std::setw(3)  << sortedData.company_id << " ;"
-            //      << std::setw(3)  << sortedData.salary     << " ;"
-            //      << std::setw(30) << sortedData.fname.data()  << " ;"
-            //      << std::setw(30) << sortedData.lname.data()  << std::endl;
+            file << std::setw(3)  << sortedData.id       << " ;"
+                 << std::setw(3)  << sortedData.company_id << " ;"
+                 << std::setw(3)  << sortedData.salary     << " ;"
+                 << std::setw(30) << sortedData.fname.data()  << " ;"
+                 << std::setw(30) << sortedData.lname.data()  << std::endl;
         }
         else
         {
-            file << std::setw(3)  << sortedData.id       << " ;"
-                 << std::setw(30) << sortedData.name.data()   << " ;"
-                 << std::setw(30) << sortedData.slogan.data() << std::endl;
+            // file << std::setw(3)  << sortedData.id       << " ;"
+            //      << std::setw(30) << sortedData.name.data()   << " ;"
+            //      << std::setw(30) << sortedData.slogan.data() << std::endl;
         }
     }
     file.close();
@@ -197,7 +197,7 @@ auto storeSortedResult ( BufferManager& buffer, int start, int end ) -> void
 
 auto storeJoinResult ( BufferManager& buffer, int startJoin, int endJoin ) -> void
 {
-    std::ofstream file ( "./files/joinedResult.csv" );
+    std::ofstream file ( "./files/joined_result.csv" );
     if ( ! file.is_open() )
     {
         std::cerr << "Error opening file" << '\n';
@@ -220,83 +220,113 @@ auto storeJoinResult ( BufferManager& buffer, int startJoin, int endJoin ) -> vo
     return;
 }
 
-int main () {
-    Disk disk( SEQUENTIAL, BLOCK_SIZE, BLOCK_COUNT_DISK );
-    std::cout << "Max Disk Size: " << ( BLOCK_SIZE * BLOCK_COUNT_DISK ) << std::endl;
-    BufferManager buffer( &disk, MRU, BLOCK_COUNT_BUFFER );
 
+
+int main () {
     int StartAddressEmployee = 0, StartAddressCompany = 0;
     int EndAddressEmployee = 0, EndAddressCompany = 0;
     int NextUsableAddress = 0;
-    /**
-     * Next Usable Address is the address of the next free frame in the bufferm    
-     * At the end it will be used while storing Join Results in the Disk
-     * After we retrieve it and store it in the Binary File outside for results
-     * we reduce it again eventually setting it to Next Address after Employee, Company, JoinedResult in the Disk
-     */
+    {
 
-    // Read the CSV Files and stored in the Disk
-    try {
-        std::ifstream file { "./files/employee.bin", std::ios::binary };
-        std::array<std::byte, 128> ReadBuffer;
-		if ( ! file.is_open() )
-		{
-			std::cerr << "Error opening file" << '\n';
-			return 1;
-		}
-        bool isHeader = true;
-        while ( file.read( reinterpret_cast<char*> ( ReadBuffer.data() ), ReadBuffer.size() ) )
-        {
-            if( isHeader )
+        Disk disk( RANDOM, BLOCK_SIZE, BLOCK_COUNT_DISK );
+        std::cout << "Max Disk Size: " << ( BLOCK_SIZE * BLOCK_COUNT_DISK ) << std::endl;
+        BufferManager buffer( &disk, MRU, BLOCK_COUNT_BUFFER );
+    
+        // Read the CSV Files and stored in the Disk
+        try {
+            std::ifstream file { "./files/employee.bin", std::ios::binary };
+            std::array<std::byte, 128> ReadBuffer;
+            if ( ! file.is_open() )
             {
-                isHeader = false;
+                std::cerr << "Error opening file" << '\n';
+                return 1;
+            }
+            while ( file.read( reinterpret_cast<char*> ( ReadBuffer.data() ), ReadBuffer.size() ) )
+            {
+                buffer.writeAddress( EndAddressEmployee, std::vector<std::byte>( ReadBuffer.begin(), ReadBuffer.end() ) );
+                auto tmpEmployee = extractData<Employee>( buffer.readAddress( EndAddressEmployee, EmployeeSize ) );
+                // std::cout << "Employee ID: " << tmpEmployee.id << std::endl;
                 EndAddressEmployee += ReadBuffer.size();
-                continue;
             }
-            buffer.writeAddress( EndAddressEmployee, std::vector<std::byte>( ReadBuffer.begin(), ReadBuffer.end() ) );
-            EndAddressEmployee += ReadBuffer.size();
-        }
-        file.close();
-        file.clear();
-        StartAddressCompany = getNextFreeFrame( EndAddressEmployee );
-        EndAddressCompany = StartAddressCompany;
-        file.open( "./files/company.bin", std::ios::binary );
-        if ( ! file.is_open() )
-        {
-            std::cerr << "Error opening file" << '\n';
-            return 1;
-        }
-        isHeader = false;
-        bool print =  true;
-        while ( file.read( reinterpret_cast<char*> ( ReadBuffer.data() ), ReadBuffer.size() ) )
-        {
-            if( isHeader )
+            file.close();
+            file.clear();
+            StartAddressCompany = getNextFreeFrame( EndAddressEmployee );
+            EndAddressCompany = StartAddressCompany;
+            file.open( "./files/company.bin", std::ios::binary );
+            if ( ! file.is_open() )
             {
-                isHeader = false;
+                std::cerr << "Error opening file" << '\n';
+                return 1;
+            }
+            while ( file.read( reinterpret_cast<char*> ( ReadBuffer.data() ), ReadBuffer.size() ) )
+            {
+                buffer.writeAddress( EndAddressCompany, std::vector<std::byte>( ReadBuffer.begin(), ReadBuffer.end() ) );
+                auto tmpCompany = extractData<Company>( buffer.readAddress( EndAddressCompany, CompanySize ) );
+                // std::cout << "Company ID: " << tmpCompany.id << std::endl;
                 EndAddressCompany += ReadBuffer.size();
-                continue;
             }
-            if( print )
-            {
-                // print = false;
-                Company company;
-                memcpy( &company, ReadBuffer.data(), sizeof(Company) );
-                std::cout << "Company ID: " << company.id << std::endl;
-                std::cout << "Company Name: " << company.name.data() << std::endl;
-                std::cout << "Company Slogan: " << company.slogan.data() << std::endl;
-            }
-            std::cerr << "EndAddressCompany: " << EndAddressCompany << std::endl;
-            buffer.writeAddress( EndAddressCompany, std::vector<std::byte>( ReadBuffer.begin(), ReadBuffer.end() ) ); // Remember, the first row is title and should be skipped later
-            EndAddressCompany += ReadBuffer.size();
+            file.close();
+            std::cout << "Employee data written to buffer : " << StartAddressEmployee << std::endl;
+            std::cout << "Company data written to buffer : " << StartAddressCompany << std::endl;
+        }
+        catch (const std::exception &e ) {
+            std::cerr << e.what() << std::endl;
+        }
+        std::cerr << "Done reading the files" << std::endl;
+
+        std::ofstream file ("temp1.txt");
+        for (int i = StartAddressEmployee; i < EndAddressEmployee; i += EmployeeSize)
+        {
+            auto data = buffer.readAddress( i, EmployeeSize );
+            Employee employee = extractData<Employee>( data );
+            file << "Employee ID: " << employee.id << std::endl;
+            file << "Company ID: " << employee.company_id << std::endl;
+            file << "Salary: " << employee.salary << std::endl;
+            file << "First Name: " << employee.fname.data() << std::endl;
+            file << "Last Name: " << employee.lname.data() << std::endl;
         }
         file.close();
-        std::cout << "Employee data written to buffer : " << StartAddressEmployee << std::endl;
-        std::cout << "Company data written to buffer : " << StartAddressCompany << std::endl;
+        // for (int i = StartAddressCompany; i < EndAddressCompany; i += CompanySize)
+        // {
+        //     auto data = buffer.readAddress( i, CompanySize );
+        //     Company company = extractData<Company>( data );
+        //     file << "Company ID: " << company.id << std::endl;
+        //     file << "Company Name: " << company.name.data() << std::endl;
+        //     file << "Company Slogan: " << company.slogan.data() << std::endl;
+        // }
+        std:: cout << StartAddressEmployee << " " << EndAddressEmployee << " " << StartAddressCompany << " " << EndAddressCompany << std::endl;
+        // buffer.~BufferManager();
+        // disk.~Disk();
     }
-    catch (const std::exception &e ) {
-        std::cerr << e.what() << std::endl;
+
+    std::cout << "Done reading the files" << std::endl;
+    // return 0;
+
+    Disk disk( RANDOM, BLOCK_SIZE, BLOCK_COUNT_DISK );
+    std::cout << "Max Disk Size: " << ( BLOCK_SIZE * BLOCK_COUNT_DISK ) << std::endl;
+    BufferManager buffer( &disk, MRU, BLOCK_COUNT_BUFFER );
+
+    std::ofstream file ("temp2.txt");
+    for (int i = 0; i < EndAddressEmployee; i += EmployeeSize)
+    {
+        auto data = buffer.readAddress( i, EmployeeSize );
+        Employee employee = extractData<Employee>( data );
+        file << "Employee ID: " << employee.id << std::endl;
+        file << "Company ID: " << employee.company_id << std::endl;
+        file << "Salary: " << employee.salary << std::endl;
+        file << "First Name: " << employee.fname.data() << std::endl;
+        file << "Last Name: " << employee.lname.data() << std::endl;
     }
-    std::cerr << "Done reading the files" << std::endl;
+    file.close();
+    std:: cout << StartAddressEmployee << " " << EndAddressEmployee << " " << StartAddressCompany << " " << EndAddressCompany << std::endl;
+    // for (int i = StartAddressCompany; i < EndAddressCompany; i += CompanySize)
+    // {
+    //     auto data = buffer.readAddress( i, CompanySize );
+    //     Company company = extractData<Company>( data );
+    //     file << "Company ID: " << company.id << std::endl;
+    //     file << "Company Name: " << company.name.data() << std::endl;
+    //     file << "Company Slogan: " << company.slogan.data() << std::endl;
+    // }
 
     // External Sort the Employee and Company data
     NextUsableAddress = getNextFreeFrame( EndAddressCompany );
@@ -307,16 +337,17 @@ int main () {
     assert ( endEmployeeSorted == EndAddressEmployee );
     assert ( endCompanySorted == EndAddressCompany );
     std::cout << "Sorted everything" << std::endl;
-    // storeSortedResult<Employee>( buffer, startEmployeeSorted, endEmployeeSorted );
-    storeSortedResult<Company>( buffer, startCompanySorted, endCompanySorted );
+    storeSortedResult<Employee>( buffer, startEmployeeSorted, endEmployeeSorted );
+    // storeSortedResult<Company>( buffer, startCompanySorted, endCompanySorted );
     // Merge Join the Employee and Company data
     auto [startJoin, endJoin] = mergeJoin( buffer, startEmployeeSorted, endEmployeeSorted, startCompanySorted, endCompanySorted, NextUsableAddress );
     storeJoinResult( buffer, startJoin, endJoin );
 
     // print statistics
-    std::cout << "Disk IO operations: " << buffer.getNumIO() << std::endl;
-    std::cout << "Disk IO cost: " << buffer.getCostIO() << std::endl;
-    std::cout << "Buffer Manager Size: " << buffer.getNumFrames() << std::endl;
-    std::cout << "Buffer Manager Replacement Strategy: " << (buffer.getReplaceStrategy()==LRU ? "LRU" : "MRU") << std::endl;
+    std::cout << "\n\t========================================================\n" << std::endl;
+    std::cout << "\t\tDisk IO operations: " << buffer.getNumIO() << std::endl;
+    std::cout << "\t\tDisk IO cost: " << buffer.getCostIO() << std::endl;
+    std::cout << "\t\tBuffer Manager Size: " << buffer.getNumFrames() << std::endl;
+    std::cout << "\t\tBuffer Manager Replacement Strategy: " << (buffer.getReplaceStrategy()==LRU ? "LRU" : "MRU") << std::endl;
     return 0;
 }

@@ -1,4 +1,4 @@
-#include "Utils.hpp"
+#include <Utils.hpp>
 #include <Storage/BufferManager.hpp>
 
 BufferManager::BufferManager ( Disk *_disk, int _replaceStrategy, unsigned int _numFrames )
@@ -22,7 +22,8 @@ BufferManager::~BufferManager ()
     {
         if ( isDirty[i] )
         {
-            disk->writeBlock( i, bufferData[i] );
+            disk->writeBlock( invPageTable[i], bufferData[i] );
+            isDirty[i] = false;
         }
     }
 }
