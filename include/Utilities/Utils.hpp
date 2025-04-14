@@ -9,6 +9,10 @@
 #include <algorithm>
 #include <iostream>
 #include <optional>
+#include <vector>
+#include <string>
+#include <sstream>
+#include <iomanip>
 
 using frame_id_t = unsigned long long;
 using page_id_t = unsigned long long;
@@ -26,6 +30,7 @@ struct Employee
 	int32_t salary;
 	std::array<char, 58> fname;
 	std::array<char, 58> lname;
+	static constexpr size_t size = 128;
 
 	friend auto operator==(const Employee &lhs, const Employee &rhs)
 		-> bool
@@ -38,6 +43,13 @@ struct Employee
 	{
 		return lhs.company_id <=> rhs.company_id;
 	}
+
+	std::string toString() const {
+		std::stringstream ss;
+		ss << id << ";" << company_id << ";" << salary << ";"
+		   << fname.data() << ";" << lname.data();
+		return ss.str();
+	}
 };
 
 struct Company
@@ -45,6 +57,7 @@ struct Company
 	int32_t id;
 	std::array<char, 62> name;
 	std::array<char, 62> slogan;
+	static constexpr size_t size = 128;
 
 	friend auto operator==(const Company &lhs, const Company &rhs) -> bool
 	{
@@ -55,6 +68,12 @@ struct Company
 		-> std::strong_ordering
 	{
 		return lhs.id <=> rhs.id;
+	}
+
+	std::string toString() const {
+		std::stringstream ss;
+		ss << id << ";" << name.data() << ";" << slogan.data();
+		return ss.str();
 	}
 };
 
@@ -67,6 +86,9 @@ struct JoinEmployeeCompany
 	std::array<char, 58> lname{};
 	std::array<char, 64> name = {};   // '\0' initialized
 	std::array<char, 64> slogan = {}; // '\0' initialized
+	static constexpr size_t size = 256;
+
+	JoinEmployeeCompany() = default;
 
 	JoinEmployeeCompany(const Employee &employee, const Company &company)
 	{
@@ -79,7 +101,13 @@ struct JoinEmployeeCompany
 		std::copy_n(company.slogan.begin(), 62, slogan.begin());
 	}
 
-	JoinEmployeeCompany() = default;
+	std::string toString() const {
+        std::stringstream ss;
+		ss << employee_id << ";" << company_id << ";" << salary << ";"
+		   << fname.data() << ";" << lname.data() << ";"
+		   << name.data() << ";" << slogan.data();
+        return ss.str();
+    }
 };
 
 auto loadFileInDisk (BufferManager& buffer, std::string fileName, address_id_t startingAddress) -> std::optional<std::pair<address_id_t,address_id_t>>;

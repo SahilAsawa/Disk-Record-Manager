@@ -33,7 +33,7 @@ TEST_SRC = test.cpp
 
 # External Merge Sort
 EMS = ems
-EMS_SRC = externalMergeSort.cpp
+EMS_SRC = ExternalMergeSort.cpp
 
 # Table
 TABLE = table
