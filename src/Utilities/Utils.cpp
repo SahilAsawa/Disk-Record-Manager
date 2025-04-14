@@ -1,8 +1,9 @@
 #include <Utilities/Utils.hpp>
 #include <Storage/BufferManager.hpp>
+#include <cstring>
 #include <iostream>
 
-auto loadFileInDisk (BufferManager& buffer, std::string fileName, address_id_t startingAddress) -> std::optional<std::pair<address_id_t,address_id_t>>
+auto loadFileInDisk (BufferManager& buffer, std::string fileName, address_id_t startingAddress) -> std::optional<std::pair<address_id_t, address_id_t>>
 {
 	address_id_t endAddress = startingAddress;
 	try {
@@ -26,3 +27,15 @@ auto loadFileInDisk (BufferManager& buffer, std::string fileName, address_id_t s
 	}
 	return std::make_pair(startingAddress, endAddress);
 }
+
+template <typename T>
+T extractData(const std::vector<std::byte> &data)
+{
+    T result;
+    std::memcpy(&result, data.data(), sizeof(T));
+    return result;
+}
+
+template Employee extractData<Employee>(const std::vector<std::byte> &data);
+template Company extractData<Company>(const std::vector<std::byte> &data);
+template JoinEmployeeCompany extractData<JoinEmployeeCompany>(const std::vector<std::byte> &data);

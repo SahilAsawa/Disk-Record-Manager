@@ -5,7 +5,6 @@
 #include <algorithm>
 #include <queue>
 #include <cassert>
-#include <cstring>
 #include <iomanip>
 #include <Storage/Disk.hpp>
 #include <Storage/BufferManager.hpp>
@@ -19,14 +18,6 @@ auto getNextFreeFrame(int readBytes) -> int
 {
     int usedFrameCnt = (readBytes + BLOCK_SIZE - 1) / BLOCK_SIZE;
     return usedFrameCnt * BLOCK_SIZE;
-}
-
-template <typename T>
-T extractData(const std::vector<std::byte> &data)
-{
-    T result;
-    std::memcpy(&result, data.data(), sizeof(T));
-    return result;
 }
 
 template <typename T>

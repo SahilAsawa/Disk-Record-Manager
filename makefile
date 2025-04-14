@@ -4,6 +4,7 @@ CXXFLAGS = -std=c++20 -Wall -Iinclude
 # Output directories
 BUILD_DIR = build
 LIB_DIR = lib
+TESTING_DIR = testing
 
 # Source files
 BUFFER_SRC = src/Storage/BufferManager.cpp
@@ -29,18 +30,22 @@ UTILS_LIB = $(LIB_DIR)/libutils.a
 
 # Test
 TEST = test
-TEST_SRC = test.cpp
+TEST_SRC = $(TESTING_DIR)/test.cpp
 
 # External Merge Sort
 EMS = ems
-EMS_SRC = ExternalMergeSort.cpp
+EMS_SRC = $(TESTING_DIR)/ExternalMergeSort.cpp
 
 # Table
 TABLE = table
-TABLE_SRC = table.cpp
+TABLE_SRC = $(TESTING_DIR)/table.cpp
+
+# Index Sort
+ISORT = isort
+ISORT_SRC = $(TESTING_DIR)/IndexSort.cpp
 
 # Default target
-all: $(TEST) $(EMS) $(TABLE)
+all: $(TEST) $(EMS) $(TABLE) $(ISORT)
 
 # Compile test.cpp and link with both static libs
 $(TEST): $(TEST_SRC) $(STORAGE_LIB) $(INDEX_LIB) $(UTILS_LIB)
@@ -53,6 +58,10 @@ $(EMS): $(EMS_SRC) $(STORAGE_LIB) $(INDEX_LIB) $(UTILS_LIB)
 # Compile Table
 $(TABLE): $(TABLE_SRC) $(STORAGE_LIB) $(INDEX_LIB) $(UTILS_LIB)
 	$(CXX) $(CXXFLAGS) -o $@ $(TABLE_SRC) -L$(LIB_DIR) -lstorage -lindexes -lutils
+
+# Compile index sort
+$(ISORT): $(ISORT_SRC) $(STORAGE_LIB) $(INDEX_LIB) $(UTILS_LIB)
+	$(CXX) $(CXXFLAGS) -o $@ $(ISORT_SRC) -L$(LIB_DIR) -lstorage -lindexes -lutils
 
 # Build object files
 $(BUILD_DIR)/%.o: src/Storage/%.cpp $(STORAGE_HEADERS)
@@ -82,6 +91,6 @@ $(UTILS_LIB): $(UTILS_OBJ)
 
 # Clean build artifacts
 clean:
-	rm -rf $(BUILD_DIR) $(LIB_DIR) $(TEST) $(EMS) $(TABLE) files/*.bin
+	rm -rf $(BUILD_DIR) $(LIB_DIR) $(TEST) $(EMS) $(TABLE) $(ISORT) files/*.bin
 
 .PHONY: all clean

@@ -22,9 +22,9 @@ class BufferManager;
 
 struct Employee
 {
-	int32_t id;
-	int32_t company_id;
-	int32_t salary;
+	int id;
+	int company_id;
+	int salary;
 	std::array<char, 58> fname;
 	std::array<char, 58> lname;
 	static constexpr size_t size = 128;
@@ -51,7 +51,7 @@ struct Employee
 
 struct Company
 {
-	int32_t id;
+	int id;
 	std::array<char, 62> name;
 	std::array<char, 62> slogan;
 	static constexpr size_t size = 128;
@@ -76,9 +76,9 @@ struct Company
 
 struct JoinEmployeeCompany
 {
-	int32_t employee_id;
-	int32_t company_id;
-	int32_t salary;
+	int employee_id;
+	int company_id;
+	int salary;
 	std::array<char, 58> fname{};
 	std::array<char, 58> lname{};
 	std::array<char, 64> name = {};   // '\0' initialized
@@ -108,6 +108,9 @@ struct JoinEmployeeCompany
 };
 
 auto loadFileInDisk (BufferManager& buffer, std::string fileName, address_id_t startingAddress) -> std::optional<std::pair<address_id_t,address_id_t>>;
+
+template <typename T>
+T extractData(const std::vector<std::byte> &data);
 
 static constexpr auto EmployeeSize = sizeof(Employee);
 static constexpr auto CompanySize = sizeof(Company);

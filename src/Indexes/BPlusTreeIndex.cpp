@@ -20,7 +20,7 @@ template<typename KeyType, typename ValueType>
 auto BPlusTreeIndex<KeyType, ValueType>::loadNode ( node_id_t id ) -> BPlusTreeNode *
 {
     BPlusTreeNode *node = new BPlusTreeNode;
-    std::vector< std::byte > data = buffer_manager->readAddress( id * nodeSize(), nodeSize() );
+    std::vector< std::byte > data = buffer_manager->readAddress( base_address + id * nodeSize(), nodeSize() );
 
     size_t curr = 0;
     node->type = *reinterpret_cast< NodeType * >( data.data() );
@@ -154,7 +154,7 @@ auto BPlusTreeIndex<KeyType, ValueType>::saveNode ( node_id_t id, BPlusTreeNode 
         curr += size * sizeof( ValueType );
     }
 
-    buffer_manager->writeAddress( id*nodeSize(), data );
+    buffer_manager->writeAddress( base_address + id * nodeSize(), data );
     
     return;
 }
@@ -221,9 +221,9 @@ auto BPlusTreeIndex<KeyType, ValueType>::search( KeyType key ) -> std::optional<
 }
 
 template<typename KeyType, typename ValueType>
-auto BPlusTreeIndex<KeyType, ValueType>::rangeSearch ( KeyType start, KeyType end ) -> std::vector< ValueType >
+auto BPlusTreeIndex<KeyType, ValueType>::rangeSearch ( KeyType start, KeyType end ) -> std::vector< std::pair< KeyType, ValueType > >
 {
-    std::vector< ValueType > result;
+    std::vector< std::pair< KeyType, ValueType > > result;
 
     node_id_t curr_id = root_id;
     if ( curr_id == -1 ) return result;
@@ -241,7 +241,7 @@ auto BPlusTreeIndex<KeyType, ValueType>::rangeSearch ( KeyType start, KeyType en
         {
             if ( curr->keys[i] >= start && curr->keys[i] <= end )
             {
-                result.push_back( curr->values[i] );
+                result.push_back( std::make_pair( curr->keys[i], curr->values[i] ) );
             }
         }
         curr_id = curr->nextLeaf_id;
@@ -653,9 +653,11 @@ template class BPlusTreeIndex<int, int>;
 template class BPlusTreeIndex<int, std::string>;
 template class BPlusTreeIndex<std::string, int>;
 template class BPlusTreeIndex<std::string, std::string>;
+template class BPlusTreeIndex<unsigned long long, unsigned long long>;
 
 template std::ostream &operator<< ( std::ostream &os, const BPlusTreeIndex<int, int> &tree );
 template std::ostream &operator<< ( std::ostream &os, const BPlusTreeIndex<int, std::string> &tree );
 template std::ostream &operator<< ( std::ostream &os, const BPlusTreeIndex<std::string, int> &tree );
 template std::ostream &operator<< ( std::ostream &os, const BPlusTreeIndex<std::string, std::string> &tree );
+template std::ostream &operator<< ( std::ostream &os, const BPlusTreeIndex<unsigned long long, unsigned long long> &tree );
 

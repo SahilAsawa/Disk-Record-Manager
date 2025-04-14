@@ -68,12 +68,15 @@ class BPlusTreeIndex
 
     //
     BufferManager *buffer_manager;
+
+    //
+    address_id_t base_address;
     
     public:
     
     //
-    BPlusTreeIndex ( BufferManager *_bm, int _order = 4 )
-        : root_id ( -1 ), order ( std::max( 3, _order )), last_id ( 0 ),  buffer_manager ( _bm )
+    BPlusTreeIndex ( BufferManager *_bm, int _order = 4, address_id_t _base_address = 0 )
+        : root_id ( -1 ), order ( std::max( 3, _order )), last_id ( 0 ),  buffer_manager ( _bm ), base_address ( _base_address )
     {
     }
 
@@ -93,7 +96,7 @@ class BPlusTreeIndex
 	 * @brief 
 	 * @param
 	 */
-    auto rangeSearch ( KeyType start, KeyType end ) -> std::vector< ValueType >;
+    auto rangeSearch ( KeyType start, KeyType end ) -> std::vector< std::pair< KeyType, ValueType > >;
     
     /**
 	 * @brief 
@@ -107,6 +110,15 @@ class BPlusTreeIndex
 	 */
     template<typename K, typename V>
     friend std::ostream &operator<< ( std::ostream &os, const BPlusTreeIndex<K, V> &tree );
+
+    /**
+     * @brief get the range of addresses occupied by the B+ tree in the disk
+     * @return a pair of address_id_t representing the start and end address of the B+ tree in the disk
+     */
+    auto getAddressRange ( ) -> std::pair< address_id_t, address_id_t >
+    {
+        return std::make_pair( base_address, base_address + nodeSize() * last_id );
+    }
 
     private:
 
