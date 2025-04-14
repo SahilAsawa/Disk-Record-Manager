@@ -35,15 +35,16 @@ auto BufferManager::findVictim ( ) -> std::optional< frame_id_t >
         {
             if ( pinCount[*it] == 0 )
             {
-                if (isDirty[*it])
+                if ( isDirty[*it] )
                 {
                     disk->writeBlock( invPageTable[*it], bufferData[*it] );
                 }
-                framePos.erase( *it );
+                auto frame = *it;
                 busyFrames.erase( it );
-                pageTable.erase( invPageTable[*it] );
-                invPageTable.erase( *it );
-                return *it;
+                framePos.erase( frame );
+                pageTable.erase( invPageTable[frame] );
+                invPageTable.erase( frame );
+                return frame;
             }
         }
     }
@@ -53,15 +54,16 @@ auto BufferManager::findVictim ( ) -> std::optional< frame_id_t >
         {
             if ( pinCount[*it] == 0 )
             {
-                if (isDirty[*it])
+                if ( isDirty[*it] )
                 {
                     disk->writeBlock( invPageTable[*it], bufferData[*it] );
                 }
-                framePos.erase( *it );
+                auto frame = *it;
                 busyFrames.erase( std::next( it ).base() );
-                pageTable.erase( invPageTable[*it] );
-                invPageTable.erase( *it );
-                return *it;
+                framePos.erase( frame );
+                pageTable.erase( invPageTable[frame] );
+                invPageTable.erase( frame );
+                return frame;
             }
         }
     }
