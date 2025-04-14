@@ -7,6 +7,8 @@
 #include <cstdint>
 #include <cstring>
 #include <algorithm>
+#include <iostream>
+#include <optional>
 
 using frame_id_t = unsigned long long;
 using page_id_t = unsigned long long;
@@ -79,6 +81,8 @@ struct JoinEmployeeCompany
 
 	JoinEmployeeCompany() = default;
 };
+
+auto loadFileInDisk (BufferManager& buffer, std::string fileName, address_id_t startingAddress) -> std::optional<std::pair<address_id_t,address_id_t>>;
 
 static constexpr auto EmployeeSize = sizeof(Employee);
 static constexpr auto CompanySize = sizeof(Company);

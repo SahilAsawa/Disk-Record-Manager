@@ -8,7 +8,7 @@
 #include <iomanip>
 #include <Storage/Disk.hpp>
 #include <Storage/BufferManager.hpp>
-#include <Utils.hpp>
+#include <Utilities/Utils.hpp>
 
 int BLOCK_SIZE = 4096;
 int BLOCK_COUNT_DISK = 1024;
@@ -272,31 +272,6 @@ int main () {
         catch (const std::exception &e ) {
             std::cerr << e.what() << std::endl;
         }
-        std::cerr << "Done reading the files" << std::endl;
-
-        std::ofstream file ("temp1.txt");
-        for (int i = StartAddressEmployee; i < EndAddressEmployee; i += EmployeeSize)
-        {
-            auto data = buffer.readAddress( i, EmployeeSize );
-            Employee employee = extractData<Employee>( data );
-            file << "Employee ID: " << employee.id << std::endl;
-            file << "Company ID: " << employee.company_id << std::endl;
-            file << "Salary: " << employee.salary << std::endl;
-            file << "First Name: " << employee.fname.data() << std::endl;
-            file << "Last Name: " << employee.lname.data() << std::endl;
-        }
-        file.close();
-        // for (int i = StartAddressCompany; i < EndAddressCompany; i += CompanySize)
-        // {
-        //     auto data = buffer.readAddress( i, CompanySize );
-        //     Company company = extractData<Company>( data );
-        //     file << "Company ID: " << company.id << std::endl;
-        //     file << "Company Name: " << company.name.data() << std::endl;
-        //     file << "Company Slogan: " << company.slogan.data() << std::endl;
-        // }
-        std:: cout << StartAddressEmployee << " " << EndAddressEmployee << " " << StartAddressCompany << " " << EndAddressCompany << std::endl;
-        // buffer.~BufferManager();
-        // disk.~Disk();
     }
 
     std::cout << "Done reading the files" << std::endl;
@@ -305,28 +280,6 @@ int main () {
     Disk disk( RANDOM, BLOCK_SIZE, BLOCK_COUNT_DISK );
     std::cout << "Max Disk Size: " << ( BLOCK_SIZE * BLOCK_COUNT_DISK ) << std::endl;
     BufferManager buffer( &disk, MRU, BLOCK_COUNT_BUFFER );
-
-    std::ofstream file ("temp2.txt");
-    for (int i = 0; i < EndAddressEmployee; i += EmployeeSize)
-    {
-        auto data = buffer.readAddress( i, EmployeeSize );
-        Employee employee = extractData<Employee>( data );
-        file << "Employee ID: " << employee.id << std::endl;
-        file << "Company ID: " << employee.company_id << std::endl;
-        file << "Salary: " << employee.salary << std::endl;
-        file << "First Name: " << employee.fname.data() << std::endl;
-        file << "Last Name: " << employee.lname.data() << std::endl;
-    }
-    file.close();
-    std:: cout << StartAddressEmployee << " " << EndAddressEmployee << " " << StartAddressCompany << " " << EndAddressCompany << std::endl;
-    // for (int i = StartAddressCompany; i < EndAddressCompany; i += CompanySize)
-    // {
-    //     auto data = buffer.readAddress( i, CompanySize );
-    //     Company company = extractData<Company>( data );
-    //     file << "Company ID: " << company.id << std::endl;
-    //     file << "Company Name: " << company.name.data() << std::endl;
-    //     file << "Company Slogan: " << company.slogan.data() << std::endl;
-    // }
 
     // External Sort the Employee and Company data
     NextUsableAddress = getNextFreeFrame( EndAddressCompany );
