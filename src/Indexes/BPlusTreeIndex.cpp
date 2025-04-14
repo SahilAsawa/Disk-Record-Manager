@@ -1,6 +1,5 @@
 #include <Indexes/BPlusTreeIndex.hpp>
 #include <algorithm>
-#include <iostream>
 
 auto BPlusTreeIndex::loadNode ( node_id_t id ) -> BPlusTreeNode *
 {
@@ -104,35 +103,52 @@ auto BPlusTreeIndex::createNode ( NodeType type ) -> node_id_t
     return id;
 }
 
+auto BPlusTreeIndex::destroyNode ( node_id_t id ) -> void
+{
+    free_ids.push_back( id );
+    return;
+}
+
 auto BPlusTreeIndex::search( KeyType key ) -> std::optional< ValueType >
 {
-    if(root == nullptr) return std::nullopt;
+    if(root_id == -1) return std::nullopt;
 
-    BPlusTreeNode *curr = root;
+    node_id_t curr_id = root_id;
+    BPlusTreeNode *curr = loadNode( curr_id );
     while( curr->type != NodeType::LEAF )
     {
         size_t i = std::upper_bound( curr->keys.begin(), curr->keys.end(), key ) - curr->keys.begin();
-        curr = curr->children[i];
+        curr_id = curr->children[i];
+        curr = loadNode( curr_id );
     }
-    if ( curr->keys.empty() ) return std::nullopt;
+    if ( curr->keys.empty() )
+    {
+        delete curr;
+        return std::nullopt;
+    }
     size_t i = std::lower_bound( curr->keys.begin(), curr->keys.end(), key ) - curr->keys.begin();
     if( i < curr->keys.size() && curr->keys[i] == key )
     {
+        delete curr;
         return curr->values[i];
     }
+    delete curr;
     return std::nullopt;
 }
 
 auto BPlusTreeIndex::rangeSearch ( KeyType start, KeyType end ) -> std::vector< ValueType >
 {
     std::vector< ValueType > result;
-    BPlusTreeNode *curr = root;
-    if ( curr == nullptr ) return result;
+
+    node_id_t curr_id = root_id;
+    if ( curr_id == -1 ) return result;
+    BPlusTreeNode *curr = loadNode( curr_id );
 
     while( curr->type != NodeType::LEAF )
     {
         size_t i = std::upper_bound( curr->keys.begin(), curr->keys.end(), start ) - curr->keys.begin();
-        curr = curr->children[i];
+        curr_id = curr->children[i];
+        curr = loadNode( curr_id );
     }
     while ( curr != nullptr && curr->keys[0] <= end)
     {
@@ -143,42 +159,55 @@ auto BPlusTreeIndex::rangeSearch ( KeyType start, KeyType end ) -> std::vector< 
                 result.push_back( curr->values[i] );
             }
         }
-
-        curr = curr->nextLeaf;
+        curr_id = curr->nextLeaf_id;
+        curr = loadNode( curr_id );
     }
     return result;
 }
 
-auto BPlusTreeIndex::findLeaf ( KeyType key ) -> BPlusTreeNode *
+auto BPlusTreeIndex::findLeaf ( KeyType key ) -> node_id_t
 {
-    if(root == nullptr) return nullptr;
-    if(root->type == NodeType::LEAF) return root;
-    BPlusTreeNode *curr = root;
+    if(root_id == -1) return -1;
+    BPlusTreeNode *root = loadNode( root_id );
+    if(root->type == NodeType::LEAF)
+    {
+        delete root;
+        return root_id;
+    }
+    node_id_t curr_id = root_id;
+    BPlusTreeNode *curr = loadNode( curr_id );
     while( curr->type != NodeType::LEAF )
     {
         int i = std::upper_bound( curr->keys.begin(), curr->keys.end(), key ) - curr->keys.begin();
-        curr = curr->children[i];
+        curr_id = curr->children[i];
+        curr = loadNode( curr_id );
     }
-    return curr;
+    return curr_id;
 }
 
 auto BPlusTreeIndex::insert ( KeyType key, ValueType value ) -> bool
 {
-    if(root == nullptr)
+    if(root_id == -1)
     {
-        root = createNode( NodeType::LEAF );
+        root_id = createNode( NodeType::LEAF );
+        BPlusTreeNode *root = loadNode( root_id );
         root->keys.push_back( key );
         root->values.push_back( value );
+        saveNode( root_id, root );
+        delete root;
         return true;
     }
 
-    BPlusTreeNode *leaf = findLeaf( key );
+    node_id_t leaf_id = findLeaf( key );
+    BPlusTreeNode *leaf = loadNode( leaf_id );
     
     size_t i = std::lower_bound( leaf->keys.begin(), leaf->keys.end(), key ) - leaf->keys.begin();
     if( i < leaf->keys.size() && leaf->keys[i] == key )
     {
         // TODO: Can change this part to throw duplicate key error instead of updating value
         leaf->values[i] = value; // Update existing value
+        saveNode( leaf_id, leaf );
+        delete leaf;
         return true;
     }
 
@@ -188,11 +217,12 @@ auto BPlusTreeIndex::insert ( KeyType key, ValueType value ) -> bool
     // Need to split the leaf if it is full
     if( leaf->keys.size() == order )
     {
-        BPlusTreeNode *newLeaf = createNode( NodeType::LEAF );
+        node_id_t newLeaf_id = createNode( NodeType::LEAF );
+        BPlusTreeNode *newLeaf = loadNode( newLeaf_id );
 
         // Link the leaves
-        newLeaf->nextLeaf = leaf->nextLeaf;
-        leaf->nextLeaf = newLeaf;
+        newLeaf->nextLeaf_id = leaf->nextLeaf_id;
+        leaf->nextLeaf_id = newLeaf_id;
 
         // Split the keys and values: First half in original leaf, second half in new leaf
         size_t mid = order / 2;
@@ -200,44 +230,71 @@ auto BPlusTreeIndex::insert ( KeyType key, ValueType value ) -> bool
         newLeaf->values.assign( leaf->values.begin() + mid, leaf->values.end() );
         leaf->keys.resize( mid );
         leaf->values.resize( mid );
-        return insertInternal( leaf, newLeaf->keys[0], newLeaf );
+
+        saveNode( newLeaf_id, newLeaf );
+        delete newLeaf;
+        saveNode( leaf_id, leaf );
+        delete leaf;
+        return insertInternal( leaf_id, newLeaf->keys[0], newLeaf_id );
     }
+
+    saveNode( leaf_id, leaf );
+    delete leaf;
     return true;
 }
 
-auto BPlusTreeIndex::insertInternal ( BPlusTreeNode *left, KeyType key, BPlusTreeNode *right ) -> bool
+auto BPlusTreeIndex::insertInternal ( node_id_t left_id, KeyType key, node_id_t right_id ) -> bool
 {
-    if(left == NULL || right == NULL) return false;
+    if(left_id == -1 || right_id == -1) return false;
 
-    if(left == root)
+    BPlusTreeNode *left = loadNode( left_id );
+    BPlusTreeNode *right = loadNode( right_id );
+
+    if(left_id == root_id)
     {
         // Create a new root
-        BPlusTreeNode *newRoot = createNode(NodeType::INTERNAL);
+        node_id_t newRoot_id = createNode( NodeType::INTERNAL );
+        BPlusTreeNode *newRoot = loadNode( newRoot_id );
+
+        BPlusTreeNode *root = loadNode( root_id );
         
         // Link the new root to the left and right nodes
-        root = newRoot;
-        root->keys.push_back( key );
-        root->children[0] = left;
-        root->children.push_back( right );
+        newRoot->keys.push_back( key );
+        newRoot->children[0] = left_id;
+        newRoot->children.push_back( right_id );
         
         // Set the parent of left and right nodes to the new root
-        left->parent = root;
-        right->parent = root;
+        left->parent_id = newRoot_id;
+        right->parent_id = newRoot_id;
         
+        root_id = newRoot_id;
+
+        saveNode( newRoot_id, newRoot );
+        delete newRoot;
+        saveNode( left_id, left );
+        delete left;
+        saveNode( right_id, right );
+        delete right;
         return true;
     }
     
-    BPlusTreeNode *parent = left->parent;
+    node_id_t parent_id = left->parent_id;
+    BPlusTreeNode *parent = loadNode( parent_id );
 
     size_t i = std::upper_bound( parent->keys.begin(), parent->keys.end(), key ) - parent->keys.begin();
     parent->keys.insert( parent->keys.begin() + i, key );
-    parent->children.insert( parent->children.begin() + i + 1, right );
-    right->parent = parent;
+    parent->children.insert( parent->children.begin() + i + 1, right_id );
+    right->parent_id = parent_id;
+
+    saveNode( right_id, right );
+    delete right;
+    delete left;
     
     if(parent->keys.size() == order)
     {
         // create new internal node
-        BPlusTreeNode *newInternal = createNode(NodeType::INTERNAL);
+        node_id_t newInternal_id = createNode( NodeType::INTERNAL );
+        BPlusTreeNode *newInternal = loadNode( newInternal_id );
 
         size_t mid = order / 2;
         newInternal->keys.assign( parent->keys.begin() + mid + 1, parent->keys.end() );
@@ -247,33 +304,47 @@ auto BPlusTreeIndex::insertInternal ( BPlusTreeNode *left, KeyType key, BPlusTre
         parent->children.resize( mid + 1 );
         for(size_t i = 0; i < newInternal->children.size(); ++i)
         {
-            newInternal->children[i]->parent = newInternal;
+            BPlusTreeNode *child = loadNode( newInternal->children[i] );
+            child->parent_id = newInternal_id;
+            saveNode( newInternal->children[i], child );
+            delete child;
         }
 
-        return insertInternal( parent, newKey, newInternal );
+        saveNode( parent_id, parent );
+        delete parent;
+        saveNode( newInternal_id, newInternal );
+        delete newInternal;
+        return insertInternal( parent_id, newKey, newInternal_id );
     }
 
+    saveNode( parent_id, parent );
+    delete parent;
     return true;
 }
 
 auto BPlusTreeIndex::remove ( KeyType key ) -> bool
 {
-    BPlusTreeNode *leaf = search(key).has_value() ? findLeaf(key) : nullptr;
-    if(leaf == nullptr) return false;
-    return removeEntry( leaf, key, nullptr );
+    node_id_t leaf_id = search(key).has_value() ? findLeaf(key) : -1;
+    if(leaf_id == -1) return false;
+    return removeEntry( leaf_id, key, -1 );
 }
 
-auto BPlusTreeIndex::removeEntry ( BPlusTreeNode *node, KeyType key, BPlusTreeNode *ptr ) -> bool
+auto BPlusTreeIndex::removeEntry ( node_id_t node_id, KeyType key, node_id_t ptr_id ) -> bool
 {
-    if(ptr == nullptr) // meaning deletion
+    BPlusTreeNode *node = loadNode( node_id );
+    if(ptr_id == -1) // meaning deletion
     {
         size_t i = std::lower_bound( node->keys.begin(), node->keys.end(), key ) - node->keys.begin();
         if( i < node->keys.size() && node->keys[i] == key )
         {
             node->keys.erase( node->keys.begin() + i );
             node->values.erase( node->values.begin() + i );
-        }   
-        else return false;
+        }
+        else
+        {
+            delete node;
+            return false;
+        }
     }
     else
     {
@@ -283,45 +354,64 @@ auto BPlusTreeIndex::removeEntry ( BPlusTreeNode *node, KeyType key, BPlusTreeNo
             node->children.erase( node->children.begin() + i + 1 );
             node->keys.erase( node->keys.begin() + i );
         }
-        else return false;
+        else
+        {
+            delete node;
+            return false;
+        }
     }
+    saveNode( node_id, node );
 
-    if(node == root)
+    if(node_id == root_id)
     {
         if(node->isLeaf() && node->keys.empty())
         {
             delete node;
-            root = nullptr;
+            destroyNode( node_id );
+            root_id = -1;
         }
         else if(node->children.size() == 1)
         {
-            root = node->children[0];
+            root_id = node->children[0];
             delete node;
+            destroyNode( node_id );
         }
     }
     else if((!node->isLeaf() && node->children.size() <= order / 2) || (node->isLeaf() && node->values.size() < order / 2)) // if node has too few pointers
     {
-        BPlusTreeNode *parent = node->parent;
-        size_t i = std::find( parent->children.begin(), parent->children.end(), node ) - parent->children.begin();
+        node_id_t parent_id = node->parent_id;
+        BPlusTreeNode *parent = loadNode( parent_id );
+        size_t i = std::find( parent->children.begin(), parent->children.end(), node_id ) - parent->children.begin();
         KeyType betKey;
         int isPred = false;
         BPlusTreeNode *prev = nullptr;
+        node_id_t prev_id = -1;
         if(i + 1 < parent->children.size()) // take next one
         {
-            prev = parent->children[i + 1];
+            prev_id = parent->children[i + 1];
+            prev = loadNode( prev_id );
             betKey = parent->keys[i];
             isPred = true;
         }
         else if(i - 1 >= 0) // take previous one
         {
-            prev = parent->children[i - 1];
+            prev_id = parent->children[i - 1];
+            prev = loadNode( prev_id );
             betKey = parent->keys[i - 1];
         }
-        else return true;
+        else
+        {
+            delete node;
+            return true;
+        }
 
         if((!node->isLeaf() && (node->children.size() + prev->children.size() <= order)) || (node->isLeaf() && (node->keys.size() + prev->keys.size() < order)))
         {
-            if(isPred) std::swap( node, prev );
+            if(isPred)
+            {
+                std::swap( node, prev );
+                std::swap( node_id, prev_id );
+            }
 
             if(!node->isLeaf())
             {
@@ -330,17 +420,24 @@ auto BPlusTreeIndex::removeEntry ( BPlusTreeNode *node, KeyType key, BPlusTreeNo
                 prev->children.insert( prev->children.end(), node->children.begin(), node->children.end() );
                 for(size_t i = 0; i < node->children.size(); ++i)
                 {
-                    node->children[i]->parent = prev;
+                    BPlusTreeNode *child = loadNode( node->children[i] );
+                    child->parent_id = prev_id;
+                    saveNode( node->children[i], child );
+                    delete child;
                 }
             }
             else
             {
                 prev->keys.insert( prev->keys.end(), node->keys.begin(), node->keys.end() );
                 prev->values.insert( prev->values.end(), node->values.begin(), node->values.end() );
-                prev->nextLeaf = node->nextLeaf;
+                prev->nextLeaf_id = node->nextLeaf_id;
             }
-            removeEntry( parent, betKey, node );    
+            bool status = removeEntry( parent_id, betKey, node_id );    
             delete node;
+            destroyNode( node_id );
+            saveNode( prev_id, prev );
+            delete prev;
+            return status;
         }
         else
         {
@@ -353,7 +450,11 @@ auto BPlusTreeIndex::removeEntry ( BPlusTreeNode *node, KeyType key, BPlusTreeNo
                     parent->keys[i - 1] = prev->keys.back();
                     prev->keys.pop_back();
                     prev->children.pop_back();
-                    node->children[0]->parent = node; // update parent
+
+                    BPlusTreeNode *child = loadNode( node->children[0] );
+                    child->parent_id = node_id; // update parent
+                    saveNode( node->children[0], child );
+                    delete child;
                 }
                 else
                 {
@@ -373,7 +474,11 @@ auto BPlusTreeIndex::removeEntry ( BPlusTreeNode *node, KeyType key, BPlusTreeNo
                     parent->keys[i] = prev->keys[0];
                     prev->keys.erase( prev->keys.begin() );
                     prev->children.erase( prev->children.begin() );
-                    node->children[node->children.size() - 1]->parent = node; // update parent
+
+                    BPlusTreeNode *child = loadNode( node->children[node->children.size() - 1] );
+                    child->parent_id = node_id; // update parent
+                    saveNode( node->children[node->children.size() - 1], child );
+                    delete child;
                 }
                 else
                 {
@@ -384,14 +489,21 @@ auto BPlusTreeIndex::removeEntry ( BPlusTreeNode *node, KeyType key, BPlusTreeNo
                     prev->values.erase( prev->values.begin() );
                 }
             }
+            saveNode( parent_id, parent );
+            delete parent;
+            saveNode( node_id, node );
+            delete node;
+            saveNode( prev_id, prev );
+            delete prev;
         }
     }
     return true;
 }
 
-auto BPlusTreeIndex::printBPlusTree ( std::ostream &os, BPlusTreeNode *node, std::string prefix, bool last ) const -> void
+auto BPlusTreeIndex::printBPlusTree ( std::ostream &os, node_id_t node_id, std::string prefix, bool last ) const -> void
 {
-    if(node == nullptr) return;
+    if(node_id == -1) return;
+    BPlusTreeNode *node = const_cast<BPlusTreeIndex *>(this)->loadNode( node_id );
 
     os << prefix << "├─ [";
     for(size_t i = 0; i < node->keys.size(); ++i)
@@ -425,11 +537,11 @@ auto BPlusTreeIndex::printBPlusTree ( std::ostream &os, BPlusTreeNode *node, std
 
 std::ostream &operator<< ( std::ostream &os, const BPlusTreeIndex &tree )
 {
-    if(tree.root == nullptr)
+    if(tree.root_id == -1)
     {
         os << "Empty B+ Tree" << std::endl;
         return os;
     }
-    tree.printBPlusTree( os, tree.root );
+    tree.printBPlusTree( os, tree.root_id );
     return os;
 }

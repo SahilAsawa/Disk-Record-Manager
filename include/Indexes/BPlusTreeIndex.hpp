@@ -141,6 +141,9 @@ class BPlusTreeIndex
     auto createNode ( NodeType type ) -> node_id_t;
 
     //
+    auto destroyNode ( node_id_t id ) -> void;
+
+    //
     auto insertInternal ( node_id_t left_id, KeyType key, node_id_t right_id ) -> bool;
 
     //
