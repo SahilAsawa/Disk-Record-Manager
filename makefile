@@ -91,6 +91,6 @@ $(UTILS_LIB): $(UTILS_OBJ)
 
 # Clean build artifacts
 clean:
-	rm -rf $(BUILD_DIR) $(LIB_DIR) $(TEST) $(EMS) $(TABLE) $(ISORT) files/*.bin
+	rm -rf $(BUILD_DIR) $(LIB_DIR) $(TEST) $(EMS) $(TABLE) $(ISORT) bin/*.bin MergeSort/*.csv
 
 .PHONY: all clean
