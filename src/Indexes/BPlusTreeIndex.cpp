@@ -1,8 +1,23 @@
 #include <Indexes/BPlusTreeIndex.hpp>
 #include <algorithm>
-#include <iostream>
 
-auto BPlusTreeIndex::loadNode ( node_id_t id ) -> BPlusTreeNode *
+template<typename KeyType, typename ValueType>
+auto BPlusTreeIndex<KeyType, ValueType>::nodeSize () -> size_t
+{
+    int keySize = sizeof( KeyType ), valueSize = sizeof( ValueType );
+    if constexpr (std::is_same_v<KeyType, std::string>) keySize = sizeof( std::byte ) * 32; // Assuming max length of string is 32
+    if constexpr (std::is_same_v<ValueType, std::string>) valueSize = sizeof( std::byte ) * 32; // Assuming max length of string is 32
+
+    return sizeof( NodeType ) +
+            sizeof( node_id_t ) * 2 +
+            sizeof( size_t ) * 3 +
+            keySize * order +
+            valueSize * order +
+            sizeof( node_id_t ) * ( order + 1 );
+}
+
+template<typename KeyType, typename ValueType>
+auto BPlusTreeIndex<KeyType, ValueType>::loadNode ( node_id_t id ) -> BPlusTreeNode *
 {
     BPlusTreeNode *node = new BPlusTreeNode;
     std::vector< std::byte > data = buffer_manager->readAddress( id * nodeSize(), nodeSize() );
@@ -20,9 +35,24 @@ auto BPlusTreeIndex::loadNode ( node_id_t id ) -> BPlusTreeNode *
     size_t size = *reinterpret_cast< size_t * >( data.data() + curr );
     curr += sizeof( size_t );
 
-    node->keys.resize( size );
-    std::copy( data.data() + curr, data.data() + curr + size * sizeof( KeyType ), reinterpret_cast< std::byte * >( node->keys.data() ) );
-    curr += size * sizeof( KeyType );
+    if constexpr (std::is_same_v<KeyType, std::string>)
+    {
+        for (size_t i = 0; i < size; ++i)
+        {
+            size_t strSize = *reinterpret_cast< size_t * >( data.data() + curr );
+            curr += sizeof( size_t );
+
+            std::string str( reinterpret_cast< char * >( data.data() + curr ), strSize );
+            node->keys.push_back( str );
+            curr += strSize;
+        }
+    }
+    else
+    {
+        node->keys.resize( size );
+        std::copy( data.data() + curr, data.data() + curr + size * sizeof( KeyType ), reinterpret_cast< std::byte * >( node->keys.data() ) );
+        curr += size * sizeof( KeyType );
+    }
 
     size = *reinterpret_cast< size_t * >( data.data() + curr );
     curr += sizeof( size_t );
@@ -34,14 +64,30 @@ auto BPlusTreeIndex::loadNode ( node_id_t id ) -> BPlusTreeNode *
     size = *reinterpret_cast< size_t * >( data.data() + curr );
     curr += sizeof( size_t );
 
-    node->values.resize( size );
-    std::copy( data.data() + curr, data.data() + curr + size * sizeof( ValueType ), reinterpret_cast< std::byte * >( node->values.data() ) );
-    curr += size * sizeof( ValueType );
+    if constexpr (std::is_same_v<ValueType, std::string>)
+    {
+        for (size_t i = 0; i < size; ++i)
+        {
+            size_t strSize = *reinterpret_cast< size_t * >( data.data() + curr );
+            curr += sizeof( size_t );
+
+            std::string str( reinterpret_cast< char * >( data.data() + curr ), strSize );
+            node->values.push_back( str );
+            curr += strSize;
+        }
+    }
+    else
+    {
+        node->values.resize( size );
+        std::copy( data.data() + curr, data.data() + curr + size * sizeof( ValueType ), reinterpret_cast< std::byte * >( node->values.data() ) );
+        curr += size * sizeof( ValueType );
+    }
 
     return node;
 }
 
-auto BPlusTreeIndex::saveNode ( node_id_t id, BPlusTreeNode *node ) -> void
+template<typename KeyType, typename ValueType>
+auto BPlusTreeIndex<KeyType, ValueType>::saveNode ( node_id_t id, BPlusTreeNode *node ) -> void
 {
     std::vector< std::byte > data( nodeSize(), std::byte( 0 ) );
 
@@ -59,8 +105,24 @@ auto BPlusTreeIndex::saveNode ( node_id_t id, BPlusTreeNode *node ) -> void
     std::copy( reinterpret_cast< std::byte * >( &size ), reinterpret_cast< std::byte * >( &size ) + sizeof( size_t ), data.data() + curr );
     curr += sizeof( size_t );
 
-    std::copy( reinterpret_cast< std::byte * >( node->keys.data() ), reinterpret_cast< std::byte * >( node->keys.data() ) + size * sizeof( KeyType ), data.data() + curr );
-    curr += size * sizeof( KeyType );
+    if constexpr (std::is_same_v<KeyType, std::string>)
+    {
+        for (size_t i = 0; i < size; ++i)
+        {
+            size_t strSize = node->keys[i].size();
+            std::copy( reinterpret_cast< std::byte * >( &strSize ), reinterpret_cast< std::byte * >( &strSize ) + sizeof( size_t ), data.data() + curr );
+            curr += sizeof( size_t );
+
+            std::string str = node->keys[i];
+            std::copy( reinterpret_cast< std::byte * >( str.data() ), reinterpret_cast< std::byte * >( str.data() ) + str.size(), data.data() + curr );
+            curr += str.size();
+        }
+    }
+    else
+    {
+        std::copy( reinterpret_cast< std::byte * >( node->keys.data() ), reinterpret_cast< std::byte * >( node->keys.data() ) + size * sizeof( KeyType ), data.data() + curr );
+        curr += size * sizeof( KeyType );
+    }
 
     size = node->children.size();
     std::copy( reinterpret_cast< std::byte * >( &size ), reinterpret_cast< std::byte * >( &size ) + sizeof( size_t ), data.data() + curr );
@@ -73,15 +135,32 @@ auto BPlusTreeIndex::saveNode ( node_id_t id, BPlusTreeNode *node ) -> void
     std::copy( reinterpret_cast< std::byte * >( &size ), reinterpret_cast< std::byte * >( &size ) + sizeof( size_t ), data.data() + curr );
     curr += sizeof( size_t );
 
-    std::copy( reinterpret_cast< std::byte * >( node->values.data() ), reinterpret_cast< std::byte * >( node->values.data() ) + size * sizeof( ValueType ), data.data() + curr );
-    curr += size * sizeof( ValueType );
+    if constexpr (std::is_same_v<ValueType, std::string>)
+    {
+        for (size_t i = 0; i < size; ++i)
+        {
+            size_t strSize = node->values[i].size();
+            std::copy( reinterpret_cast< std::byte * >( &strSize ), reinterpret_cast< std::byte * >( &strSize ) + sizeof( size_t ), data.data() + curr );
+            curr += sizeof( size_t );
+
+            std::string str = node->values[i];
+            std::copy( reinterpret_cast< std::byte * >( str.data() ), reinterpret_cast< std::byte * >( str.data() ) + str.size(), data.data() + curr );
+            curr += str.size();
+        }
+    }
+    else
+    {
+        std::copy( reinterpret_cast< std::byte * >( node->values.data() ), reinterpret_cast< std::byte * >( node->values.data() ) + size * sizeof( ValueType ), data.data() + curr );
+        curr += size * sizeof( ValueType );
+    }
 
     buffer_manager->writeAddress( id*nodeSize(), data );
-
+    
     return;
 }
 
-auto BPlusTreeIndex::createNode ( NodeType type ) -> node_id_t
+template<typename KeyType, typename ValueType>
+auto BPlusTreeIndex<KeyType, ValueType>::createNode ( NodeType type ) -> node_id_t
 {
     node_id_t id;
     if( free_ids.empty() )
@@ -104,13 +183,15 @@ auto BPlusTreeIndex::createNode ( NodeType type ) -> node_id_t
     return id;
 }
 
-auto BPlusTreeIndex::destroyNode ( node_id_t id ) -> void
+template<typename KeyType, typename ValueType>
+auto BPlusTreeIndex<KeyType, ValueType>::destroyNode ( node_id_t id ) -> void
 {
     free_ids.push_back( id );
     return;
 }
 
-auto BPlusTreeIndex::search( KeyType key ) -> std::optional< ValueType >
+template<typename KeyType, typename ValueType>
+auto BPlusTreeIndex<KeyType, ValueType>::search( KeyType key ) -> std::optional< ValueType >
 {
     if(root_id == -1) return std::nullopt;
 
@@ -139,7 +220,8 @@ auto BPlusTreeIndex::search( KeyType key ) -> std::optional< ValueType >
     return std::nullopt;
 }
 
-auto BPlusTreeIndex::rangeSearch ( KeyType start, KeyType end ) -> std::vector< ValueType >
+template<typename KeyType, typename ValueType>
+auto BPlusTreeIndex<KeyType, ValueType>::rangeSearch ( KeyType start, KeyType end ) -> std::vector< ValueType >
 {
     std::vector< ValueType > result;
 
@@ -171,7 +253,8 @@ auto BPlusTreeIndex::rangeSearch ( KeyType start, KeyType end ) -> std::vector< 
     return result;
 }
 
-auto BPlusTreeIndex::findLeaf ( KeyType key ) -> node_id_t
+template<typename KeyType, typename ValueType>
+auto BPlusTreeIndex<KeyType, ValueType>::findLeaf ( KeyType key ) -> node_id_t
 {
     if(root_id == -1) return -1;
     BPlusTreeNode *root = loadNode( root_id );
@@ -194,7 +277,8 @@ auto BPlusTreeIndex::findLeaf ( KeyType key ) -> node_id_t
     return curr_id;
 }
 
-auto BPlusTreeIndex::insert ( KeyType key, ValueType value ) -> bool
+template<typename KeyType, typename ValueType>
+auto BPlusTreeIndex<KeyType, ValueType>::insert ( KeyType key, ValueType value ) -> bool
 {
     if(root_id == -1)
     {
@@ -253,7 +337,8 @@ auto BPlusTreeIndex::insert ( KeyType key, ValueType value ) -> bool
     return true;
 }
 
-auto BPlusTreeIndex::insertInternal ( node_id_t left_id, KeyType key, node_id_t right_id ) -> bool
+template<typename KeyType, typename ValueType>
+auto BPlusTreeIndex<KeyType, ValueType>::insertInternal ( node_id_t left_id, KeyType key, node_id_t right_id ) -> bool
 {
     if(left_id == -1 || right_id == -1) return false;
 
@@ -330,14 +415,16 @@ auto BPlusTreeIndex::insertInternal ( node_id_t left_id, KeyType key, node_id_t 
     return true;
 }
 
-auto BPlusTreeIndex::remove ( KeyType key ) -> bool
+template<typename KeyType, typename ValueType>
+auto BPlusTreeIndex<KeyType, ValueType>::remove ( KeyType key ) -> bool
 {
     node_id_t leaf_id = search(key).has_value() ? findLeaf(key) : -1;
     if(leaf_id == -1) return false;
     return removeEntry( leaf_id, key, -1 );
 }
 
-auto BPlusTreeIndex::removeEntry ( node_id_t node_id, KeyType key, node_id_t ptr_id ) -> bool
+template<typename KeyType, typename ValueType>
+auto BPlusTreeIndex<KeyType, ValueType>::removeEntry ( node_id_t node_id, KeyType key, node_id_t ptr_id ) -> bool
 {
     BPlusTreeNode *node = loadNode( node_id );
     if(ptr_id == -1) // meaning deletion
@@ -381,6 +468,7 @@ auto BPlusTreeIndex::removeEntry ( node_id_t node_id, KeyType key, node_id_t ptr
         else if(node->children.size() == 1)
         {
             root_id = node->children[0];
+
             delete node;
             destroyNode( node_id );
         }
@@ -442,11 +530,11 @@ auto BPlusTreeIndex::removeEntry ( node_id_t node_id, KeyType key, node_id_t ptr
                 prev->values.insert( prev->values.end(), node->values.begin(), node->values.end() );
                 prev->nextLeaf_id = node->nextLeaf_id;
             }
+            saveNode( prev_id, prev );
+            delete prev;
             bool status = removeEntry( parent_id, betKey, node_id );    
             delete node;
             destroyNode( node_id );
-            saveNode( prev_id, prev );
-            delete prev;
             delete parent;
             return status;
         }
@@ -512,7 +600,8 @@ auto BPlusTreeIndex::removeEntry ( node_id_t node_id, KeyType key, node_id_t ptr
     return true;
 }
 
-auto BPlusTreeIndex::printBPlusTree ( std::ostream &os, node_id_t node_id, std::string prefix, bool last ) const -> void
+template<typename KeyType, typename ValueType>
+auto BPlusTreeIndex<KeyType, ValueType>::printBPlusTree ( std::ostream &os, node_id_t node_id, std::string prefix, bool last ) const -> void
 {
     if(node_id == -1) return;
     BPlusTreeNode *node = const_cast<BPlusTreeIndex *>(this)->loadNode( node_id );
@@ -548,7 +637,8 @@ auto BPlusTreeIndex::printBPlusTree ( std::ostream &os, node_id_t node_id, std::
     return;
 }
 
-std::ostream &operator<< ( std::ostream &os, const BPlusTreeIndex &tree )
+template<typename KeyType, typename ValueType>
+std::ostream &operator<< ( std::ostream &os, const BPlusTreeIndex<KeyType, ValueType> &tree )
 {
     if(tree.root_id == -1)
     {
@@ -558,3 +648,14 @@ std::ostream &operator<< ( std::ostream &os, const BPlusTreeIndex &tree )
     tree.printBPlusTree( os, tree.root_id );
     return os;
 }
+
+template class BPlusTreeIndex<int, int>;
+template class BPlusTreeIndex<int, std::string>;
+template class BPlusTreeIndex<std::string, int>;
+template class BPlusTreeIndex<std::string, std::string>;
+
+template std::ostream &operator<< ( std::ostream &os, const BPlusTreeIndex<int, int> &tree );
+template std::ostream &operator<< ( std::ostream &os, const BPlusTreeIndex<int, std::string> &tree );
+template std::ostream &operator<< ( std::ostream &os, const BPlusTreeIndex<std::string, int> &tree );
+template std::ostream &operator<< ( std::ostream &os, const BPlusTreeIndex<std::string, std::string> &tree );
+

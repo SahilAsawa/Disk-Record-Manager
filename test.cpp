@@ -5,49 +5,48 @@
 #include <Indexes/BPlusTreeIndex.hpp>
 #include <Storage/Disk.hpp>
 
-Disk disk( RANDOM, 4096, 1024 );
+using KeyType = std::string;
+using ValueType = std::string;
+
+Disk disk( SEQUENTIAL, 512, 1024 );
 BufferManager bm( &disk, LRU, 1024 );
 
 void BPlusTreeTest()
 {
-    BPlusTreeIndex bptree( &bm, 4 );
+    BPlusTreeIndex<KeyType, ValueType> bptree( &bm, 4 );
     std::vector<std::pair<KeyType, ValueType>> data;
-    // std::string k1 = "Srinivasan";
-    // std::string k2 = "Wu";
-    // std::string v1 = "16790";
-    // std::string v2 = "12345";
-    // data.push_back( {k1, v1} );
-    // data.push_back( {k2, v2} );
-    // data.push_back( {"Mozart", "15151"} );
-    // data.push_back( {"Einstein", "22222"} );
-    // data.push_back( {"El Said", "32343"} );
-    // data.push_back( {"Gold", "33456"} );
-    // data.push_back( {"Katz", "45565"} );
-    // data.push_back( {"Caliﬁeri", "58583"} );
-    // data.push_back( {"Singh", "76543"} );
-    // data.push_back( {"Crick", "76766"} );
-    // data.push_back( {"Brandt", "83821"} );
-    // data.push_back( {"Kim", "98345"} );
-    // data.push_back({"Adams", "12345"});
-    // data.push_back({"Lamport", "23456"});
-    // data.push_back({"Knuth", "34567"});
-    // data.push_back({"Hopper", "45678"});
-    // data.push_back({"Turing", "56789"});
-    // data.push_back({"Hawking", "67890"});
-    // data.push_back({"Newton", "78901"});
-    // data.push_back({"Curie", "89012"});
-    // data.push_back({"Darwin", "90123"});
-    // data.push_back({"Tesla", "01234"});
-    // data.push_back({"Hubble", "12345"});
-    // data.push_back({"Feynman", "23456"});
-    // data.push_back({"Bohr", "34567"});
-    // data.push_back({"Heisenberg", "45678"});
-    // data.push_back({"Faraday", "56789"});
-    // data.push_back({"Maxwell", "67890"});
-    // data.push_back({"Planck", "78901"});
-    // data.push_back({"Galileo", "90123"});
-    // data.push_back({"Copernicus", "01234"});
-    // data.push_back({"Kepler", "12345"});
+    data.push_back( {"Srinivasan", "10101"} );
+    data.push_back( {"Wu", "12121"} );
+    data.push_back( {"Mozart", "15151"} );
+    data.push_back( {"Einstein", "22222"} );
+    data.push_back( {"El Said", "32343"} );
+    data.push_back( {"Gold", "33456"} );
+    data.push_back( {"Katz", "45565"} );
+    data.push_back( {"Caliﬁeri", "58583"} );
+    data.push_back( {"Singh", "76543"} );
+    data.push_back( {"Crick", "76766"} );
+    data.push_back( {"Brandt", "83821"} );
+    data.push_back( {"Kim", "98345"} );
+    data.push_back({"Adams", "12345"});
+    data.push_back({"Lamport", "23456"});
+    data.push_back({"Knuth", "34567"});
+    data.push_back({"Hopper", "45678"});
+    data.push_back({"Turing", "56789"});
+    data.push_back({"Hawking", "67890"});
+    data.push_back({"Newton", "78901"});
+    data.push_back({"Curie", "89012"});
+    data.push_back({"Darwin", "90123"});
+    data.push_back({"Tesla", "01234"});
+    data.push_back({"Hubble", "12345"});
+    data.push_back({"Feynman", "23456"});
+    data.push_back({"Bohr", "34567"});
+    data.push_back({"Heisenberg", "45678"});
+    data.push_back({"Faraday", "56789"});
+    data.push_back({"Maxwell", "67890"});
+    data.push_back({"Planck", "78901"});
+    data.push_back({"Galileo", "90123"});
+    data.push_back({"Copernicus", "01234"});
+    data.push_back({"Kepler", "12345"});
 
 
     for(const auto& [key, value] : data)
@@ -56,84 +55,76 @@ void BPlusTreeTest()
         std::cout << "Inserted: " << key << " -> " << value << std::endl;
         // std::cout << bptree << std::endl;
     }
-    std::cout << "Final B+ Tree:" << std::endl;
-    std::cout << bptree << std::endl;
     
-    // std::cout << "\nSearch Results:" << std::endl;
-    // for(const auto& [key, value] : data)
-    // {
-    //     auto result = bptree.search( key );
-    //     if(result)
-    //     {
-    //         std::cout << "Found: " << key << " -> " << *result << std::endl;
-    //     }
-    //     else
-    //     {
-    //         std::cout << "Not Found: " << key << std::endl;
-    //     }
-    // }
-    // auto result = bptree.search( "Random" );
-    // if(result)
-    // {
-    //     std::cout << "Found: Random -> " << *result << std::endl;
-    // }
-    // else
-    // {
-    //     std::cout << "Not Found: Random" << std::endl;
-    // }
+    std::cout << "\nSearch Results:" << std::endl;
+    for(const auto& [key, value] : data)
+    {
+        auto result = bptree.search( key );
+        if(result)
+        {
+            std::cout << "Found: " << key << " -> " << *result << std::endl;
+        }
+        else
+        {
+            std::cout << "Not Found: " << key << std::endl;
+        }
+    }
+    auto result = bptree.search( "Random" );
+    if(result)
+    {
+        std::cout << "Found: Random -> " << *result << std::endl;
+    }
+    else
+    {
+        std::cout << "Not Found: Random" << std::endl;
+    }
 
-    // std::vector<std::pair<KeyType, ValueType>> searchData {
-    //     {"Einstein", "Einstein"},
-    //     {"A", "Z"},
-    //     {"A", "Caliﬁeri"},
-    //     {"Einstein", "Hawking"},
-    //     {"Hawking", "Einstein"},
-    //     {"A", "A"},
-    //     {"Z", "Z"}
-    // };
-    // std::cout << "\nRange Search Results:" << std::endl;
-    // for(const auto& [start, end] : searchData)
-    // {
-    //     auto rangeResult = bptree.rangeSearch( start, end );
-    //     std::cout << "Range [" << start << ", " << end << "] -> ";
-    //     if(rangeResult.empty())
-    //     {
-    //         std::cout << "No results" << std::endl;
-    //     }
-    //     else
-    //     {
-    //         for(const auto& val : rangeResult)
-    //         {
-    //             std::cout << val << " ";
-    //         }
-    //         std::cout << std::endl;
-    //     }
-    // }
+    std::vector<std::pair<KeyType, ValueType>> searchData {
+        {"Einstein", "Einstein"},
+        {"A", "Z"},
+        {"A", "Caliﬁeri"},
+        {"Einstein", "Hawking"},
+        {"Hawking", "Einstein"},
+        {"A", "A"},
+        {"Z", "Z"}
+    };
+    std::cout << "\nRange Search Results:" << std::endl;
+    for(const auto& [start, end] : searchData)
+    {
+        auto rangeResult = bptree.rangeSearch( start, end );
+        std::cout << "Range [" << start << ", " << end << "] -> ";
+        if(rangeResult.empty())
+        {
+            std::cout << "No results" << std::endl;
+        }
+        else
+        {
+            for(const auto& val : rangeResult)
+            {
+                std::cout << val << " ";
+            }
+            std::cout << std::endl;
+        }
+    }
 
-    // std::vector<KeyType> toremove{
-    //     "Srinivasan",
-    //     "Singh",
-    //     "Wu",
-    //     "Gold",
-    //     "Adams"
-    // };
+    std::vector<KeyType> toremove{
+        "Srinivasan",
+        "Singh",
+        "Wu",
+        "Gold",
+        "Adams"
+    };
  
-    // for(const auto &it: data)
-    // {
-    //     bptree.remove(it.first);
-    //     std::cout << "Removed: " << it.first << std::endl;
-    //     std::cout << bptree << std::endl;
-    // }
-
-
-    // for(const auto &it: toremove)
-    // {
-    //     bptree.remove(it);
-    //     std::cout << "Removed: " << it << std::endl;
-    //     std::cout << bptree << std::endl;
-    // }
-
+    for(const auto &it: data)
+    {
+        bptree.remove(it.first);
+        std::cout << "Removed: " << it.first << std::endl;
+        // std::cout << bptree << std::endl;
+    }
     
+    //stats
+    std::cout << "Disk IO's: " << bm.getNumIO() << std::endl;
+    std::cout << "Disk IO cost: " << bm.getCostIO() << std::endl;
     return;
 }
 
@@ -232,69 +223,9 @@ void BPlusTreeTest()
 
 // }
 
-void newBPT()
-{
-    BPlusTreeIndex bptree( &bm, 4 );
-    for(int i = 0; i < 10; ++i)
-    {
-        bptree.insert( i, i );
-        std::cout << "Inserted: " << i << std::endl;
-    }
-    std::cout << "Final B+ Tree:" << std::endl;
-    std::cout << bptree << std::endl;
-    std::cout << "Disk IO operations: " << bm.getNumIO() << std::endl;
-    std::cout << "Disk IO cost: " << bm.getCostIO() << std::endl;
-
-    bptree.remove( 5 );
-    std::cout << "Removed: 5" << std::endl;
-
-    std::cout << "Final B+ Tree:" << std::endl;
-    std::cout << bptree << std::endl;
-
-    if(bptree.search( 6 ).has_value()) 
-    {
-        std::cout << "Found: 6" << std::endl;
-    }
-    else
-    {
-        std::cout << "Not Found: 6" << std::endl;
-    }
-
-    if(bptree.search( 5 ).has_value()) 
-    {
-        std::cout << "Found: 5" << std::endl;
-    }
-    else
-    {
-        std::cout << "Not Found: 5" << std::endl;
-    }
-
-    // range search
-    auto rangeResult = bptree.rangeSearch( 2, 8 );
-    std::cout << "Range Search [2, 8]: ";
-    if(rangeResult.empty())
-    {
-        std::cout << "No results" << std::endl;
-    }
-    else
-    {
-        for(const auto& val : rangeResult)
-        {
-            std::cout << val << " ";
-        }
-        std::cout << std::endl;
-    }
-    std::cout << "Disk IO operations: " << bm.getNumIO() << std::endl;
-    std::cout << "Disk IO cost: " << bm.getCostIO() << std::endl;
-    std::cout << "Buffer Manager frames: " << bm.getNumFrames() << std::endl;
-
-
-}
-
 int main()
 {
     // BufferManagerTest();
     // god();
-    // BPlusTreeTest();
-    newBPT();
+    BPlusTreeTest();
 }

@@ -10,9 +10,11 @@
     #include <Utils.hpp>
     #include <Storage/BufferManager.hpp>
 
-using KeyType = int;
-using ValueType = int;
 
+// using KeyType = int;
+// using ValueType = int;
+
+template<typename KeyType, typename ValueType>
 class BPlusTreeIndex
 {
     private:
@@ -106,20 +108,13 @@ class BPlusTreeIndex
 	 * @brief prints the B+ tree by overloading the << operator
 	 * @param
 	 */
-    friend std::ostream &operator<< ( std::ostream &os, const BPlusTreeIndex &tree );
+    template<typename K, typename V>
+    friend std::ostream &operator<< ( std::ostream &os, const BPlusTreeIndex<K, V> &tree );
 
     private:
 
     //
-    auto nodeSize () -> size_t
-    {
-        return sizeof( NodeType ) +
-               sizeof( node_id_t ) * 2 +
-               sizeof( size_t ) * 3 +
-               sizeof( KeyType ) * order +
-               sizeof( ValueType ) * order +
-               sizeof( node_id_t ) * ( order + 1 );
-    }
+    auto nodeSize () -> size_t;
 
     //
     auto loadNode ( node_id_t id ) -> BPlusTreeNode *;
@@ -145,10 +140,5 @@ class BPlusTreeIndex
     //
     auto printBPlusTree ( std::ostream &os, node_id_t node_id, std::string prefix = "", bool last = true ) const -> void;
 };
-
-using PBPlusTreeIndex   =  BPlusTreeIndex *;
-using CPBPlusTreeIndex  = const BPlusTreeIndex *;
-using RBPlusTreeIndex   = BPlusTreeIndex &;
-using CRBlusTreeIndex   = const BPlusTreeIndex &;
 
 #endif      // _B_PLUS_TREE_INDEX_HPP_
