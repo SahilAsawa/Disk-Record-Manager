@@ -4,7 +4,6 @@
     #define _BUFFER_MANAGER_HPP_
 
     #include <unordered_map>
-    #include <algorithm>
     #include <optional>
     #include <stack>
     #include <list>
