@@ -9,19 +9,23 @@ LIB_DIR = lib
 BUFFER_SRC = src/Storage/BufferManager.cpp
 DISK_SRC = src/Storage/Disk.cpp
 BPT_SRC = src/Indexes/BPlusTreeIndex.cpp
+UTIL_SRC = src/Utilities/Utils.cpp
 
 # Header include paths (already covered by -Iinclude)
 STORAGE_HEADERS = include/Storage/Disk.hpp include/Storage/BufferManager.hpp
 INDEX_HEADERS = include/Indexes/BPlusTreeIndex.hpp include/Indexes/HashIndex.hpp
+UTILS_HEADERS = include/Utilities/Utils.hpp
 
 # Object files
 BUFFER_OBJ = $(BUILD_DIR)/BufferManager.o
 DISK_OBJ = $(BUILD_DIR)/Disk.o
 BPT_OBJ = $(BUILD_DIR)/BPlusTreeIndex.o
+UTILS_OBJ = $(BUILD_DIR)/Utils.o
 
 # Static libraries
 STORAGE_LIB = $(LIB_DIR)/libstorage.a
 INDEX_LIB = $(LIB_DIR)/libindexes.a
+UTILS_LIB = $(LIB_DIR)/libutils.a
 
 # Test
 TEST = test
@@ -39,16 +43,16 @@ TABLE_SRC = table.cpp
 all: $(TEST) $(EMS) $(TABLE)
 
 # Compile test.cpp and link with both static libs
-$(TEST): $(TEST_SRC) $(STORAGE_LIB) $(INDEX_LIB)
-	$(CXX) $(CXXFLAGS) -o $@ $(TEST_SRC) -L$(LIB_DIR) -lstorage -lindexes
+$(TEST): $(TEST_SRC) $(STORAGE_LIB) $(INDEX_LIB) $(UTILS_LIB)
+	$(CXX) $(CXXFLAGS) -o $@ $(TEST_SRC) -L$(LIB_DIR) -lstorage -lindexes -lutils
 
 # Compile External Merge Sort
-$(EMS): $(EMS_SRC) $(STORAGE_LIB) $(INDEX_LIB)
-	$(CXX) $(CXXFLAGS) -o $@ $(EMS_SRC) -L$(LIB_DIR) -lstorage -lindexes
+$(EMS): $(EMS_SRC) $(STORAGE_LIB) $(INDEX_LIB) $(UTILS_LIB)
+	$(CXX) $(CXXFLAGS) -o $@ $(EMS_SRC) -L$(LIB_DIR) -lstorage -lindexes -lutils
 
 # Compile Table
-$(TABLE): $(TABLE_SRC) $(STORAGE_LIB) $(INDEX_LIB)
-	$(CXX) $(CXXFLAGS) -o $@ $(TABLE_SRC) -L$(LIB_DIR) -lstorage -lindexes
+$(TABLE): $(TABLE_SRC) $(STORAGE_LIB) $(INDEX_LIB) $(UTILS_LIB)
+	$(CXX) $(CXXFLAGS) -o $@ $(TABLE_SRC) -L$(LIB_DIR) -lstorage -lindexes -lutils
 
 # Build object files
 $(BUILD_DIR)/%.o: src/Storage/%.cpp $(STORAGE_HEADERS)
@@ -59,12 +63,20 @@ $(BUILD_DIR)/%.o: src/Indexes/%.cpp $(INDEX_HEADERS)
 	@mkdir -p $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+$(BUILD_DIR)/%.o: src/Utilities/%.cpp $(UTILS_HEADERS)
+	@mkdir -p $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
 # Create static libraries
 $(STORAGE_LIB): $(DISK_OBJ) $(BUFFER_OBJ)
 	@mkdir -p $(LIB_DIR)
 	ar rcs $@ $^
 
 $(INDEX_LIB): $(BPT_OBJ)
+	@mkdir -p $(LIB_DIR)
+	ar rcs $@ $^
+
+$(UTILS_LIB): $(UTILS_OBJ)
 	@mkdir -p $(LIB_DIR)
 	ar rcs $@ $^
 
