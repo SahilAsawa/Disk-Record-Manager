@@ -5,10 +5,10 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <sys/stat.h> 
+#include <unistd.h>
+#include <cstdio>
 #include <Utilities/Utils.hpp>
-
-// add company.bin and employee.bin to rm -f in the make file
-// Add a smaller test csv for by-hand simulation of the project 
 
 using Table = std::vector<std::vector<std::string>>;
 
@@ -46,6 +46,12 @@ Table readCSV(const std::string &filename, char delim = ',')
 
 int main()
 {
+    struct stat st;
+    if(stat("bin", &st) == -1) 
+    { 
+        if(mkdir("bin", 0755) != 0) perror("mkdir failed");
+    }
+    else if(S_ISDIR(st.st_mode));
     std::cout << "Size of Employee: " << sizeof(Employee) << '\n';
     std::cout << "Size of Company:  " << sizeof(Company) << '\n';
 
@@ -70,7 +76,7 @@ int main()
 
         // std::sort(std::begin(employees), std::end(employees));
 
-        std::ofstream file{"./files/employee.bin", std::ios::binary};
+        std::ofstream file{"./bin/employee.bin", std::ios::binary};
 
         for (const auto &employee : employees)
         {
@@ -100,7 +106,7 @@ int main()
 
         // std::sort(std::begin(companys), std::end(companys));
 
-        file.open("./files/company.bin", std::ios::binary);
+        file.open("./bin/company.bin", std::ios::binary);
 
         for (const auto &company : companys)
         {

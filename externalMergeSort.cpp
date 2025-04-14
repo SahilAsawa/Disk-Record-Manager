@@ -7,6 +7,9 @@
 #include <cassert>
 #include <cstring>
 #include <iomanip>
+#include <sys/stat.h> 
+#include <unistd.h>
+#include <cstdio>
 #include <Storage/Disk.hpp>
 #include <Storage/BufferManager.hpp>
 #include <Utilities/Utils.hpp>
@@ -180,7 +183,7 @@ auto loadData() -> std::tuple<address_id_t, address_id_t, address_id_t, address_
     Disk disk(RANDOM, BLOCK_SIZE, BLOCK_COUNT_DISK);
     BufferManager buffer(&disk, MRU, BLOCK_COUNT_BUFFER);
 
-    auto locationEmployee = loadFileInDisk(buffer, "./files/employee.bin", 0);
+    auto locationEmployee = loadFileInDisk(buffer, "./bin/employee.bin", 0);
     if (!locationEmployee.has_value())
     {
         std::cerr << "Error loading Employee data" << std::endl;
@@ -188,7 +191,7 @@ auto loadData() -> std::tuple<address_id_t, address_id_t, address_id_t, address_
     }
     auto [StartAddressEmployee, EndAddressEmployee] = locationEmployee.value();
 
-    auto locationCompany = loadFileInDisk(buffer, "./files/company.bin", EndAddressEmployee);
+    auto locationCompany = loadFileInDisk(buffer, "./bin/company.bin", EndAddressEmployee);
     if (!locationCompany.has_value())
     {
         std::cerr << "Error loading Company data" << std::endl;
@@ -198,12 +201,11 @@ auto loadData() -> std::tuple<address_id_t, address_id_t, address_id_t, address_
     return {StartAddressEmployee, EndAddressEmployee, StartAddressCompany, EndAddressCompany};
 }
 
-auto testing(std::tuple<address_id_t, address_id_t, address_id_t, address_id_t> dataAddresses,
-             bool DiskAccessStrategy, int BufferReplacementStategy) -> void
+auto testing(bool DiskAccessStrategy, int BufferReplacementStategy) -> void
 {
+    auto [StartAddressEmployee, EndAddressEmployee, StartAddressCompany, EndAddressCompany] = loadData();
     Disk disk(DiskAccessStrategy, BLOCK_SIZE, BLOCK_COUNT_DISK);
     BufferManager buffer(&disk, BufferReplacementStategy, BLOCK_COUNT_BUFFER);
-    auto [StartAddressEmployee, EndAddressEmployee, StartAddressCompany, EndAddressCompany] = dataAddresses;
 
     // External Sort the Employee and Company data
     address_id_t NextUsableAddress = getNextFreeFrame(EndAddressCompany);
@@ -214,9 +216,9 @@ auto testing(std::tuple<address_id_t, address_id_t, address_id_t, address_id_t> 
     auto [startJoin, endJoin] = mergeJoin(buffer, startEmployeeSorted, endEmployeeSorted, startCompanySorted, endCompanySorted, NextUsableAddress);
 
     // Storing the sorted files for Demonstration
-    storeResult<Employee>(buffer, startEmployeeSorted, endEmployeeSorted, "./files/sorted_employee.csv");
-    storeResult<Company>(buffer, startCompanySorted, endCompanySorted, "./files/sorted_company.csv");
-    storeResult<JoinEmployeeCompany>(buffer, startJoin, endJoin, "./files/joined_result.csv");
+    storeResult<Employee>(buffer, startEmployeeSorted, endEmployeeSorted, "./MergeSort/sorted_employee.csv");
+    storeResult<Company>(buffer, startCompanySorted, endCompanySorted, "./MergeSort/sorted_company.csv");
+    storeResult<JoinEmployeeCompany>(buffer, startJoin, endJoin, "./MergeSort/joined_result.csv");
 
     // print statistics
     std::cout << "\n\t========================================================\n" << std::endl;
@@ -224,17 +226,22 @@ auto testing(std::tuple<address_id_t, address_id_t, address_id_t, address_id_t> 
     std::cout << "\t\tDisk IO cost: " << buffer.getCostIO() << std::endl;
     std::cout << "\t\tBuffer Manager Size: " << buffer.getNumFrames() << std::endl;
     std::cout << "\t\tBuffer Manager Replacement Strategy: " << (buffer.getReplaceStrategy() == LRU ? "LRU" : "MRU") << std::endl;
-
+    std::cout << "\t\tDisk Access Strategy: " << (DiskAccessStrategy == RANDOM ? "RANDOM" : "SEQUENTIAL") << std::endl;
     return;
 }
 
 int main()
 {
-    auto dataAddreses = loadData();
-    testing(dataAddreses, RANDOM, LRU);
-    testing(dataAddreses, RANDOM, MRU);
-    testing(dataAddreses, SEQUENTIAL, LRU);
-    testing(dataAddreses, SEQUENTIAL, MRU);
+    struct stat st;
+    if(stat("MergeSort", &st) == -1) 
+    { 
+        if(mkdir("MergeSort", 0755) != 0) perror("mkdir failed");
+    }
+    else if(S_ISDIR(st.st_mode));
+    testing(RANDOM, LRU);
+    testing(RANDOM, MRU);
+    testing(SEQUENTIAL, LRU);
+    testing(SEQUENTIAL, MRU);
     std::cout << "\n\t========================================================\n" << std::endl;
     return 0;
 }
