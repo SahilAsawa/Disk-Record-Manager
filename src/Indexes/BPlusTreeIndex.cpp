@@ -9,11 +9,11 @@ auto BPlusTreeIndex<KeyType, ValueType>::nodeSize () -> size_t
     if constexpr (std::is_same_v<ValueType, std::string>) valueSize = sizeof( std::byte ) * 32; // Assuming max length of string is 32
 
     return sizeof( NodeType ) +
-            sizeof( node_id_t ) * 2 +
-            sizeof( size_t ) * 3 +
-            keySize * order +
-            valueSize * order +
-            sizeof( node_id_t ) * ( order + 1 );
+        sizeof( node_id_t ) * 2 +
+        sizeof( size_t ) * 3 +
+        keySize * order +
+        valueSize * order +
+        sizeof( node_id_t ) * ( order + 1 );
 }
 
 template<typename KeyType, typename ValueType>

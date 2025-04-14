@@ -11,9 +11,6 @@
     #include <Storage/BufferManager.hpp>
 
 
-// using KeyType = int;
-// using ValueType = int;
-
 template<typename KeyType, typename ValueType>
 class BPlusTreeIndex
 {
