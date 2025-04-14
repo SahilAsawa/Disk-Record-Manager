@@ -98,6 +98,7 @@ auto BPlusTreeIndex::createNode ( NodeType type ) -> node_id_t
     node->type = type;
     node->parent_id = -1;
     node->nextLeaf_id = -1;
+    if( type == NodeType::INTERNAL ) node->children.push_back( -1 );
 
     saveNode( id, node );
     return id;
