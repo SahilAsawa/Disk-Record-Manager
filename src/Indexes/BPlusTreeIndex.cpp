@@ -2,15 +2,105 @@
 #include <algorithm>
 #include <iostream>
 
-
-auto BPlusTreeIndex::createNode ( NodeType type ) -> BPlusTreeNode *
+auto BPlusTreeIndex::loadNode ( node_id_t id ) -> BPlusTreeNode *
 {
-    BPlusTreeNode *node = new BPlusTreeNode;
-    node->type = type;
-    if(type  == NodeType::INTERNAL) node->children.push_back(nullptr);
-    node->parent = nullptr;
-    node->nextLeaf = nullptr;
+    BPlusTreeNode *node = new BPlusTreeNode( order );
+    std::vector< std::byte > data = buffer_manager->readAddress( id*nodeSize(), nodeSize() );
+
+    size_t curr = 0;
+    node->type = *reinterpret_cast< NodeType * >( data.data() );
+    curr += sizeof( NodeType );
+
+    node->parent_id = *reinterpret_cast< node_id_t * >( data.data() + curr );
+    curr += sizeof( node_id_t );
+
+    node->nextLeaf_id = *reinterpret_cast< node_id_t * >( data.data() + curr );
+    curr += sizeof( node_id_t );
+
+    size_t size = *reinterpret_cast< size_t * >( data.data() + curr );
+    curr += sizeof( size_t );
+
+    node->keys.resize( size );
+    std::copy( data.data() + curr, data.data() + curr + size * sizeof( KeyType ), reinterpret_cast< std::byte * >( node->keys.data() ) );
+    curr += size * sizeof( KeyType );
+
+    size = *reinterpret_cast< size_t * >( data.data() + curr );
+    curr += sizeof( size_t );
+
+    node->children.resize( size );
+    std::copy( data.data() + curr, data.data() + curr + size * sizeof( node_id_t ), reinterpret_cast< std::byte * >( node->children.data() ) );
+    curr += size * sizeof( node_id_t );
+
+    size = *reinterpret_cast< size_t * >( data.data() + curr );
+    curr += sizeof( size_t );
+
+    node->values.resize( size );
+    std::copy( data.data() + curr, data.data() + curr + size * sizeof( ValueType ), reinterpret_cast< std::byte * >( node->values.data() ) );
+    curr += size * sizeof( ValueType );
+
     return node;
+}
+
+auto BPlusTreeIndex::saveNode ( node_id_t id, BPlusTreeNode *node ) -> void
+{
+    std::vector< std::byte > data( nodeSize() );
+
+    size_t curr = 0;
+    std::copy( reinterpret_cast< std::byte * >( &node->type ), reinterpret_cast< std::byte * >( &node->type ) + sizeof( NodeType ), data.data() + curr );
+    curr += sizeof( NodeType );
+
+    std::copy( reinterpret_cast< std::byte * >( &node->parent_id ), reinterpret_cast< std::byte * >( &node->parent_id ) + sizeof( node_id_t ), data.data() + curr );
+    curr += sizeof( node_id_t );
+
+    std::copy( reinterpret_cast< std::byte * >( &node->nextLeaf_id ), reinterpret_cast< std::byte * >( &node->nextLeaf_id ) + sizeof( node_id_t ), data.data() + curr );
+    curr += sizeof( node_id_t );
+
+    size_t size = node->keys.size();
+    std::copy( reinterpret_cast< std::byte * >( &size ), reinterpret_cast< std::byte * >( &size ) + sizeof( size_t ), data.data() + curr );
+    curr += sizeof( size_t );
+
+    std::copy( reinterpret_cast< std::byte * >( node->keys.data() ), reinterpret_cast< std::byte * >( node->keys.data() ) + size * sizeof( KeyType ), data.data() + curr );
+    curr += size * sizeof( KeyType );
+
+    size = node->children.size();
+    std::copy( reinterpret_cast< std::byte * >( &size ), reinterpret_cast< std::byte * >( &size ) + sizeof( size_t ), data.data() + curr );
+    curr += sizeof( size_t );
+
+    std::copy( reinterpret_cast< std::byte * >( node->children.data() ), reinterpret_cast< std::byte * >( node->children.data() ) + size * sizeof( node_id_t ), data.data() + curr );
+    curr += size * sizeof( node_id_t );
+
+    size = node->values.size();
+    std::copy( reinterpret_cast< std::byte * >( &size ), reinterpret_cast< std::byte * >( &size ) + sizeof( size_t ), data.data() + curr );
+    curr += sizeof( size_t );
+
+    std::copy( reinterpret_cast< std::byte * >( node->values.data() ), reinterpret_cast< std::byte * >( node->values.data() ) + size * sizeof( ValueType ), data.data() + curr );
+    curr += size * sizeof( ValueType );
+
+    buffer_manager->writeAddress( id*nodeSize(), data );
+
+    delete node; // Free the memory allocated for the node
+    return;
+}
+
+auto BPlusTreeIndex::createNode ( NodeType type ) -> node_id_t
+{
+    node_id_t id;
+    if( free_ids.empty() )
+    {
+        id = last_id++;
+    }
+    else
+    {
+        id = free_ids.back();
+        free_ids.pop_back();
+    }
+    BPlusTreeNode *node = new BPlusTreeNode( order );
+    node->type = type;
+    node->parent_id = -1;
+    node->nextLeaf_id = -1;
+
+    saveNode( id, node );
+    return id;
 }
 
 auto BPlusTreeIndex::search( KeyType key ) -> std::optional< ValueType >
