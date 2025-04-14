@@ -1,5 +1,6 @@
 #include <Utilities/Utils.hpp>
 #include <Storage/BufferManager.hpp>
+#include <iostream>
 
 auto loadFileInDisk (BufferManager& buffer, std::string fileName, address_id_t startingAddress) -> std::optional<std::pair<address_id_t,address_id_t>>
 {
