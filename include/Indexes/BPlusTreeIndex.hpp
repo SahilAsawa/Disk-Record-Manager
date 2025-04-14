@@ -144,7 +144,7 @@ class BPlusTreeIndex
     auto insertInternal ( node_id_t left_id, KeyType key, node_id_t right_id ) -> bool;
 
     //
-    auto findLeaf ( KeyType key ) -> BPlusTreeNode *;
+    auto findLeaf ( KeyType key ) -> node_id_t;
 
     //
     auto removeEntry( node_id_t node_id, KeyType key, node_id_t ptr_id ) -> bool;
