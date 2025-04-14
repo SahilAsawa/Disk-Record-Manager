@@ -27,12 +27,28 @@ INDEX_LIB = $(LIB_DIR)/libindexes.a
 TEST = test
 TEST_SRC = test.cpp
 
+# External Merge Sort
+EMS = ems
+EMS_SRC = externalMergeSort.cpp
+
+# Table
+TABLE = table
+TABLE_SRC = table.cpp
+
 # Default target
-all: $(TEST)
+all: $(TEST) $(EMS) $(TABLE)
 
 # Compile test.cpp and link with both static libs
 $(TEST): $(TEST_SRC) $(STORAGE_LIB) $(INDEX_LIB)
 	$(CXX) $(CXXFLAGS) -o $@ $(TEST_SRC) -L$(LIB_DIR) -lstorage -lindexes
+
+# Compile External Merge Sort
+$(EMS): $(EMS_SRC) $(STORAGE_LIB) $(INDEX_LIB)
+	$(CXX) $(CXXFLAGS) -o $@ $(EMS_SRC) -L$(LIB_DIR) -lstorage -lindexes
+
+# Compile Table
+$(TABLE): $(TABLE_SRC) $(STORAGE_LIB) $(INDEX_LIB)
+	$(CXX) $(CXXFLAGS) -o $@ $(TABLE_SRC) -L$(LIB_DIR) -lstorage -lindexes
 
 # Build object files
 $(BUILD_DIR)/%.o: src/Storage/%.cpp $(STORAGE_HEADERS)
@@ -54,6 +70,6 @@ $(INDEX_LIB): $(BPT_OBJ)
 
 # Clean build artifacts
 clean:
-	rm -rf $(BUILD_DIR) $(LIB_DIR) $(TEST)
+	rm -rf $(BUILD_DIR) $(LIB_DIR) $(TEST) $(EMS) $(TABLE) files/*.bin
 
 .PHONY: all clean

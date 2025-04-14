@@ -1,0 +1,606 @@
+Max Disk Size: 4194304
+Company ID: 1
+Company Name: Corkery Group
+Company Slogan: aggregate mission-critical synergies
+Company ID: 2
+Company Name: Sawayn-Konopelski
+Company Slogan: synthesize killer functionalities
+Company ID: 3
+Company Name: Schneider, Dickinson and Vandervort
+Company Slogan: matrix bricks-and-clicks networks
+Company ID: 4
+Company Name: Orn, Cremin and Larson
+Company Slogan: deliver end-to-end models
+Company ID: 5
+Company Name: Walker-Maggio
+Company Slogan: embrace sticky initiatives
+Company ID: 6
+Company Name: Champlin, Wilderman and Bechtelar
+Company Slogan: productize proactive schemas
+Company ID: 7
+Company Name: Brekke and Sons
+Company Slogan: reintermediate B2B web-readiness
+Company ID: 8
+Company Name: Hessel LLC
+Company Slogan: enhance efficient eyeballs
+Company ID: 9
+Company Name: Sporer Group
+Company Slogan: reinvent leading-edge channels
+Company ID: 10
+Company Name: Denesik LLC
+Company Slogan: grow viral synergies
+Company ID: 11
+Company Name: Donnelly-Effertz
+Company Slogan: orchestrate vertical portals
+Company ID: 12
+Company Name: Yost, Ritchie and Predovic
+Company Slogan: extend strategic eyeballs
+Company ID: 13
+Company Name: Smitham, Schimmel and Hilll
+Company Slogan: repurpose intuitive communities
+Company ID: 14
+Company Name: Mayer, Ritchie and DuBuque
+Company Slogan: deliver best-of-breed metrics
+Company ID: 15
+Company Name: Balistreri-Blanda
+Company Slogan: scale back-end convergence
+Company ID: 16
+Company Name: Lebsack and Sons
+Company Slogan: aggregate impactful niches
+Company ID: 17
+Company Name: Kling, Greenholt and Fritsch
+Company Slogan: generate clicks-and-mortar paradigms
+Company ID: 18
+Company Name: Haag, Conn and Heller
+Company Slogan: synergize scalable solutions
+Company ID: 19
+Company Name: Russel-Boyer
+Company Slogan: recontextualize scalable supply-chains
+Company ID: 20
+Company Name: Powlowski Group
+Company Slogan: revolutionize proactive functionalities
+Company ID: 21
+Company Name: Witting LLC
+Company Slogan: grow robust interfaces
+Company ID: 22
+Company Name: Von-Morissette
+Company Slogan: whiteboard 24/7 web-readiness
+Company ID: 23
+Company Name: Kilback-Bosco
+Company Slogan: engineer intuitive content
+Company ID: 24
+Company Name: Wilkinson Inc
+Company Slogan: evolve cross-media e-tailers
+Company ID: 25
+Company Name: Sawayn, Torphy and VonRueden
+Company Slogan: recontextualize cross-platform partnerships
+Company ID: 26
+Company Name: Legros-Nienow
+Company Slogan: optimize world-class e-business
+Company ID: 27
+Company Name: Murray Group
+Company Slogan: target turn-key action-items
+Company ID: 28
+Company Name: Gottlieb Inc
+Company Slogan: empower sexy convergence
+Company ID: 29
+Company Name: Miller-Goyette
+Company Slogan: innovate leading-edge vortals
+Company ID: 30
+Company Name: Kuhic-Gibson
+Company Slogan: maximize value-added e-business
+Company ID: 31
+Company Name: Leannon-Cronin
+Company Slogan: incubate interactive solutions
+Company ID: 32
+Company Name: Hand-Balistreri
+Company Slogan: implement enterprise channels
+Company ID: 33
+Company Name: Ledner Group
+Company Slogan: benchmark customized experiences
+Company ID: 34
+Company Name: Pouros-Hintz
+Company Slogan: envisioneer revolutionary mindshare
+Company ID: 35
+Company Name: Mills-Goyette
+Company Slogan: iterate holistic markets
+Company ID: 36
+Company Name: Heidenreich-O'Conner
+Company Slogan: iterate B2C infomediaries
+Company ID: 37
+Company Name: Goldner LLC
+Company Slogan: whiteboard enterprise bandwidth
+Company ID: 38
+Company Name: Stark LLC
+Company Slogan: envisioneer killer systems
+Company ID: 39
+Company Name: Koepp-Medhurst
+Company Slogan: reinvent plug-and-play niches
+Company ID: 40
+Company Name: Bruen and Sons
+Company Slogan: deploy B2B vortals
+Company ID: 41
+Company Name: Sipes Inc
+Company Slogan: drive cross-platform schemas
+Company ID: 42
+Company Name: Fisher-Langworth
+Company Slogan: enhance holistic applications
+Company ID: 43
+Company Name: Nolan, Osinski and O'Hara
+Company Slogan: redefine value-added web services
+Company ID: 44
+Company Name: Johnson-Hickle
+Company Slogan: engineer next-generation users
+Company ID: 45
+Company Name: Vandervort-Adams
+Company Slogan: envisioneer customized infrastructures
+Company ID: 46
+Company Name: Nicolas, MacGyver and Schuppe
+Company Slogan: streamline customized ROI
+Company ID: 47
+Company Name: Schumm-Funk
+Company Slogan: productize proactive supply-chains
+Company ID: 48
+Company Name: Dooley-Reichel
+Company Slogan: benchmark enterprise models
+Company ID: 49
+Company Name: Stoltenberg-Mertz
+Company Slogan: whiteboard world-class synergies
+Company ID: 50
+Company Name: Ruecker-Nikolaus
+Company Slogan: optimize visionary methodologies
+Company ID: 51
+Company Name: Towne, Bartoletti and Ferry
+Company Slogan: matrix seamless convergence
+Company ID: 52
+Company Name: Weissnat, Parker and Bartoletti
+Company Slogan: engage integrated e-markets
+Company ID: 53
+Company Name: Prohaska-Halvorson
+Company Slogan: innovate one-to-one functionalities
+Company ID: 54
+Company Name: Pagac Inc
+Company Slogan: repurpose transparent eyeballs
+Company ID: 55
+Company Name: Crist LLC
+Company Slogan: optimize impactful e-services
+Company ID: 56
+Company Name: Dicki-Koss
+Company Slogan: grow customized infomediaries
+Company ID: 57
+Company Name: Mohr, Smitham and Kertzmann
+Company Slogan: evolve 24/7 e-services
+Company ID: 58
+Company Name: Howell Group
+Company Slogan: unleash virtual networks
+Company ID: 59
+Company Name: Toy, Leannon and Hintz
+Company Slogan: deliver global methodologies
+Company ID: 60
+Company Name: Harris, Reynolds and Jast
+Company Slogan: monetize end-to-end platforms
+Company ID: 61
+Company Name: Little-Durgan
+Company Slogan: reinvent vertical interfaces
+Company ID: 62
+Company Name: Cruickshank and Sons
+Company Slogan: cultivate ubiquitous models
+Company ID: 63
+Company Name: Funk-Dietrich
+Company Slogan: exploit 24/365 metrics
+Company ID: 64
+Company Name: Bradtke-Block
+Company Slogan: target bleeding-edge relationships
+Company ID: 65
+Company Name: Pfannerstill, Bayer and Mayer
+Company Slogan: unleash viral niches
+Company ID: 66
+Company Name: Casper LLC
+Company Slogan: repurpose granular applications
+Company ID: 67
+Company Name: Bogan, Glover and Kerluke
+Company Slogan: reintermediate collaborative initiatives
+Company ID: 68
+Company Name: MacGyver-Stamm
+Company Slogan: generate vertical web services
+Company ID: 69
+Company Name: VonRueden-Ferry
+Company Slogan: maximize cutting-edge e-services
+Company ID: 70
+Company Name: Berge-Cummerata
+Company Slogan: orchestrate ubiquitous e-commerce
+Company ID: 71
+Company Name: Feeney, Jacobi and Kozey
+Company Slogan: reinvent best-of-breed synergies
+Company ID: 72
+Company Name: Kulas Inc
+Company Slogan: orchestrate end-to-end bandwidth
+Company ID: 73
+Company Name: Ondricka and Sons
+Company Slogan: enhance frictionless models
+Company ID: 74
+Company Name: Steuber Group
+Company Slogan: deliver synergistic methodologies
+Company ID: 75
+Company Name: Ziemann-Renner
+Company Slogan: synergize robust bandwidth
+Company ID: 76
+Company Name: Bradtke-Abshire
+Company Slogan: empower front-end architectures
+Company ID: 77
+Company Name: Yundt-Carter
+Company Slogan: syndicate extensible methodologies
+Company ID: 78
+Company Name: Lakin Group
+Company Slogan: deliver extensible web-readiness
+Company ID: 79
+Company Name: Armstrong Group
+Company Slogan: embrace efficient infrastructures
+Company ID: 80
+Company Name: Boehm-Pollich
+Company Slogan: revolutionize transparent paradigms
+Company ID: 81
+Company Name: Jacobs, Dach and Ferry
+Company Slogan: integrate mission-critical metrics
+Company ID: 82
+Company Name: Leffler-West
+Company Slogan: target revolutionary models
+Company ID: 83
+Company Name: Renner, Stehr and Kunde
+Company Slogan: synergize B2B channels
+Company ID: 84
+Company Name: Treutel-Abernathy
+Company Slogan: deliver revolutionary schemas
+Company ID: 85
+Company Name: Murray Group
+Company Slogan: incubate viral infomediaries
+Company ID: 86
+Company Name: Zieme-Kuvalis
+Company Slogan: utilize viral methodologies
+Company ID: 87
+Company Name: Zulauf LLC
+Company Slogan: utilize interactive partnerships
+Company ID: 88
+Company Name: McCullough, McCullough and Donnelly
+Company Slogan: mesh strategic interfaces
+Company ID: 89
+Company Name: Ankunding-Frami
+Company Slogan: facilitate cross-media users
+Company ID: 90
+Company Name: Mayert, Goldner and Ward
+Company Slogan: evolve innovative infrastructures
+Company ID: 91
+Company Name: Kub, Kunze and Moore
+Company Slogan: transform user-centric deliverables
+Company ID: 92
+Company Name: Kunze, Runolfsson and Emmerich
+Company Slogan: harness rich e-tailers
+Company ID: 93
+Company Name: Goldner LLC
+Company Slogan: architect bleeding-edge e-markets
+Company ID: 94
+Company Name: Purdy Inc
+Company Slogan: drive 24/7 portals
+Company ID: 95
+Company Name: Emmerich Inc
+Company Slogan: deliver revolutionary e-services
+Company ID: 96
+Company Name: Wisozk, Dicki and Lind
+Company Slogan: unleash extensible niches
+Company ID: 97
+Company Name: Oberbrunner Group
+Company Slogan: transition efficient eyeballs
+Company ID: 98
+Company Name: Wintheiser Group
+Company Slogan: empower next-generation networks
+Company ID: 99
+Company Name: Marquardt and Sons
+Company Slogan: productize user-centric initiatives
+Company ID: 100
+Company Name: Goodwin-Kunde
+Company Slogan: disintermediate cross-media systems
+Company ID: 101
+Company Name: Bashirian Group
+Company Slogan: cultivate ubiquitous channels
+Company ID: 102
+Company Name: Kozey-Skiles
+Company Slogan: deploy dot-com ROI
+Company ID: 103
+Company Name: Zemlak-VonRueden
+Company Slogan: repurpose magnetic e-services
+Company ID: 104
+Company Name: Kautzer Group
+Company Slogan: reinvent robust methodologies
+Company ID: 105
+Company Name: Murazik, Purdy and Little
+Company Slogan: recontextualize B2C web services
+Company ID: 106
+Company Name: Gutkowski-Stracke
+Company Slogan: deploy seamless platforms
+Company ID: 107
+Company Name: Jacobs-Kulas
+Company Slogan: evolve bleeding-edge action-items
+Company ID: 108
+Company Name: O'Connell Inc
+Company Slogan: reinvent synergistic synergies
+Company ID: 109
+Company Name: Prohaska-Howell
+Company Slogan: productize sexy content
+Company ID: 110
+Company Name: Hudson-Vandervort
+Company Slogan: benchmark efficient vortals
+Company ID: 111
+Company Name: Tillman, Braun and Lemke
+Company Slogan: empower value-added methodologies
+Company ID: 112
+Company Name: Sanford, Erdman and Ritchie
+Company Slogan: reinvent ubiquitous architectures
+Company ID: 113
+Company Name: Kreiger-Wisozk
+Company Slogan: embrace synergistic initiatives
+Company ID: 114
+Company Name: Hintz, Waters and Johnston
+Company Slogan: incubate collaborative functionalities
+Company ID: 115
+Company Name: Grimes, Grimes and Gutkowski
+Company Slogan: synergize best-of-breed e-business
+Company ID: 116
+Company Name: Friesen, Rowe and Schultz
+Company Slogan: enable virtual initiatives
+Company ID: 117
+Company Name: Murphy and Sons
+Company Slogan: harness seamless partnerships
+Company ID: 118
+Company Name: Harber LLC
+Company Slogan: visualize bricks-and-clicks users
+Company ID: 119
+Company Name: Lubowitz-Runolfsson
+Company Slogan: implement world-class platforms
+Company ID: 120
+Company Name: Streich and Sons
+Company Slogan: synthesize open-source partnerships
+Company ID: 121
+Company Name: Hamill and Sons
+Company Slogan: strategize vertical metrics
+Company ID: 122
+Company Name: Kertzmann, Weissnat and Lueilwitz
+Company Slogan: iterate efficient content
+Company ID: 123
+Company Name: Frami LLC
+Company Slogan: harness mission-critical networks
+Company ID: 124
+Company Name: Daniel-Marquardt
+Company Slogan: deploy collaborative e-tailers
+Company ID: 125
+Company Name: Mitchell, Harber and Rau
+Company Slogan: implement e-business technologies
+Company ID: 126
+Company Name: Schuster Inc
+Company Slogan: harness global e-commerce
+Company ID: 127
+Company Name: Swift, Kshlerin and Osinski
+Company Slogan: enable strategic e-commerce
+Company ID: 128
+Company Name: Franecki, Hamill and Leffler
+Company Slogan: empower compelling paradigms
+Company ID: 129
+Company Name: Glover-Langosh
+Company Slogan: iterate B2B web-readiness
+Company ID: 130
+Company Name: Corwin Inc
+Company Slogan: optimize B2B e-commerce
+Company ID: 131
+Company Name: Klein LLC
+Company Slogan: reintermediate leading-edge eyeballs
+Company ID: 132
+Company Name: Jerde LLC
+Company Slogan: synergize robust e-services
+Company ID: 133
+Company Name: Friesen, Baumbach and Murazik
+Company Slogan: leverage value-added initiatives
+Company ID: 134
+Company Name: Crona, Gislason and Bradtke
+Company Slogan: deliver ubiquitous infrastructures
+Company ID: 135
+Company Name: Wiegand, Mitchell and Schuppe
+Company Slogan: incubate user-centric communities
+Company ID: 136
+Company Name: Hintz, Cronin and McCullough
+Company Slogan: strategize user-centric functionalities
+Company ID: 137
+Company Name: Reichel LLC
+Company Slogan: optimize customized methodologies
+Company ID: 138
+Company Name: Wunsch, Keebler and Jacobs
+Company Slogan: exploit out-of-the-box mindshare
+Company ID: 139
+Company Name: Rowe LLC
+Company Slogan: engage transparent supply-chains
+Company ID: 140
+Company Name: Conn Group
+Company Slogan: leverage seamless partnerships
+Company ID: 141
+Company Name: Schinner, Parker and Lindgren
+Company Slogan: leverage enterprise interfaces
+Company ID: 142
+Company Name: Wunsch Inc
+Company Slogan: transform world-class vortals
+Company ID: 143
+Company Name: Brown, Strosin and Hodkiewicz
+Company Slogan: redefine out-of-the-box web-readiness
+Company ID: 144
+Company Name: Batz-Hessel
+Company Slogan: drive customized content
+Company ID: 145
+Company Name: Murazik and Sons
+Company Slogan: recontextualize world-class initiatives
+Company ID: 146
+Company Name: Donnelly and Sons
+Company Slogan: reinvent sexy vortals
+Company ID: 147
+Company Name: Halvorson LLC
+Company Slogan: integrate B2B e-services
+Company ID: 148
+Company Name: Schaefer, Abshire and Beahan
+Company Slogan: utilize enterprise vortals
+Company ID: 149
+Company Name: Zemlak-Berge
+Company Slogan: synergize killer users
+Company ID: 150
+Company Name: Donnelly Group
+Company Slogan: facilitate 24/7 paradigms
+Company ID: 151
+Company Name: McGlynn Inc
+Company Slogan: implement scalable vortals
+Company ID: 152
+Company Name: Will-Kuvalis
+Company Slogan: iterate granular functionalities
+Company ID: 153
+Company Name: Stehr Inc
+Company Slogan: recontextualize strategic e-tailers
+Company ID: 154
+Company Name: Jacobson-Pfannerstill
+Company Slogan: revolutionize magnetic infrastructures
+Company ID: 155
+Company Name: Berge LLC
+Company Slogan: evolve user-centric interfaces
+Company ID: 156
+Company Name: Rath, Frami and Kirlin
+Company Slogan: implement magnetic metrics
+Company ID: 157
+Company Name: Feeney LLC
+Company Slogan: cultivate cutting-edge vortals
+Company ID: 158
+Company Name: Hamill Inc
+Company Slogan: monetize distributed applications
+Company ID: 159
+Company Name: Bernier Group
+Company Slogan: strategize real-time applications
+Company ID: 160
+Company Name: Conroy, Vandervort and Gerhold
+Company Slogan: embrace vertical deliverables
+Company ID: 161
+Company Name: Dickinson and Sons
+Company Slogan: exploit enterprise users
+Company ID: 162
+Company Name: Huel Inc
+Company Slogan: enable mission-critical networks
+Company ID: 163
+Company Name: Hickle Inc
+Company Slogan: aggregate killer e-tailers
+Company ID: 164
+Company Name: Goldner, Paucek and Steuber
+Company Slogan: incentivize ubiquitous methodologies
+Company ID: 165
+Company Name: O'Keefe-Lind
+Company Slogan: repurpose user-centric interfaces
+Company ID: 166
+Company Name: Mertz LLC
+Company Slogan: monetize dot-com methodologies
+Company ID: 167
+Company Name: Dicki Inc
+Company Slogan: synthesize transparent paradigms
+Company ID: 168
+Company Name: Okuneva and Sons
+Company Slogan: aggregate next-generation convergence
+Company ID: 169
+Company Name: Sawayn Group
+Company Slogan: repurpose magnetic portals
+Company ID: 170
+Company Name: Boyer, Weissnat and Weimann
+Company Slogan: recontextualize cutting-edge synergies
+Company ID: 171
+Company Name: Gleason and Sons
+Company Slogan: expedite proactive web-readiness
+Company ID: 172
+Company Name: Mueller Group
+Company Slogan: synthesize next-generation methodologies
+Company ID: 173
+Company Name: Schneider Group
+Company Slogan: deploy value-added web services
+Company ID: 174
+Company Name: Zulauf, Mraz and Beer
+Company Slogan: reintermediate compelling initiatives
+Company ID: 175
+Company Name: Smith LLC
+Company Slogan: revolutionize collaborative mindshare
+Company ID: 176
+Company Name: Wiza and Sons
+Company Slogan: recontextualize integrated systems
+Company ID: 177
+Company Name: Champlin LLC
+Company Slogan: synthesize 24/365 deliverables
+Company ID: 178
+Company Name: Hoppe-Leffler
+Company Slogan: orchestrate dynamic e-tailers
+Company ID: 179
+Company Name: Strosin, Krajcik and Pollich
+Company Slogan: target impactful supply-chains
+Company ID: 180
+Company Name: Mills-Treutel
+Company Slogan: target impactful eyeballs
+Company ID: 181
+Company Name: Stracke Group
+Company Slogan: embrace distributed vortals
+Company ID: 182
+Company Name: Beatty, Bartoletti and Quigley
+Company Slogan: scale cutting-edge users
+Company ID: 183
+Company Name: Hilll, Lind and Pollich
+Company Slogan: cultivate interactive action-items
+Company ID: 184
+Company Name: Klein, Keeling and Walter
+Company Slogan: streamline bleeding-edge markets
+Company ID: 185
+Company Name: Stanton LLC
+Company Slogan: innovate vertical e-tailers
+Company ID: 186
+Company Name: Toy, Moen and Rippin
+Company Slogan: whiteboard ubiquitous metrics
+Company ID: 187
+Company Name: Koch, O'Conner and Crooks
+Company Slogan: syndicate killer schemas
+Company ID: 188
+Company Name: Kutch-Stamm
+Company Slogan: deliver efficient networks
+Company ID: 189
+Company Name: Tromp, Kessler and Hills
+Company Slogan: revolutionize 24/7 e-tailers
+Company ID: 190
+Company Name: Auer-Trantow
+Company Slogan: reinvent out-of-the-box methodologies
+Company ID: 191
+Company Name: Bauch-Lang
+Company Slogan: monetize 24/365 architectures
+Company ID: 192
+Company Name: Heaney, Daugherty and Upton
+Company Slogan: enhance cross-media portals
+Company ID: 193
+Company Name: Ledner-Bednar
+Company Slogan: monetize robust web-readiness
+Company ID: 194
+Company Name: Armstrong-Kulas
+Company Slogan: strategize user-centric supply-chains
+Company ID: 195
+Company Name: Herman Group
+Company Slogan: morph virtual architectures
+Company ID: 196
+Company Name: Bogan-Kohler
+Company Slogan: empower enterprise portals
+Company ID: 197
+Company Name: Pfeffer, Lindgren and Kreiger
+Company Slogan: drive plug-and-play content
+Company ID: 198
+Company Name: Champlin-Erdman
+Company Slogan: e-enable impactful web-readiness
+Company ID: 199
+Company Name: Kuvalis, Mueller and Dietrich
+Company Slogan: transform sticky experiences
+Company ID: 200
+Company Name: Beahan, Goyette and Lowe
+Company Slogan: orchestrate back-end functionalities
+Employee data written to buffer : 0
+Company data written to buffer : 131072
+Sorted everything
+Sorted Result stored in the file
+Join Result stored in the file
