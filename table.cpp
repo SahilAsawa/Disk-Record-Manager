@@ -74,8 +74,6 @@ int main()
             employees.emplace_back(employee);
         }
 
-        // std::sort(std::begin(employees), std::end(employees));
-
         std::ofstream file{"./bin/employee.bin", std::ios::binary};
 
         for (const auto &employee : employees)
@@ -104,14 +102,11 @@ int main()
             companys.emplace_back(company);
         }
 
-        // std::sort(std::begin(companys), std::end(companys));
-
         file.open("./bin/company.bin", std::ios::binary);
 
         for (const auto &company : companys)
         {
-            file.write(reinterpret_cast<const char *>(&company),
-                       sizeof(Company));
+            file.write(reinterpret_cast<const char *>(&company), sizeof(Company));
         }
 
         file.close();
