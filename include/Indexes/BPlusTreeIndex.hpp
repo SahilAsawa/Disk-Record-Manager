@@ -10,14 +10,12 @@
     #include <Utils.hpp>
     #include <Storage/BufferManager.hpp>
 
-
-using KeyType = std::string;
-using ValueType = std::string;
-
+using KeyType = int;
+using ValueType = int;
 
 class BPlusTreeIndex
 {
-    public:
+    private:
 
     enum class NodeType
     {
@@ -55,14 +53,6 @@ class BPlusTreeIndex
         {
             return type == NodeType::LEAF;
         }
-
-        //
-        BPlusTreeNode ( int order )
-        {
-            keys.reserve( order );
-            children.reserve( order + 1 );
-            values.reserve( order );
-        }
     };
 
     //
@@ -71,7 +61,7 @@ class BPlusTreeIndex
     //
     const unsigned int order;
 
-    //
+    // id's assigned till now
     node_id_t last_id;
 
     //
@@ -84,7 +74,7 @@ class BPlusTreeIndex
     
     //
     BPlusTreeIndex ( BufferManager *_bm, int _order = 4 )
-        : root_id ( 0 ), order ( std::max( 3, _order )), last_id ( 0 ),  buffer_manager ( _bm )
+        : root_id ( -1 ), order ( std::max( 3, _order )), last_id ( 0 ),  buffer_manager ( _bm )
     {
     }
 
@@ -118,7 +108,7 @@ class BPlusTreeIndex
 	 */
     friend std::ostream &operator<< ( std::ostream &os, const BPlusTreeIndex &tree );
 
-    public:
+    private:
 
     //
     auto nodeSize () -> size_t
