@@ -1,12 +1,14 @@
 #include "Storage/BufferManager.hpp"
-#include <iostream>
-#include <vector>
-#include <optional>
 #include <Indexes/BPlusTreeIndex.hpp>
 #include <Storage/Disk.hpp>
+#include <Indexes/HashIndex.hpp>
+#include <iostream>
+#include <vector>
+#include <set>
+#include <optional>
 
-using KeyType = std::string;
-using ValueType = std::string;
+// using KeyType = std::string;
+// using ValueType = std::string;
 
 Disk disk( SEQUENTIAL, 512, 1024 );
 BufferManager bm( &disk, LRU, 1024 );
@@ -223,8 +225,102 @@ BufferManager bm( &disk, LRU, 1024 );
 
 // }
 
+
+void ExtendableHashIndex::display()
+{
+    int size=0;
+    std::string s;
+    std::set<std::string> shown;
+    std::cout << "Global Depth: " << globalDepth << std::endl;
+
+    for(size_t i=0;i<directory.size();i++)
+    {
+        s=bucket_id(i);
+        if(shown.find(s)==shown.end())
+        {
+            shown.insert(s);
+            if(directory[i]->isEmpty()==0)size++;
+        }
+    }
+
+    std::cout << "Directory Size: " << size << std::endl;
+    shown.clear();
+    std::vector<Bucket*> tempo=directory;
+    for(size_t i=0;i<directory.size();i++)
+    {
+        s=bucket_id(i);
+        if(shown.find(s)==shown.end())
+        {
+            shown.insert(s);
+            if(tempo[i]->isEmpty()==0)
+            {
+                tempo[i]->display();
+            }
+        }
+    }
+
+
+
+}
+
+// using namespace std;
+
+void testInsertSearch(ExtendableHashIndex &index)
+{
+    std::cout << "\n=== Insert & Search Test ===\n";
+    index.insert(1, 100);
+    index.insert(5, 500);
+    index.insert(9, 900);
+    index.display(); // View current directory
+
+    auto res1 = index.search(5);
+    std::cout << "Search key 5: " << (res1.has_value() ? std::to_string(res1.value()) : "Not Found") << std::endl;
+
+    auto res2 = index.search(99);
+    std::cout << "Search key 99: " << (res2.has_value() ? std::to_string(res2.value()) : "Not Found") << std::endl;
+}
+
+void testDelete(ExtendableHashIndex &index)
+{
+    std::cout << "\n=== Delete Test ===\n";
+    index.deleteKey(5);
+    index.display(); // View structure after deletion
+
+    auto res = index.search(5);
+    std::cout << "Search key 5 after delete: " << (res.has_value() ? std::to_string(res.value()) : "Not Found") << std::endl;
+}
+
+void testSplitAndMerge(ExtendableHashIndex &index)
+{
+    std::cout << "\n=== Split & Merge Test ===\n";
+
+    // Insert keys to cause splits
+    for (int i = 0; i < 20; ++i)
+    {
+        index.insert(i, i * 10);
+        std::cout << "\nInserted " << i << std::endl;
+        index.display();
+    }
+    // index.display(); // After multiple inserts
+
+    // Now delete keys to cause merges/shrink
+    for (int i = 0; i < 20; ++i)
+    {
+        index.deleteKey(i);
+    }
+    index.display(); // After deletes
+
+    std::cout << "Global Depth After Deletes: " << index.getGlobalDepth() << std::endl;
+}
+
 int main()
 {
+    ExtendableHashIndex index(0); // Start with global depth 2
+
+    // testInsertSearch(index);
+    // testDelete(index);
+    testSplitAndMerge(index);
+
     // BufferManagerTest();
     // god();
     // BPlusTreeTest();

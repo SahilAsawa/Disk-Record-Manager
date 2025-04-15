@@ -46,13 +46,13 @@ TEST = test
 TEST_SRC = $(TESTING_DIR)/test.cpp
 
 EMS = ems
-EMS_SRC = $(TESTING_DIR)/ExternalMergeSort.cpp
+EMS_SRC = $(TESTING_DIR)/externalMergeSort.cpp
 
 TABLE = table
 TABLE_SRC = $(TESTING_DIR)/table.cpp
 
 ISORT = isort
-ISORT_SRC = $(TESTING_DIR)/IndexSort.cpp
+ISORT_SRC = $(TESTING_DIR)/indexSort.cpp
 
 NEST = nest
 NEST_SRC = $(TESTING_DIR)/nestedLoopJoin.cpp
@@ -90,15 +90,15 @@ $(BUILD_DIR)/%.o: src/Utilities/%.cpp $(UTILS_HEADERS)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Create shared libraries
-$(STORAGE_LIB): $(DISK_OBJ) $(BUFFER_OBJ) $(UTIL_OBJ)
+$(STORAGE_LIB): $(DISK_OBJ) $(BUFFER_OBJ)
 	@mkdir -p $(LIB_DIR)
 	$(CXX) -shared -o $@ $^
 
-$(UTILS_LIB): $(UTILS_OBJ) $(BUFFER_OBJ) $(DISK_OBJ)
+$(UTILS_LIB): $(UTILS_OBJ)
 	@mkdir -p $(LIB_DIR)
 	$(CXX) -shared -o $@ $^
 
-$(INDEX_LIB): $(BPT_OBJ) $(BUFFER_OBJ) $(DISK_OBJ) $(UTILS_OBJ)
+$(INDEX_LIB): $(BPT_OBJ) $(HASH_OBJ)
 	@mkdir -p $(LIB_DIR)
 	$(CXX) -shared -o $@ $^
 
