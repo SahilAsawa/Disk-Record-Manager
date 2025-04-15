@@ -54,7 +54,7 @@ class Disk
     public:
 
     // Constructor
-    Disk ( bool _accessType = SEQUENTIAL, size_t _blockSize = 4096, size_t _blockCount = 1024, std::string _diskFile = "disk.dat" );
+    Disk ( bool _accessType, size_t _blockSize = (4 KB), unsigned long long _diskSize = (4 GB), std::string _diskFile = "disk.dat" );
 
     // Destructor
     ~Disk ();

@@ -88,7 +88,7 @@ class BufferManager
     public:
 
     // Constructor
-    BufferManager (  Disk *_disk, int _replaceStrategy = LRU, unsigned int _numFrames = 1024);
+    BufferManager (  Disk *_disk, int _replaceStrategy = LRU, unsigned long long _bufferSize = (4 MB) );
 
     // Destructor
     ~BufferManager ();

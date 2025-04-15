@@ -1,9 +1,11 @@
 #include <Storage/Disk.hpp>
 
-Disk::Disk ( bool _accessType, size_t _blockSize, size_t _blockCount, std::string _diskFile )
-        : accessType( _accessType), blockSize( _blockSize ), blockCount( _blockCount ), diskFile( _diskFile ), 
+Disk::Disk ( bool _accessType, size_t _blockSize, unsigned long long _diskSize, std::string _diskFile )
+        : accessType( _accessType), blockSize( _blockSize ), diskFile( _diskFile ), 
             numIO( 0 ), costIO( 0 )
 {
+    blockCount = _diskSize / blockSize;
+
     diskFileStream.open( diskFile, std::ios::in | std::ios::out | std::ios::binary );
     if (!diskFileStream.is_open())
     {

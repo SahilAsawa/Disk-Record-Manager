@@ -1,14 +1,13 @@
 #include <Utilities/Utils.hpp>
 #include <Storage/BufferManager.hpp>
 
-BufferManager::BufferManager ( Disk *_disk, int _replaceStrategy, unsigned int _numFrames )
+BufferManager::BufferManager ( Disk *_disk, int _replaceStrategy, unsigned long long _bufferSize )
     : disk( _disk ),
       replaceStrategy( _replaceStrategy ),
-      numFrames( _numFrames ),
-      bufferData( _numFrames,
+      bufferData( _bufferSize / disk->blockSize,
       std::vector< std::byte >( disk->blockSize ) ),
-      pinCount( _numFrames, 0 ),
-      isDirty( _numFrames, false )
+      pinCount( _bufferSize / disk->blockSize, 0 ),
+      isDirty( _bufferSize / disk->blockSize, false )
 {
     for ( frame_id_t i = 0; i < numFrames; ++i )
     {

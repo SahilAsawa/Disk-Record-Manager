@@ -9,7 +9,6 @@
 #include <vector>
 #include <string>
 #include <sstream>
-#include <iomanip>
 
 using frame_id_t = unsigned long long;
 using page_id_t = unsigned long long;
@@ -17,6 +16,10 @@ using block_id_t = unsigned long long;
 using address_id_t = unsigned long long;
 using node_id_t = long long;
 using bucket_id_t = unsigned long long;
+
+#define GB * 1024ll * 1024 * 1024
+#define MB * 1024ll * 1024
+#define KB * 1024ll
 
 const std::string BIN_DIR = "./bin/";
 const std::string CSV_DIR = "./files/";
