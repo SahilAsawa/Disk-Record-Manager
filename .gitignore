@@ -7,6 +7,6 @@ lib/
 *.exe
 *.cache
 *.bin
-test
+test ems isort nest table hjoin
 compile_commands.json
 .DS_Store

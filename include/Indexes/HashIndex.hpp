@@ -21,19 +21,19 @@ class Bucket
 {
     private:
 
-    //
+    // Denotes the maximum number of elements in a bucket
     size_t bucketSize;
 
-    //
+    // Denotes the local depth of the bucket
     int localDepth;
 
-    //
+    // Denotes the number of elements in the bucket
     int listSize;
 
-    //
+    // Denotes the ID of the bucket
     bucket_id_t bucket_id;
 
-    //
+    // Denotes the list of key-value pairs in the bucket
     std::list<std::pair<KeyType, ValueType>> bucketList;
     
     public:
@@ -48,7 +48,7 @@ class Bucket
     }
 
     
-
+    // overloaded assignment operator
     Bucket& operator= ( const Bucket& other )
     {
         if( this != &other )
@@ -62,6 +62,7 @@ class Bucket
         return *this;
     }
 
+    // overloaded copy constructor
     Bucket ( const Bucket& other )
     {
         this->bucketSize = other.bucketSize;
@@ -158,25 +159,25 @@ class Bucket
 
 class ExtendableHashIndex
 {
-    //
+    // Denotes the ID of the bucket
     size_t globalDepth;
 
     // Denotes the maximum number of elements in a bucket
     const unsigned int order;
 
-    //
+    // Denotes the maximum number of elements in a bucket
     std::vector<bucket_id_t> directory;
 
-    //
+    // Denotes the maximum number of elements in a bucket
     std::vector<bucket_id_t> free_ids;
 
-    //
+    // Denotes the maximum number of elements in a bucket
     address_id_t base_address;
 
-    //
+    // Denotes the maximum number of elements in a bucket
     bucket_id_t lastIDUsed;
 
-    //
+    // Denotes the maximum number of elements in a bucket
     BufferManager* buffer_manager;
 
 
@@ -242,10 +243,8 @@ class ExtendableHashIndex
         address_id_t end_address = base_address + b.getMaxSize();
         return std::make_pair( base_address, end_address );
     }
-
     
     private:
-
 
     /**
      * @brief Returns a 0-1 string representing the bucket according to current local depth of the bucket

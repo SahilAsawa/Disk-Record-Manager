@@ -131,7 +131,6 @@ auto getNextFreeFrame(int readBytes, block_id_t BLOCK_SIZE = (4 KB)) -> int;
 template <typename T>
 T extractData(const std::vector<std::byte> &data);
 
-
 auto loadData(block_id_t BLOCK_SIZE = (4 KB), storage_t DISK_SIZE = (4 GB), storage_t BUFFER_SIZE = (64 KB)) -> std::tuple<address_id_t, address_id_t, address_id_t, address_id_t>;
 
 template <typename T>

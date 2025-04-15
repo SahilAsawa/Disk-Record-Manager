@@ -7,14 +7,15 @@
 #include <vector>
 #include <optional>
 
-const int blockSize = 4096;
-const int frameCount = 1024;
+const storage_t blockSize = (4 KB);
+const storage_t bufferSize = (4 MB);
+const storage_t diskSize = (4 GB);
 const int replaceStrategy = LRU;
 const int accessType = RANDOM;
 
 int main() {
-    Disk disk ( accessType, blockSize, 1024 );
-    BufferManager bm ( &disk, replaceStrategy, frameCount );
+    Disk disk ( accessType, blockSize, diskSize );
+    BufferManager bm ( &disk, replaceStrategy, bufferSize );
 
     auto p = loadFileInDisk( bm, BIN_DIR + "employee.bin", 0);
     if ( !p.has_value() )
@@ -55,7 +56,7 @@ int main() {
     std::cout << "Statistics of the creation of Hash Indices (Before Join)" << std::endl;
     std::cout << "\t\tDisk IO operations: " << bm.getNumIO() << std::endl;
     std::cout << "\t\tDisk IO cost: " << bm.getCostIO() << std::endl;
-    std::cout << "\t\t(FrameSize: " << blockSize << ", FrameCount: " << frameCount << ")" << std::endl;
+    std::cout << "\t\t(FrameSize: " << blockSize << ", FrameCount: " << bm.getNumFrames() << ")" << std::endl;
     std::cout << "\t\t(ReplacementStrategy: " << (replaceStrategy == LRU ? "LRU" : "MRU") << ", DiskAccessStrategy: " << (accessType == RANDOM ? "RANDOM" : "SEQUENTIAL") << ")" << std::endl;
 
     address_id_t joinAddress = compEndIndex;
@@ -81,7 +82,7 @@ int main() {
     std::cout << "Statistics of the creation of Hash Indices (Before Join)" << std::endl;
     std::cout << "\t\tDisk IO operations: " << bm.getNumIO() << std::endl;
     std::cout << "\t\tDisk IO cost: " << bm.getCostIO() << std::endl;
-    std::cout << "\t\t(FrameSize: " << blockSize << ", FrameCount: " << frameCount << ")" << std::endl;
+    std::cout << "\t\t(FrameSize: " << blockSize << ", FrameCount: " << bm.getNumFrames() << ")" << std::endl;
     std::cout << "\t\t(ReplacementStrategy: " << (replaceStrategy == LRU ? "LRU" : "MRU") << ", DiskAccessStrategy: " << (accessType == RANDOM ? "RANDOM" : "SEQUENTIAL") << ")" << std::endl;
 
     return 0;

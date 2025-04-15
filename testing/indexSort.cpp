@@ -20,10 +20,10 @@ std::string to_string(const std::array<char, 58>& arr)
     return std::string(arr.data(), arr.size());
 }
 
-int help(int blockSize, int frameCount, int replaceStrategy, int accessType)
+int help(storage_t blockSize, storage_t diskSize, storage_t bufferSize, int replaceStrategy, int accessType)
 {
-    Disk disk(accessType, blockSize, 1024);
-    BufferManager bm(&disk, replaceStrategy, frameCount);
+    Disk disk(accessType, blockSize, diskSize);
+    BufferManager bm(&disk, replaceStrategy, bufferSize);
 
     auto p = loadFileInDisk( bm, BIN_DIR + "employee.bin", 0);
     if ( !p.has_value() )
@@ -63,7 +63,7 @@ int help(int blockSize, int frameCount, int replaceStrategy, int accessType)
     std::cout << "Statistics of the creation of Index (Before Join)" << std::endl;
     std::cout << "\t\tDisk IO operations: " << bm.getNumIO() << std::endl;
     std::cout << "\t\tDisk IO cost: " << bm.getCostIO() << std::endl;
-    std::cout << "\t\t(FrameSize: " << blockSize << ", FrameCount: " << frameCount << ")" << std::endl;
+    std::cout << "\t\t(FrameSize: " << blockSize << ", FrameCount: " << bm.getNumFrames() << ")" << std::endl;
     std::cout << "\t\t(ReplacementStrategy: " << (replaceStrategy == LRU ? "LRU" : "MRU") << ", DiskAccessStrategy: " << (accessType == RANDOM ? "RANDOM" : "SEQUENTIAL") << ")" << std::endl;
 
     auto empBegin = emp_index.begin();
@@ -94,7 +94,7 @@ int help(int blockSize, int frameCount, int replaceStrategy, int accessType)
     std::cout << "\nStatistics of the Join using Index operation" << std::endl;
     std::cout << "\t\tDisk IO operations: " << bm.getNumIO() << std::endl;
     std::cout << "\t\tDisk IO cost: " << bm.getCostIO() << std::endl;
-    std::cout << "\t\t(FrameSize: " << blockSize << ", FrameCount: " << frameCount << ")" << std::endl;
+    std::cout << "\t\t(FrameSize: " << blockSize << ", FrameCount: " << bm.getNumFrames() << ")" << std::endl;
     std::cout << "\t\t(ReplacementStrategy: " << (replaceStrategy == LRU ? "LRU" : "MRU") << ", DiskAccessStrategy: " << (accessType == RANDOM ? "RANDOM" : "SEQUENTIAL") << ")" << std::endl;
 
     return 0;
@@ -102,9 +102,9 @@ int help(int blockSize, int frameCount, int replaceStrategy, int accessType)
 
 int main()
 {
-    help( 4096, 1024, LRU, RANDOM );
-    help( 4096, 5, LRU, RANDOM );
-    help( 4096, 1024, MRU, RANDOM );
-    help( 4096, 5, MRU, RANDOM );
+    help((4 KB), (4 GB), (64 KB), LRU, RANDOM);
+    help((4 KB), (4 GB), (64 KB), LRU, SEQUENTIAL);
+    help((4 KB), (4 GB), (64 KB), MRU, RANDOM);
+    help((4 KB), (4 GB), (64 KB), MRU, SEQUENTIAL);
     return 0;
 }
