@@ -61,20 +61,20 @@ $(TEST): $(TEST_SRC) $(STORAGE_LIB) $(INDEX_LIB) $(UTILS_LIB)
 	$(CXX) $(CXXFLAGS) -o $@ $(TEST_SRC) -L$(LIB_DIR) -lstorage -lindexes -lutils
 
 # Compile External Merge Sort
-$(EMS): $(EMS_SRC) $(STORAGE_LIB) $(INDEX_LIB) $(UTILS_LIB)
-	$(CXX) $(CXXFLAGS) -o $@ $(EMS_SRC) -L$(LIB_DIR) -lstorage -lindexes -lutils
+$(EMS): $(EMS_SRC) $(STORAGE_LIB) $(UTILS_LIB)
+	$(CXX) $(CXXFLAGS) -o $@ $(EMS_SRC) -L$(LIB_DIR) -lstorage -lutils
 
 # Compile Table
-$(TABLE): $(TABLE_SRC) $(STORAGE_LIB) $(INDEX_LIB) $(UTILS_LIB)
-	$(CXX) $(CXXFLAGS) -o $@ $(TABLE_SRC) -L$(LIB_DIR) -lstorage -lindexes -lutils
+$(TABLE): $(TABLE_SRC) $(UTILS_LIB)
+	$(CXX) $(CXXFLAGS) -o $@ $(TABLE_SRC) -L$(LIB_DIR) -lutils
 
 # Compile index sort
 $(ISORT): $(ISORT_SRC) $(STORAGE_LIB) $(INDEX_LIB) $(UTILS_LIB)
 	$(CXX) $(CXXFLAGS) -o $@ $(ISORT_SRC) -L$(LIB_DIR) -lstorage -lindexes -lutils
 
 # Compile nested loop join
-$(NEST): $(NEST_SRC) $(STORAGE_LIB) $(INDEX_LIB) $(UTILS_LIB)
-	$(CXX) $(CXXFLAGS) -o $@ $(NEST_SRC) -L$(LIB_DIR) -lstorage -lindexes -lutils
+$(NEST): $(NEST_SRC) $(STORAGE_LIB) $(UTILS_LIB)
+	$(CXX) $(CXXFLAGS) -o $@ $(NEST_SRC) -L$(LIB_DIR) -lstorage -lutils
 
 # Build object files
 $(BUILD_DIR)/%.o: src/Storage/%.cpp $(STORAGE_HEADERS)

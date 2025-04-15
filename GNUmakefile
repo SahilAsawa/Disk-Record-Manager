@@ -35,6 +35,10 @@ ifeq ($(UNAME), Linux)
 	STORAGE_LIB = $(LIB_DIR)/libstorage.so
 	INDEX_LIB = $(LIB_DIR)/libindexes.so
 	UTILS_LIB = $(LIB_DIR)/libutils.so
+else ifeq ($(UNAME), Darwin)
+	STORAGE_LIB = $(LIB_DIR)/libstorage.dylib
+	INDEX_LIB = $(LIB_DIR)/libindexes.dylib
+	UTILS_LIB = $(LIB_DIR)/libutils.dylib
 else
 	STORAGE_LIB = $(LIB_DIR)/libstorage.dll
 	INDEX_LIB = $(LIB_DIR)/libindexes.dll
@@ -64,17 +68,17 @@ all: $(TEST) $(EMS) $(TABLE) $(ISORT) $(NEST)
 $(TEST): $(TEST_SRC) $(STORAGE_LIB) $(INDEX_LIB) $(UTILS_LIB)
 	$(CXX) $(CXXFLAGS) -o $@ $(TEST_SRC) -L$(LIB_DIR) -Wl,-rpath,$(LIB_DIR) -lstorage -lindexes -lutils
 
-$(EMS): $(EMS_SRC) $(STORAGE_LIB) $(INDEX_LIB) $(UTILS_LIB)
-	$(CXX) $(CXXFLAGS) -o $@ $(EMS_SRC) -L$(LIB_DIR) -Wl,-rpath,$(LIB_DIR) -lstorage -lindexes -lutils
+$(EMS): $(EMS_SRC) $(STORAGE_LIB) $(UTILS_LIB)
+	$(CXX) $(CXXFLAGS) -o $@ $(EMS_SRC) -L$(LIB_DIR) -Wl,-rpath,$(LIB_DIR) -lstorage -lutils
 
-$(TABLE): $(TABLE_SRC) $(STORAGE_LIB) $(INDEX_LIB) $(UTILS_LIB)
-	$(CXX) $(CXXFLAGS) -o $@ $(TABLE_SRC) -L$(LIB_DIR) -Wl,-rpath,$(LIB_DIR) -lstorage -lindexes -lutils
+$(TABLE): $(TABLE_SRC) $(UTILS_LIB)
+	$(CXX) $(CXXFLAGS) -o $@ $(TABLE_SRC) -L$(LIB_DIR) -Wl,-rpath,$(LIB_DIR) -lutils
 
 $(ISORT): $(ISORT_SRC) $(STORAGE_LIB) $(INDEX_LIB) $(UTILS_LIB)
 	$(CXX) $(CXXFLAGS) -o $@ $(ISORT_SRC) -L$(LIB_DIR) -Wl,-rpath,$(LIB_DIR) -lstorage -lindexes -lutils
 
-$(NEST): $(NEST_SRC) $(STORAGE_LIB) $(INDEX_LIB) $(UTILS_LIB)
-	$(CXX) $(CXXFLAGS) -o $@ $(NEST_SRC) -L$(LIB_DIR) -Wl,-rpath,$(LIB_DIR) -lstorage -lindexes -lutils
+$(NEST): $(NEST_SRC) $(STORAGE_LIB) $(UTILS_LIB)
+	$(CXX) $(CXXFLAGS) -o $@ $(NEST_SRC) -L$(LIB_DIR) -Wl,-rpath,$(LIB_DIR) -lstorage -lutils
 
 # Build object files
 $(BUILD_DIR)/%.o: src/Storage/%.cpp $(STORAGE_HEADERS)
