@@ -13,6 +13,7 @@ STATS_DIR = Stats
 BUFFER_SRC = src/Storage/BufferManager.cpp
 DISK_SRC = src/Storage/Disk.cpp
 BPT_SRC = src/Indexes/BPlusTreeIndex.cpp
+HASH_SRC = src/Indexes/HashIndex.cpp
 UTIL_SRC = src/Utilities/Utils.cpp
 
 # Header include paths (already covered by -Iinclude)
@@ -24,6 +25,7 @@ UTILS_HEADERS = include/Utilities/Utils.hpp
 BUFFER_OBJ = $(BUILD_DIR)/BufferManager.o
 DISK_OBJ = $(BUILD_DIR)/Disk.o
 BPT_OBJ = $(BUILD_DIR)/BPlusTreeIndex.o
+HASH_OBJ = $(BUILD_DIR)/HashIndex.o
 UTILS_OBJ = $(BUILD_DIR)/Utils.o
 
 # Static libraries
@@ -37,7 +39,7 @@ TEST_SRC = $(TESTING_DIR)/test.cpp
 
 # External Merge Sort
 EMS = ems
-EMS_SRC = $(TESTING_DIR)/ExternalMergeSort.cpp
+EMS_SRC = $(TESTING_DIR)/externalMergeSort.cpp
 
 # Table
 TABLE = table
@@ -45,7 +47,7 @@ TABLE_SRC = $(TESTING_DIR)/table.cpp
 
 # Index Sort
 ISORT = isort
-ISORT_SRC = $(TESTING_DIR)/IndexSort.cpp
+ISORT_SRC = $(TESTING_DIR)/indexSort.cpp
 
 # Nested join
 NEST = nest
@@ -92,7 +94,7 @@ $(STORAGE_LIB): $(DISK_OBJ) $(BUFFER_OBJ)
 	@mkdir -p $(LIB_DIR)
 	ar rcs $@ $^
 
-$(INDEX_LIB): $(BPT_OBJ)
+$(INDEX_LIB): $(BPT_OBJ) $(HASH_OBJ)
 	@mkdir -p $(LIB_DIR)
 	ar rcs $@ $^
 
