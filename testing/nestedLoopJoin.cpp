@@ -14,67 +14,9 @@
 #define EMPLOYEE 0
 #define COMPANY 1
 
-int BLOCK_SIZE = 4096;
-int BLOCK_COUNT_DISK = 1024 * 1024;
-int BLOCK_COUNT_BUFFER = 16;
-
-auto getNextFreeFrame(int readBytes) -> int
-{
-    int usedFrameCnt = (readBytes + BLOCK_SIZE - 1) / BLOCK_SIZE;
-    return usedFrameCnt * BLOCK_SIZE;
-}
-
-template <typename T>
-T extractData(const std::vector<std::byte> &data)
-{
-    T result;
-    std::memcpy(&result, data.data(), sizeof(T));
-    return result;
-}
-
-template <typename T>
-auto storeResult(BufferManager &buffer, int start, int end, std::string fileName) -> void
-{
-    T storeData;
-    auto size = storeData.size;
-    std::ofstream file(fileName);
-    if (!file.is_open())
-    {
-        std::cerr << "Error opening file" << '\n';
-        return;
-    }
-    for (int i = start; i < end; i += size)
-    {
-        auto data = buffer.readAddress(i, size);
-        storeData = extractData<T>(data);
-        file << storeData.toString() << std::endl;
-    }
-    file.close();
-    return;
-}
-
-auto loadData() -> std::tuple<address_id_t, address_id_t, address_id_t, address_id_t>
-{
-    Disk disk(RANDOM, BLOCK_SIZE, BLOCK_COUNT_DISK);
-    BufferManager buffer(&disk, MRU, BLOCK_COUNT_BUFFER);
-
-    auto locationEmployee = loadFileInDisk(buffer, BIN_DIR + "employee.bin", 0);
-    if (!locationEmployee.has_value())
-    {
-        std::cerr << "Error loading Employee data" << std::endl;
-        exit(1);
-    }
-    auto [StartAddressEmployee, EndAddressEmployee] = locationEmployee.value();
-
-    auto locationCompany = loadFileInDisk(buffer, BIN_DIR + "company.bin", EndAddressEmployee);
-    if (!locationCompany.has_value())
-    {
-        std::cerr << "Error loading Company data" << std::endl;
-        exit(1);
-    }
-    auto [StartAddressCompany, EndAddressCompany] = locationCompany.value();
-    return {StartAddressEmployee, EndAddressEmployee, StartAddressCompany, EndAddressCompany};
-}
+block_id_t BLOCK_SIZE = 4096;
+size_t BLOCK_COUNT_DISK = 1024 * 1024;
+size_t BLOCK_COUNT_BUFFER = 16;
 
 auto join(BufferManager &buffer, address_id_t StartAddressEmployee, address_id_t EndAddressEmployee, address_id_t StartAddressCompany, address_id_t EndAddressCompany, address_id_t NextUsableAddress, bool Outer) -> std::pair<address_id_t, address_id_t>
 {

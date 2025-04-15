@@ -14,12 +14,6 @@ block_id_t BLOCK_SIZE = 4096;
 size_t BLOCK_COUNT_DISK = 1024 * 1024;
 size_t BLOCK_COUNT_BUFFER = 16;
 
-auto getNextFreeFrame(int readBytes) -> int
-{
-    int usedFrameCnt = (readBytes + BLOCK_SIZE - 1) / BLOCK_SIZE;
-    return usedFrameCnt * BLOCK_SIZE;
-}
-
 template <typename T>
 auto mergeRuns(BufferManager &buffer, const std::vector<std::pair<address_id_t, address_id_t>> &Runs, address_id_t NextUsableAddress) -> std::pair<address_id_t, address_id_t>
 {
@@ -143,50 +137,6 @@ auto mergeJoin(BufferManager &buffer, address_id_t startEmployee, address_id_t e
         }
     }
     return std::make_pair(NextUsableAddress, baseAddress);
-}
-
-template <typename T>
-auto storeResult(BufferManager &buffer, address_id_t start, address_id_t end, std::string fileName) -> void
-{
-    T storeData;
-    auto size = T::size;
-    std::ofstream file(fileName);
-    if (!file.is_open())
-    {
-        std::cerr << "Error opening file" << '\n';
-        return;
-    }
-    for (address_id_t i = start; i < end; i += size)
-    {
-        auto data = buffer.readAddress(i, size);
-        storeData = extractData<T>(data);
-        file << storeData.toString() << std::endl;
-    }
-    file.close();
-    return;
-}
-
-auto loadData() -> std::tuple<address_id_t, address_id_t, address_id_t, address_id_t>
-{
-    Disk disk(RANDOM, BLOCK_SIZE, BLOCK_COUNT_DISK);
-    BufferManager buffer(&disk, MRU, BLOCK_COUNT_BUFFER);
-
-    auto locationEmployee = loadFileInDisk(buffer, BIN_DIR + "employee.bin", 0);
-    if (!locationEmployee.has_value())
-    {
-        std::cerr << "Error loading Employee data" << std::endl;
-        exit(1);
-    }
-    auto [StartAddressEmployee, EndAddressEmployee] = locationEmployee.value();
-
-    auto locationCompany = loadFileInDisk(buffer, BIN_DIR + "company.bin", EndAddressEmployee);
-    if (!locationCompany.has_value())
-    {
-        std::cerr << "Error loading Company data" << std::endl;
-        exit(1);
-    }
-    auto [StartAddressCompany, EndAddressCompany] = locationCompany.value();
-    return {StartAddressEmployee, EndAddressEmployee, StartAddressCompany, EndAddressCompany};
 }
 
 auto testing(bool DiskAccessStrategy, int BufferReplacementStategy) -> void

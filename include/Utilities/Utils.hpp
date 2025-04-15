@@ -115,13 +115,21 @@ struct JoinEmployeeCompany
     }
 };
 
+static constexpr auto EmployeeSize = sizeof(Employee);
+static constexpr auto CompanySize = sizeof(Company);
+static constexpr auto JoinedSize = sizeof(JoinEmployeeCompany);
+
 auto loadFileInDisk (BufferManager& buffer, std::string fileName, address_id_t startingAddress) -> std::optional<std::pair<address_id_t,address_id_t>>;
+
+auto getNextFreeFrame(int readBytes, block_id_t BLOCK_SIZE = 4096) -> int;
 
 template <typename T>
 T extractData(const std::vector<std::byte> &data);
 
-static constexpr auto EmployeeSize = sizeof(Employee);
-static constexpr auto CompanySize = sizeof(Company);
-static constexpr auto JoinedSize = sizeof(JoinEmployeeCompany);
+
+auto loadData(block_id_t BLOCK_SIZE = 4096, size_t BLOCK_COUNT_DISK = 1024 * 1024, size_t BLOCK_COUNT_BUFFER = 16) -> std::tuple<address_id_t, address_id_t, address_id_t, address_id_t>;
+
+template <typename T>
+auto storeResult(BufferManager &buffer, address_id_t start, address_id_t end, std::string fileName) -> void;
 
 #endif // _UTILS_HPP_

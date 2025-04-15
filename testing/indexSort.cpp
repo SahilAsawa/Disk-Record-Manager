@@ -20,27 +20,6 @@ std::string to_string(const std::array<char, 58>& arr)
     return std::string(arr.data(), arr.size());
 }
 
-template <typename T>
-auto storeResult(BufferManager &buffer, int start, int end, std::string fileName) -> void
-{
-    T sortedData;
-    auto size = sortedData.size;
-    std::ofstream file(fileName);
-    if (!file.is_open())
-    {
-        std::cerr << "Error opening file" << '\n';
-        return;
-    }
-    for (int i = start; i < end; i += size)
-    {
-        auto data = buffer.readAddress(i, size);
-        sortedData = extractData<T>(data);
-        file << sortedData.toString() << std::endl;
-    }
-    file.close();
-    return;
-}
-
 int help(int blockSize, int frameCount, int replaceStrategy, int accessType)
 {
     Disk disk(accessType, blockSize, 1024);
