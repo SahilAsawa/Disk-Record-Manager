@@ -1,17 +1,19 @@
 #include <Indexes/HashIndex.hpp>
+#include <set>
+#include <string>
 
-bool Bucket::isFull()
+auto Bucket::isFull ( ) -> bool
 {
     return bucketList.size() >= bucketSize;
 }
 
-bool Bucket::isEmpty()
+auto Bucket::isEmpty ( ) -> bool
 {
     return bucketList.empty();
 }
 
-bool Bucket::insert(KeyType key, ValueType value)
-{
+auto Bucket::insert ( KeyType key, ValueType value ) -> bool
+{ 
     for (auto &pair : bucketList)
     {
         if (pair.first == key)
@@ -28,7 +30,7 @@ bool Bucket::insert(KeyType key, ValueType value)
     return true;
 }
 
-std::optional<ValueType> Bucket::search(KeyType key)
+auto Bucket::search ( KeyType key ) -> std::optional< ValueType >
 {
     for (auto &pair : bucketList)
     {
@@ -38,7 +40,7 @@ std::optional<ValueType> Bucket::search(KeyType key)
     return std::nullopt;
 }
 
-bool Bucket::deleteKey(KeyType key)
+auto Bucket::deleteKey ( KeyType key ) -> bool
 {
     for (auto it = bucketList.begin(); it != bucketList.end(); ++it)
     {
@@ -52,44 +54,44 @@ bool Bucket::deleteKey(KeyType key)
     return false;
 }
 
-int Bucket::getLocalDepth()
+auto Bucket::getLocalDepth ( ) -> int
 {
     return localDepth;
 }
 
-int Bucket::increaseDepth()
+auto Bucket::increaseDepth ( ) -> int
 {
     return ++localDepth;
 }
 
-int Bucket::decreaseDepth()
+auto Bucket::decreaseDepth() -> int
 {
     return --localDepth;
 }
 
-std::list<std::pair<KeyType, ValueType>> Bucket::copy(void)
+auto Bucket::copy ( ) -> std::list<std::pair<KeyType, ValueType>>
 {
     return bucketList;
 }
 
-void Bucket::clear(void)
+auto Bucket::clear ( ) -> void
 {
     this->bucketList.clear();
 }
 
-void Bucket::display(void)
+auto Bucket::display ( ) -> void
 {
     for (auto &[k, v] : bucketList)
         std::cout << "(" << k << ", " << v << ") ";
     std::cout << std::endl;
 }
 
-size_t Bucket::getBucketSize()
+auto Bucket::getBucketSize ( ) -> size_t
 {
     return bucketSize;
 }
 
-auto Bucket::getActualSize() -> size_t
+auto Bucket::getActualSize ( ) -> size_t
 {
     int keySize = sizeof(KeyType),valueSize = sizeof(ValueType);
     return sizeof(bucketSize)+sizeof(localDepth)+sizeof(listSize)+sizeof(bucket_id)+bucketSize*(keySize+valueSize);
@@ -97,7 +99,7 @@ auto Bucket::getActualSize() -> size_t
 
 // ======================== ExtendableHashIndex ========================
 
-auto ExtendableHashIndex::createBucket() -> bucket_id_t
+auto ExtendableHashIndex::createBucket ( ) -> bucket_id_t
 {
     bucket_id_t id;
     if(free_ids.empty())
@@ -114,13 +116,14 @@ auto ExtendableHashIndex::createBucket() -> bucket_id_t
     return id;
 }
 
-auto ExtendableHashIndex::destroyBucket(bucket_id_t id) -> void
+auto ExtendableHashIndex::destroyBucket ( bucket_id_t id ) -> void
 {
     free_ids.push_back(id); // Add the bucket ID to the free list
     return;
 }
 
-Bucket* ExtendableHashIndex::loadBucket(bucket_id_t id){
+ auto ExtendableHashIndex::loadBucket ( bucket_id_t id ) -> Bucket*
+ {
     Bucket*bp=new Bucket;
     std::vector<std::byte>data=buffer_manager->readAddress(base_address+id*bp->getActualSize(),bp->getActualSize());
 
@@ -151,7 +154,7 @@ Bucket* ExtendableHashIndex::loadBucket(bucket_id_t id){
     return bp;
 }
 
-auto ExtendableHashIndex::saveBucket(bucket_id_t id, Bucket*bp) -> void
+auto ExtendableHashIndex::saveBucket ( bucket_id_t id, Bucket*bp ) -> void
 {
     std::vector<std::byte>data(bp->getActualSize(),std::byte(0));
     size_t curr=0;
@@ -177,12 +180,12 @@ auto ExtendableHashIndex::saveBucket(bucket_id_t id, Bucket*bp) -> void
     return;
 }
 
-int ExtendableHashIndex::getBucketNo(KeyType key)
+auto ExtendableHashIndex::getBucketNo ( KeyType key ) -> int
 {
     return key & ((1 << globalDepth) - 1);
 }
 
-bool ExtendableHashIndex::insert(KeyType key, ValueType value)
+auto ExtendableHashIndex::insert ( KeyType key, ValueType value ) -> bool
 {
     int index = getBucketNo(key);
 
@@ -197,29 +200,29 @@ bool ExtendableHashIndex::insert(KeyType key, ValueType value)
     return insert(key, value); // re-attempt after split
 }
 
-std::optional<ValueType> ExtendableHashIndex::search(KeyType key)
+auto ExtendableHashIndex::search ( KeyType key ) -> std::optional<ValueType>
 {
     Bucket*bptr=loadBucket(directory[getBucketNo(key)]);
     return bptr->search(key);
 }
 
-bool ExtendableHashIndex::deleteKey(KeyType key)
+auto ExtendableHashIndex::deleteKey ( KeyType key ) -> bool
 {
     Bucket*bptr=loadBucket(directory[getBucketNo(key)]);
     return bptr->deleteKey(key);
 }
 
-int ExtendableHashIndex::getGlobalDepth()
+auto ExtendableHashIndex::getGlobalDepth ( ) -> int
 {
     return globalDepth;
 }
 
-size_t ExtendableHashIndex::getDirectorySize()
+auto ExtendableHashIndex::getDirectorySize ( ) -> size_t
 {
     return directory.size();
 }
 
-void ExtendableHashIndex::splitBucket(int index)
+auto ExtendableHashIndex::splitBucket ( int index ) -> void
 {
     Bucket*bptr=loadBucket(directory[index]);
     int localDepth, buddy_index, index_diff, dir_size;
@@ -253,7 +256,7 @@ void ExtendableHashIndex::splitBucket(int index)
     }
 }
 
-void ExtendableHashIndex::grow()
+auto ExtendableHashIndex::grow ( ) -> void
 {
     for (int i = 0; i < (1LL << globalDepth); i++)
     {
@@ -263,7 +266,7 @@ void ExtendableHashIndex::grow()
     globalDepth++;
 }
 
-void ExtendableHashIndex::mergeBucket(int index)
+auto ExtendableHashIndex::mergeBucket ( int index ) -> void
 {
     int local_depth, dummy_index, index_diff, dir_size;
     Bucket*bptr=loadBucket(directory[index]);
@@ -277,7 +280,8 @@ void ExtendableHashIndex::mergeBucket(int index)
         dum_ptr->decreaseDepth();
         // delete (directory[index]);
         // directory[index] = nullptr;
-        delete(bptr)
+        destroyBucket(directory[index]);
+        delete(bptr);
         directory[index] = directory[dummy_index];
         for (int i = index + index_diff; i < dir_size; i += index_diff)
         {
@@ -290,27 +294,30 @@ void ExtendableHashIndex::mergeBucket(int index)
     }
 }
 
-void ExtendableHashIndex::shrink()
+auto ExtendableHashIndex::shrink ( ) -> void
 {
     for (size_t i = 0; i < directory.size(); i++)
     {
-        if (directory[i]->getLocalDepth() == (int)globalDepth)
+        Bucket*bptr=loadBucket(directory[i]);
+        if (bptr->getLocalDepth() == (int)globalDepth)
         {
             return; // Cannot shrink if any bucket has max depth
         }
     }
     globalDepth--;
     for (int i = 0; i < (1 << globalDepth); i++)
-    {
+    {   
+        destroyBucket(directory.back());
         directory.pop_back();
     }
 }
 
-std::string ExtendableHashIndex::bucket_id(int n)
+auto ExtendableHashIndex::bucket_id( int n ) -> std::string
 {
     int d;
     std::string s;
-    d = (directory[n])->getLocalDepth();
+    Bucket*bptr=loadBucket(directory[n]);
+    d = bptr->getLocalDepth();
     s = "";
     while (n > 0 && d > 0)
     {
@@ -326,7 +333,7 @@ std::string ExtendableHashIndex::bucket_id(int n)
     return s;
 }
 
-void ExtendableHashIndex::display()
+auto ExtendableHashIndex::display ( ) -> void
 {
     int size = 0;
     std::string s;
@@ -339,85 +346,26 @@ void ExtendableHashIndex::display()
         if (shown.find(s) == shown.end())
         {
             shown.insert(s);
-            if (directory[i]->isEmpty() == 0)
+            Bucket*bptr=loadBucket(directory[i]);
+            if (bptr->isEmpty() == 0)
                 size++;
         }
     }
 
     std::cout << "Directory Size: " << size << std::endl;
     shown.clear();
-    std::vector<Bucket *> tempo = directory;
+    std::vector<bucket_id_t> tempo = directory;
     for (size_t i = 0; i < directory.size(); i++)
     {
         s = bucket_id(i);
         if (shown.find(s) == shown.end())
         {
             shown.insert(s);
-            if (tempo[i]->isEmpty() == 0)
+            Bucket*bptr=loadBucket(tempo[i]);
+            if ((bptr->isEmpty()) == 0)
             {
-                tempo[i]->display();
+                bptr->display();
             }
         }
     }
-}
-
-// using namespace std;
-
-void testInsertSearch(ExtendableHashIndex &index)
-{
-    std::cout << "\n=== Insert & Search Test ===\n";
-    index.insert(1, 100);
-    index.insert(5, 500);
-    index.insert(9, 900);
-    index.display(); // View current directory
-
-    auto res1 = index.search(5);
-    std::cout << "Search key 5: " << (res1.has_value() ? std::to_string(res1.value()) : "Not Found") << std::endl;
-
-    auto res2 = index.search(99);
-    std::cout << "Search key 99: " << (res2.has_value() ? std::to_string(res2.value()) : "Not Found") << std::endl;
-}
-
-void testDelete(ExtendableHashIndex &index)
-{
-    std::cout << "\n=== Delete Test ===\n";
-    index.deleteKey(5);
-    index.display(); // View structure after deletion
-
-    auto res = index.search(5);
-    std::cout << "Search key 5 after delete: " << (res.has_value() ? std::to_string(res.value()) : "Not Found") << std::endl;
-}
-
-void testSplitAndMerge(ExtendableHashIndex &index)
-{
-    std::cout << "\n=== Split & Merge Test ===\n";
-
-    // Insert keys to cause splits
-    for (int i = 0; i < 20; ++i)
-    {
-        index.insert(i, i * 10);
-        std::cout << "\nInserted " << i << std::endl;
-        index.display();
-    }
-    // index.display(); // After multiple inserts
-
-    // Now delete keys to cause merges/shrink
-    for (int i = 0; i < 20; ++i)
-    {
-        index.deleteKey(i);
-    }
-    index.display(); // After deletes
-
-    std::cout << "Global Depth After Deletes: " << index.getGlobalDepth() << std::endl;
-}
-
-int main()
-{
-    ExtendableHashIndex index(0); // Start with global depth 2
-
-    // testInsertSearch(index);
-    // testDelete(index);
-    testSplitAndMerge(index);
-
-    return 0;
 }

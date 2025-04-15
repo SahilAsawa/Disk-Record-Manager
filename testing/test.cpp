@@ -3,7 +3,7 @@
 #include <Storage/Disk.hpp>
 #include <Indexes/HashIndex.hpp>
 #include <iostream>
-#include <vector>
+#include <vector> 
 #include <set>
 #include <optional>
 
@@ -226,44 +226,6 @@ BufferManager bm( &disk, LRU, 1024 );
 // }
 
 
-void ExtendableHashIndex::display()
-{
-    int size=0;
-    std::string s;
-    std::set<std::string> shown;
-    std::cout << "Global Depth: " << globalDepth << std::endl;
-
-    for(size_t i=0;i<directory.size();i++)
-    {
-        s=bucket_id(i);
-        if(shown.find(s)==shown.end())
-        {
-            shown.insert(s);
-            if(directory[i]->isEmpty()==0)size++;
-        }
-    }
-
-    std::cout << "Directory Size: " << size << std::endl;
-    shown.clear();
-    std::vector<Bucket*> tempo=directory;
-    for(size_t i=0;i<directory.size();i++)
-    {
-        s=bucket_id(i);
-        if(shown.find(s)==shown.end())
-        {
-            shown.insert(s);
-            if(tempo[i]->isEmpty()==0)
-            {
-                tempo[i]->display();
-            }
-        }
-    }
-
-
-
-}
-
-// using namespace std;
 
 void testInsertSearch(ExtendableHashIndex &index)
 {
