@@ -231,7 +231,11 @@ void testInsertSearch(ExtendableHashIndex &index)
 {
     std::cout << "\n=== Insert & Search Test ===\n";
     index.insert(1, 100);
+    index.display();
+
     index.insert(5, 500);
+    index.display();
+
     index.insert(9, 900);
     index.display(); // View current directory
 
@@ -277,11 +281,13 @@ void testSplitAndMerge(ExtendableHashIndex &index)
 
 int main()
 {
-    ExtendableHashIndex index(0); // Start with global depth 2
+    Disk disk( RANDOM, 4096, 1024 );
+    BufferManager bm( &disk, LRU, 1024 );
+    ExtendableHashIndex index(&bm); // Start with global depth 2
 
-    // testInsertSearch(index);
+    testInsertSearch(index);
     // testDelete(index);
-    testSplitAndMerge(index);
+    // testSplitAndMerge(index);
 
     // BufferManagerTest();
     // god();

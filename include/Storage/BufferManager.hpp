@@ -13,16 +13,15 @@
 
     #define LRU 0
     #define MRU 1
-    #define CLOCK 2
 
 class BufferManager 
 {
     private:
 
-    //
+    // Pointer to the disk object
     Disk *disk;
 
-    //
+    // Replacement strategy: LRU or MRU
     int replaceStrategy;
 
     // number of frames

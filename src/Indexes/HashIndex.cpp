@@ -86,15 +86,15 @@ auto Bucket::display ( ) -> void
     std::cout << std::endl;
 }
 
-auto Bucket::getBucketSize ( ) -> size_t
+auto Bucket::getMaxElementCount ( ) -> size_t
 {
     return bucketSize;
 }
 
-auto Bucket::getActualSize ( ) -> size_t
+auto Bucket::getMaxSize ( ) -> size_t
 {
-    int keySize = sizeof(KeyType),valueSize = sizeof(ValueType);
-    return sizeof(bucketSize)+sizeof(localDepth)+sizeof(listSize)+sizeof(bucket_id)+bucketSize*(keySize+valueSize);
+    int keySize = sizeof(KeyType), valueSize = sizeof(ValueType);
+    return sizeof(bucketSize) + sizeof(localDepth) + sizeof(listSize) + sizeof(bucket_id) + bucketSize * (keySize + valueSize);
 }
 
 // ======================== ExtendableHashIndex ========================
@@ -110,7 +110,7 @@ auto ExtendableHashIndex::createBucket ( ) -> bucket_id_t
         id = free_ids.back();
         free_ids.pop_back();
     }
-    Bucket *bucket = new Bucket(2, 0); // Create a new bucket with size 2 and local depth 0
+    Bucket *bucket = new Bucket(order, 0); // Create a new bucket with size 2 and local depth 0
     saveBucket(id, bucket); // Save the new bucket to the directory
     directory.push_back(id); // Add the bucket ID to the directory
     return id;
@@ -124,39 +124,50 @@ auto ExtendableHashIndex::destroyBucket ( bucket_id_t id ) -> void
 
  auto ExtendableHashIndex::loadBucket ( bucket_id_t id ) -> Bucket*
  {
-    Bucket*bp=new Bucket;
-    std::vector<std::byte>data=buffer_manager->readAddress(base_address+id*bp->getActualSize(),bp->getActualSize());
-
-    size_t curr=0;
-    bp->bucketSize=*reinterpret_cast<size_t*>(data.data());
-    curr+=sizeof(size_t);
-
-    bp->localDepth=*reinterpret_cast<int*>(data.data()+curr);
-    curr+=sizeof(int);
-
-    bp->listSize=*reinterpret_cast<int*>(data.data()+curr);
-    curr+=sizeof(int);
-
-    bp->bucket_id=*reinterpret_cast<bucket_id_t*>(data.data()+curr);
-    curr+=sizeof(bucket_id_t);
-
-    for(int i=0;i<bp->bucketSize;i++){
-        KeyType key=*reinterpret_cast<KeyType*>(data.data()+curr);
-        curr+=sizeof(KeyType);
-        ValueType value=*reinterpret_cast<ValueType*>(data.data()+curr);
-        curr+=sizeof(ValueType);
+    Bucket *bp = new Bucket;
     
-        if(i<bp->listSize){
+    // std::cout << "Trying to read from address: " << base_address + id*bp->getMaxSize() << " of size: " << bp->getMaxSize() << std::endl;
+    std::vector< std::byte > data = buffer_manager->readAddress(base_address + id*bp->getMaxSize(), bp->getMaxSize());
+    // std::cout << "Read data size: " << data.size() << std::endl;
+
+    size_t curr = 0;
+    bp->bucketSize = *reinterpret_cast<size_t*>(data.data());
+    curr += sizeof(size_t);
+    // std::cout << "Bucket size: " << bp->bucketSize << std::endl;
+
+    bp->localDepth = *reinterpret_cast<int*>(data.data()+curr);
+    curr += sizeof(int);
+    // std::cout << "Local depth: " << bp->localDepth << std::endl;
+
+    bp->listSize = *reinterpret_cast<int*>(data.data()+curr);
+    curr += sizeof(int);
+    // std::cout << "List size: " << bp->listSize << std::endl;
+
+    bp->bucket_id = *reinterpret_cast<bucket_id_t*>(data.data()+curr);
+    curr += sizeof(bucket_id_t);
+    // std::cout << "Bucket ID: " << bp->bucket_id << std::endl;
+
+    for ( size_t i=0; i<bp->bucketSize; i++)
+    {
+        KeyType key = *reinterpret_cast<KeyType*>(data.data()+curr);
+        curr += sizeof(KeyType);
+        ValueType value = *reinterpret_cast<ValueType*>(data.data()+curr);
+        curr += sizeof(ValueType);
+        // std::cout << "Element " << i << ": (" << key << ", " << value << ")" << std::endl;
+    
+        if ( i < bp->listSize )
+        {
             bp->bucketList.push_back(std::make_pair(key,value));
         }
     }
+    // std::cout << "Loaded bucket: " << id << std::endl;
 
     return bp;
 }
 
 auto ExtendableHashIndex::saveBucket ( bucket_id_t id, Bucket*bp ) -> void
 {
-    std::vector<std::byte>data(bp->getActualSize(),std::byte(0));
+    std::vector<std::byte>data(bp->getMaxSize(),std::byte(0));
     size_t curr=0;
     std::copy(reinterpret_cast<std::byte*>(&bp->bucketSize),reinterpret_cast<std::byte*>(&bp->bucketSize)+sizeof(size_t),data.data()+curr);
     curr+=sizeof(size_t);
@@ -176,26 +187,27 @@ auto ExtendableHashIndex::saveBucket ( bucket_id_t id, Bucket*bp ) -> void
         std::copy(reinterpret_cast<std::byte*>(&pair.second),reinterpret_cast<std::byte*>(&pair.second)+sizeof(ValueType),data.data()+curr);
         curr+=sizeof(ValueType);
     }
-    buffer_manager->writeAddress(base_address+id*bp->getActualSize(),data);
+    buffer_manager->writeAddress(base_address+id*bp->getMaxSize(),data);
     return;
 }
 
 auto ExtendableHashIndex::getBucketNo ( KeyType key ) -> int
 {
-    return key & ((1 << globalDepth) - 1);
+    return key & ((1ll << globalDepth) - 1);
 }
 
 auto ExtendableHashIndex::insert ( KeyType key, ValueType value ) -> bool
 {
     int index = getBucketNo(key);
 
-    Bucket*bptr=loadBucket(directory[index]);
+    Bucket *bptr = loadBucket(directory[index]);
+    bptr->display();
 
     if (bptr->insert(key, value)){
         saveBucket(directory[index],bptr);
         return true;
     }
-    // std::cout<<"Bucket is full, need to split\n";
+    std::cout<<"Bucket is full, need to split"<<std::endl;
     splitBucket(index);
     return insert(key, value); // re-attempt after split
 }
@@ -236,9 +248,9 @@ auto ExtendableHashIndex::splitBucket ( int index ) -> void
     // std::cout<<"Split bucket: "<<index<<", new buddy index: "<<buddy_index<<", Local depth="<<localDepth<<std::endl;
     directory[buddy_index] =createBucket();
     Bucket*buddy_ptr=loadBucket(directory[buddy_index]); 
-    buddy_ptr->bucketSize=bptr->getBucketSize();
+    buddy_ptr->bucketSize=bptr->getMaxElementCount();
     buddy_ptr->localDepth=localDepth;
-    // new Bucket(bptr->getBucketSize(), localDepth); 
+    // new Bucket(bptr->getMaxElementCount(), localDepth); 
     bptr->clear();
     index_diff = (1 << (localDepth));
     dir_size = (1 << ((int)globalDepth));
@@ -260,7 +272,7 @@ auto ExtendableHashIndex::grow ( ) -> void
 {
     for (int i = 0; i < (1LL << globalDepth); i++)
     {
-        // Bucket tmp(directory[i].getBucketSize(), directory[i].getLocalDepth());
+        // Bucket tmp(directory[i].getMaxElementCount(), directory[i].getLocalDepth());
         directory.push_back(directory[i]);
     }
     globalDepth++;
@@ -312,7 +324,7 @@ auto ExtendableHashIndex::shrink ( ) -> void
     }
 }
 
-auto ExtendableHashIndex::bucket_id( int n ) -> std::string
+auto ExtendableHashIndex::bucket_string ( int n ) -> std::string
 {
     int d;
     std::string s;
@@ -338,11 +350,11 @@ auto ExtendableHashIndex::display ( ) -> void
     int size = 0;
     std::string s;
     std::set<std::string> shown;
-    std::cout << "Global Depth: " << globalDepth << std::endl;
+    std::cout << "Hash Index\nGlobal Depth: " << globalDepth << std::endl;
 
     for (size_t i = 0; i < directory.size(); i++)
     {
-        s = bucket_id(i);
+        s = bucket_string(i);
         if (shown.find(s) == shown.end())
         {
             shown.insert(s);
@@ -357,7 +369,7 @@ auto ExtendableHashIndex::display ( ) -> void
     std::vector<bucket_id_t> tempo = directory;
     for (size_t i = 0; i < directory.size(); i++)
     {
-        s = bucket_id(i);
+        s = bucket_string(i);
         if (shown.find(s) == shown.end())
         {
             shown.insert(s);
@@ -368,4 +380,5 @@ auto ExtendableHashIndex::display ( ) -> void
             }
         }
     }
+    std::cout << std::endl;
 }

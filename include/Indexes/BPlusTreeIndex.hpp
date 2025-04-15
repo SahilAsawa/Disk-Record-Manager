@@ -148,8 +148,8 @@ class BPlusTreeIndex
     public:
     
     //
-    BPlusTreeIndex ( BufferManager *_bm, int _order = 4, address_id_t _base_address = 0 )
-        : root_id ( -1 ), order ( std::max( 3, _order )), last_id ( 0 ),  buffer_manager ( _bm ), base_address ( _base_address )
+    BPlusTreeIndex ( BufferManager *_bm, unsigned int _order = 4, address_id_t _base_address = 0 )
+        : root_id ( -1 ), order ( std::max( 3U, _order )), last_id ( 0 ),  buffer_manager ( _bm ), base_address ( _base_address )
     {
     }
 

@@ -38,18 +38,18 @@ class Bucket
     
     public:
 
-    Bucket(): bucketSize(2), localDepth(0) 
+    Bucket ( ): bucketSize(2), localDepth(0) 
     {
     }
 
-    Bucket( size_t _bucketSize, int _localDepth = 0 )
+    Bucket ( size_t _bucketSize, int _localDepth = 0 )
         : bucketSize(_bucketSize), localDepth(_localDepth), listSize(0)
     {
     }
 
     
 
-    Bucket& operator=( const Bucket& other )
+    Bucket& operator= ( const Bucket& other )
     {
         if( this != &other )
         {
@@ -62,7 +62,7 @@ class Bucket
         return *this;
     }
 
-    Bucket(const Bucket& other)
+    Bucket ( const Bucket& other )
         : bucketSize(other.bucketSize), localDepth(other.localDepth), 
         listSize(other.listSize), bucketList(other.bucketList), 
         bucket_id(other.bucket_id)
@@ -73,14 +73,14 @@ class Bucket
      * @brief Check if the bucket is full
      * @returns true if the bucket is full, false otherwise
      */
-    auto isFull() -> bool;
+    auto isFull ( ) -> bool;
 
 
     /**
      * @brief Check if the bucket is empty
      * @returns true if the bucket is empty, false otherwise
      */
-    auto isEmpty() -> bool;
+    auto isEmpty ( ) -> bool;
 
     /**
      * @brief Insert a key-value pair into the bucket
@@ -88,67 +88,67 @@ class Bucket
      * @param value The value to insert
      * @return true if the insertion was successful, false if the bucket is full
      */
-    auto insert(KeyType key, ValueType value) -> bool;
+    auto insert ( KeyType key, ValueType value ) -> bool;
 
     /**
      * @brief Search for a key in the bucket
      * @param key The key to search for
      * @return An optional containing the value if found, or std::nullopt if not found
      */
-    auto search(KeyType key) -> std::optional<ValueType>;
+    auto search ( KeyType key ) -> std::optional<ValueType>;
 
     /**
      * @brief Delete a key from the bucket
      * @param key The key to delete
      * @return true if the deletion was successful, false if the key was not found
      */
-    auto deleteKey(KeyType key) -> bool;
+    auto deleteKey ( KeyType key ) -> bool;
     
     /**
      * @brief Get the local depth of the bucket
      * @return The local depth of the bucket
      */
-    auto getLocalDepth() -> int;
+    auto getLocalDepth ( ) -> int;
 
     /**
      * @brief Increase the local depth of the bucket by 1
      * @return The new local depth of the bucket
      */
-    auto increaseDepth() -> int;
+    auto increaseDepth ( ) -> int;
 
     /**
      * @brief Decrease the local depth of the bucket by 1
      * @return The new local depth of the bucket
      */
-    auto decreaseDepth() -> int;
+    auto decreaseDepth ( ) -> int;
 
     /**
      * @brief Copies the bucket's contents to a new list
      * @return A list of key-value pairs in the bucket
      */
-    auto copy() -> std::list< std::pair< KeyType, ValueType > >;
+    auto copy ( ) -> std::list< std::pair< KeyType, ValueType > >;
 
     /**
      * @brief Clear the contents of the bucket
      */
-    auto clear() -> void;
+    auto clear ( ) -> void;
 
     /**
      * @brief Prints the contents of the bucket
      */
-    auto display() -> void;
+    auto display ( ) -> void;
+
+    /**
+     * @brief Get the maximum number of elements in the bucket
+     * @return The maximum number of elements in the bucket
+     */
+    auto getMaxElementCount ( ) -> size_t;
 
     /**
      * @brief Get the maximum bucket size
-     * @return The maximum size of the bucket
+     * @return The maximum possible size of the bucket
      */
-    auto getBucketSize() -> size_t;
-
-    /**
-     * @brief Get the current bucket size
-     * @return The current size of the bucket
-     */
-    auto getActualSize() -> size_t;
+    auto getMaxSize ( ) -> size_t;
 
     friend class ExtendableHashIndex;
 };
@@ -156,16 +156,38 @@ class Bucket
 
 class ExtendableHashIndex
 {
+    //
+    size_t globalDepth;
+
+    // Denotes the maximum number of elements in a bucket
+    const unsigned int order;
+
+    //
+    std::vector<bucket_id_t> directory;
+
+    //
+    std::vector<bucket_id_t> free_ids;
+
+    //
+    address_id_t base_address;
+
+    //
+    bucket_id_t lastIDUsed;
+
+    //
+    BufferManager* buffer_manager;
+
+
     public:
 
     // Constructor
-    ExtendableHashIndex ( BufferManager* _bm,size_t _globalDepth = 0 )
-    : globalDepth ( _globalDepth ), buffer_manager ( _bm )
+    ExtendableHashIndex ( BufferManager* _bm, unsigned int _order = 2, size_t _globalDepth = 0, address_id_t _base_addr = 0 )
+    : globalDepth ( _globalDepth ), order ( _order ), base_address ( _base_addr ), lastIDUsed ( 0 ), buffer_manager ( _bm )
     {
         for ( int i = 0; i < (1<<globalDepth) ;i++ )
         {
             // Initialize buckets with size 2 and local depth 0
-            directory.push_back(i); 
+            directory.push_back(createBucket()); 
         }
     }
     
@@ -213,7 +235,7 @@ class ExtendableHashIndex
      * @param n The bucket number
      * @return A string of length equal to the local depth of the bucket, representing the bucket number in binary
      */
-    auto bucket_id ( int n ) -> std::string;
+    auto bucket_string ( int n ) -> std::string;
 
     /**
      * @brief Create a new bucket
@@ -242,24 +264,6 @@ class ExtendableHashIndex
     auto destroyBucket ( bucket_id_t id ) -> void;
     
     private:
-
-    //
-    size_t globalDepth;
-
-    //
-    std::vector<bucket_id_t> directory;
-
-    //
-    std::vector<bucket_id_t> free_ids;
-
-    //
-    address_id_t base_address;
-
-    //
-    bucket_id_t lastIDUsed;
-
-    //
-    BufferManager* buffer_manager;
 
     /**
      * @brief Get the bucket number for a given key
