@@ -53,8 +53,12 @@ ISORT_SRC = $(TESTING_DIR)/indexSort.cpp
 NEST = nest
 NEST_SRC = $(TESTING_DIR)/nestedLoopJoin.cpp
 
+# Hash join
+HJOIN = hjoin
+HJOIN_SRC = $(TESTING_DIR)/hashJoin.cpp
+
 # Default target
-all: $(TEST) $(EMS) $(TABLE) $(ISORT) $(NEST)
+all: $(TEST) $(EMS) $(TABLE) $(ISORT) $(NEST) $(HJOIN)
 
 # Compile test.cpp and link with both static libs
 $(TEST): $(TEST_SRC) $(STORAGE_LIB) $(INDEX_LIB) $(UTILS_LIB)
@@ -75,6 +79,10 @@ $(ISORT): $(ISORT_SRC) $(STORAGE_LIB) $(INDEX_LIB) $(UTILS_LIB)
 # Compile nested loop join
 $(NEST): $(NEST_SRC) $(STORAGE_LIB) $(UTILS_LIB)
 	$(CXX) $(CXXFLAGS) -o $@ $(NEST_SRC) -L$(LIB_DIR) -lstorage -lutils
+
+# Compile hash join
+$(HJOIN): $(HJOIN_SRC) $(STORAGE_LIB) $(INDEX_LIB) $(UTILS_LIB)
+	$(CXX) $(CXXFLAGS) -o $@ $(HJOIN_SRC) -L$(LIB_DIR) -lstorage -lindexes -lutils
 
 # Build object files
 $(BUILD_DIR)/%.o: src/Storage/%.cpp $(STORAGE_HEADERS)
@@ -104,6 +112,6 @@ $(UTILS_LIB): $(UTILS_OBJ)
 
 # Clean build artifacts
 clean:
-	rm -rf $(BUILD_DIR) $(LIB_DIR) $(TEST) $(EMS) $(TABLE) $(ISORT) $(NEST) $(BIN_DIR) $(RES_DIR) $(STATS_DIR)
+	rm -rf $(BUILD_DIR) $(LIB_DIR) $(TEST) $(EMS) $(TABLE) $(ISORT) $(NEST) $(HJOIN) $(BIN_DIR) $(RES_DIR) $(STATS_DIR)
 
 .PHONY: all clean

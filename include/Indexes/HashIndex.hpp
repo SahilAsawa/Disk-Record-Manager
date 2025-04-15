@@ -233,6 +233,21 @@ class ExtendableHashIndex
     auto display ( ) -> void;
 
     /**
+     * @brief Get the address range of the hash index occupied in the disk
+     * @return A pair of address_id_t representing the start and end address of the hash index in the disk
+     */
+    auto getAddressRange  ( ) -> std::pair< address_id_t, address_id_t >
+    {
+        Bucket b(order, globalDepth);
+        address_id_t end_address = base_address + b.getMaxSize();
+        return std::make_pair( base_address, end_address );
+    }
+
+    
+    private:
+
+
+    /**
      * @brief Returns a 0-1 string representing the bucket according to current local depth of the bucket
      * @param n The bucket number
      * @return A string of length equal to the local depth of the bucket, representing the bucket number in binary
@@ -264,8 +279,6 @@ class ExtendableHashIndex
      * @param id The ID of the bucket to destroy
      */
     auto destroyBucket ( bucket_id_t id ) -> void;
-    
-    private:
 
     /**
      * @brief Get the bucket number for a given key

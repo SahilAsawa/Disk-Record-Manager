@@ -208,7 +208,7 @@ auto ExtendableHashIndex::insert ( KeyType key, ValueType value ) -> bool
         saveBucket(directory[index],bptr);
         return true;
     }
-    std::cout<<"Bucket is full, need to split"<<std::endl;
+    // std::cout<<"Bucket is full, need to split"<<std::endl;
     splitBucket(index);
     return insert(key, value); // re-attempt after split
 }
@@ -216,6 +216,7 @@ auto ExtendableHashIndex::insert ( KeyType key, ValueType value ) -> bool
 auto ExtendableHashIndex::search ( KeyType key ) -> std::optional<ValueType>
 {
     Bucket*bptr=loadBucket(directory[getBucketNo(key)]);
+    std::cout<<"Searching "<<key<<" in bucket: "<<directory[getBucketNo(key)]<<std::endl;
     return bptr->search(key);
 }
 
