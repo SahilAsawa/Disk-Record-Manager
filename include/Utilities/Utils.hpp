@@ -16,6 +16,7 @@ using page_id_t = unsigned long long;
 using block_id_t = unsigned long long;
 using address_id_t = unsigned long long;
 using node_id_t = long long;
+using bucket_id_t = unsigned long long;
 
 const std::string BIN_DIR = "./bin/";
 const std::string CSV_DIR = "./files/";
