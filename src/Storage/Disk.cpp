@@ -4,6 +4,8 @@ Disk::Disk ( bool _accessType, storage_t _blockSize, storage_t _diskSize, std::s
         : accessType( _accessType), blockSize( _blockSize ), blockCount( _diskSize / _blockSize ), diskFile( _diskFile ), 
             numIO( 0 ), costIO( 0 )
 {
+    blockCount = _diskSize / blockSize;
+
     diskFileStream.open( diskFile, std::ios::in | std::ios::out | std::ios::binary );
     if (!diskFileStream.is_open())
     {
