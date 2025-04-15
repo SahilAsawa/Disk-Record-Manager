@@ -63,10 +63,12 @@ class Bucket
     }
 
     Bucket ( const Bucket& other )
-        : bucketSize(other.bucketSize), localDepth(other.localDepth), 
-        listSize(other.listSize), bucketList(other.bucketList), 
-        bucket_id(other.bucket_id)
     {
+        this->bucketSize = other.bucketSize;
+        this->localDepth = other.localDepth;
+        this->bucketList = other.bucketList;
+        this->listSize = other.listSize;
+        this->bucket_id = other.bucket_id;
     }
     
     /**

@@ -155,7 +155,7 @@ auto ExtendableHashIndex::destroyBucket ( bucket_id_t id ) -> void
         curr += sizeof(ValueType);
         // std::cout << "Element " << i << ": (" << key << ", " << value << ")" << std::endl;
     
-        if ( i < (int)bp->listSize )
+        if ( i < (size_t)bp->listSize )
         {
             bp->bucketList.push_back(std::make_pair(key,value));
         }
