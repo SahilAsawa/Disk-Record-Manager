@@ -1,8 +1,5 @@
 #include <Indexes/HashIndex.hpp>
 
-using KeyType=int;
-using ValueType=int;
-
 bool Bucket::isFull()
 {
     return bucketList.size() >= bucketSize;
