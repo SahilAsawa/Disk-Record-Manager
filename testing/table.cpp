@@ -5,9 +5,16 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <random>
 #include <Utilities/Utils.hpp>
 
 using Table = std::vector<std::vector<std::string>>;
+
+void shuffleOuterVector(std::vector<std::vector<std::string>>& vec) {
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(vec.begin(), vec.end(), g);
+}
 
 Table readCSV(const std::string &filename, char delim = ',')
 {
@@ -52,6 +59,21 @@ int main()
         auto data = readCSV(CSV_DIR + "employee.csv", ',');
         std::cout << "employee.csv size : " << data.size() << '\n';
         std::cout << "Total Attributes : " << data[0].size() << '\n';
+
+        // shuffleOuterVector(data);
+        // std::ofstream file1(CSV_DIR + "employee_random.csv");
+        // for (const auto &row : data)
+        // {
+        //     for (size_t i = 0; i < row.size(); ++i)
+        //     {
+        //         file1 << row[i];
+        //         if (i != row.size() - 1)
+        //             file1 << ',';
+        //     }
+        //     file1 << '\n';
+        // }
+        // file1.close();
+
         std::vector<Employee> employees{};
 
         for (auto &&row : data)
@@ -82,6 +104,21 @@ int main()
         data = readCSV(CSV_DIR + "company.csv", ';');
         std::cout << "company.csv Size : " << data.size() << '\n';
         std::cout << "Total Attributes : " << data[0].size() << '\n';
+
+        // shuffleOuterVector(data);
+        // std::ofstream file2(CSV_DIR + "company_random.csv");
+        // for (const auto &row : data)
+        // {
+        //     for (size_t i = 0; i < row.size(); ++i)
+        //     {
+        //         file2 << row[i];
+        //         if (i != row.size() - 1)
+        //             file2 << ';';
+        //     }
+        //     file2 << '\n';
+        // }
+        // file2.close();
+
         std::vector<Company> companys{};
 
         for (const auto &row : data)
