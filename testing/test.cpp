@@ -286,8 +286,8 @@ int main()
     ExtendableHashIndex index(&bm); // Start with global depth 2
 
     testInsertSearch(index);
-    // testDelete(index);
-    // testSplitAndMerge(index);
+    testDelete(index);
+    testSplitAndMerge(index);
 
     // BufferManagerTest();
     // god();

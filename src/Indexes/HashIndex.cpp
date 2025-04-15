@@ -77,6 +77,7 @@ auto Bucket::copy ( ) -> std::list<std::pair<KeyType, ValueType>>
 auto Bucket::clear ( ) -> void
 {
     this->bucketList.clear();
+    this->listSize=0;
 }
 
 auto Bucket::display ( ) -> void
@@ -111,8 +112,9 @@ auto ExtendableHashIndex::createBucket ( ) -> bucket_id_t
         free_ids.pop_back();
     }
     Bucket *bucket = new Bucket(order, 0); // Create a new bucket with size 2 and local depth 0
+    bucket->bucket_id=id;
     saveBucket(id, bucket); // Save the new bucket to the directory
-    directory.push_back(id); // Add the bucket ID to the directory
+    // directory.push_back(id); // Add the bucket ID to the directory
     return id;
 }
 
@@ -201,7 +203,6 @@ auto ExtendableHashIndex::insert ( KeyType key, ValueType value ) -> bool
     int index = getBucketNo(key);
 
     Bucket *bptr = loadBucket(directory[index]);
-    bptr->display();
 
     if (bptr->insert(key, value)){
         saveBucket(directory[index],bptr);
@@ -221,7 +222,11 @@ auto ExtendableHashIndex::search ( KeyType key ) -> std::optional<ValueType>
 auto ExtendableHashIndex::deleteKey ( KeyType key ) -> bool
 {
     Bucket*bptr=loadBucket(directory[getBucketNo(key)]);
-    return bptr->deleteKey(key);
+    bool val= bptr->deleteKey(key);
+    if(val){
+        saveBucket(directory[getBucketNo(key)],bptr);
+    }
+    return val;
 }
 
 auto ExtendableHashIndex::getGlobalDepth ( ) -> int
@@ -252,20 +257,27 @@ auto ExtendableHashIndex::splitBucket ( int index ) -> void
     buddy_ptr->localDepth=localDepth;
     // new Bucket(bptr->getMaxElementCount(), localDepth); 
     bptr->clear();
+    bptr->listSize=0;
     index_diff = (1 << (localDepth));
     dir_size = (1 << ((int)globalDepth));
     for (int i = buddy_index - index_diff; i >= 0; i -= index_diff)
     {
         directory[i] = directory[buddy_index];
+        saveBucket(directory[i], buddy_ptr);
     }
     for (int i = buddy_index + index_diff; i < dir_size; i += index_diff)
     {
         directory[i] = directory[buddy_index];
+        saveBucket(directory[i], buddy_ptr);
     }
+    saveBucket(directory[index], bptr);
+    saveBucket(directory[buddy_index], buddy_ptr);
     for (auto &pair : items)
     {
         insert(pair.first, pair.second); // Reinsert items into the split buckets
     }
+    // saveBucket(directory[index], bptr);
+    // saveBucket(directory[buddy_index], buddy_ptr);
 }
 
 auto ExtendableHashIndex::grow ( ) -> void
@@ -364,7 +376,7 @@ auto ExtendableHashIndex::display ( ) -> void
         }
     }
 
-    std::cout << "Directory Size: " << size << std::endl;
+    std::cout << "Directory Size: " << (int)directory.size() << std::endl;
     shown.clear();
     std::vector<bucket_id_t> tempo = directory;
     for (size_t i = 0; i < directory.size(); i++)
