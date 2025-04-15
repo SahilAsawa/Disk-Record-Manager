@@ -649,6 +649,36 @@ std::ostream &operator<< ( std::ostream &os, const BPlusTreeIndex<KeyType, Value
     return os;
 }
 
+template<typename KeyType, typename ValueType>
+auto BPlusTreeIndex<KeyType, ValueType>::begin ( ) -> BPlusTreeIterator
+{
+    if(root_id == -1) return BPlusTreeIterator( this, -1 );
+    node_id_t curr_id = root_id;
+    BPlusTreeNode *curr = loadNode( root_id );
+    while( curr->type != NodeType::LEAF )
+    {
+        curr_id = curr->children[0];
+        delete curr;
+        curr = loadNode( curr_id );
+    }
+    BPlusTreeIterator it( this, curr_id );
+    delete curr;
+    return it;
+}
+
+template<typename KeyType, typename ValueType>
+auto BPlusTreeIndex<KeyType, ValueType>::data ( node_id_t id ) -> std::vector< std::pair< KeyType, ValueType > >
+{
+    BPlusTreeNode *curr = loadNode( id );
+    std::vector< std::pair< KeyType, ValueType > > result;
+    for(size_t i = 0; i < curr->keys.size(); ++i)
+    {
+        result.push_back( std::make_pair( curr->keys[i], curr->values[i] ) );
+    }
+    delete curr;
+    return result;
+}
+
 template class BPlusTreeIndex<int, int>;
 template class BPlusTreeIndex<int, std::string>;
 template class BPlusTreeIndex<std::string, int>;

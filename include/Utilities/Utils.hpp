@@ -25,6 +25,8 @@ const std::string STAT_DIR = "./Statistics/";
 
 class Disk;
 class BufferManager;
+template<typename KeyType, typename ValueType>
+class BPlusTreeIndex;
 
 struct Employee
 {

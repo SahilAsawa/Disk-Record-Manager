@@ -10,7 +10,6 @@
     #include <Utilities/Utils.hpp>
     #include <Storage/BufferManager.hpp>
 
-
 template<typename KeyType, typename ValueType>
 class BPlusTreeIndex
 {
@@ -51,6 +50,80 @@ class BPlusTreeIndex
         bool isLeaf () const
         {
             return type == NodeType::LEAF;
+        }
+    };
+
+    struct BPlusTreeIterator
+    {
+        friend class BPlusTreeIndex;
+
+        private:
+
+        //
+        node_id_t curr_id;
+        
+        //
+        BPlusTreeIndex *tree;
+
+        //
+        size_t curr_index;
+
+        //
+        std::vector< std::pair< KeyType, ValueType > > data;
+
+        //
+        BPlusTreeIterator ( BPlusTreeIndex *tree, node_id_t id )
+            : curr_id ( id ), tree ( tree )
+        {
+            if( id == -1 )
+            {
+                curr_index = 0;
+                return;
+            }
+            data = tree->data( curr_id );
+            curr_index = 0;
+        }
+
+        public:
+
+        //
+        std::pair< KeyType, ValueType > operator* ()
+        {
+            if( curr_index >= 0 && curr_index < data.size() )
+            {
+                return data[ curr_index ];
+            }
+            else
+            {
+                throw std::out_of_range( "Iterator out of range" );
+            }
+        }
+
+        //
+        auto operator++ () -> BPlusTreeIterator &
+        {
+            if( curr_index < data.size() )
+            {
+                ++curr_index;
+            }
+            if( curr_index >= data.size() )
+            {
+                BPlusTreeNode *curr = tree->loadNode( curr_id );
+                curr_id = curr->nextLeaf_id;
+                delete curr;
+                if( curr_id != -1 )
+                {
+                    data = tree->data( curr_id );
+                }
+                curr_index = 0;
+            }
+            return *this;
+        }
+
+        //overload equality operator
+        auto operator== ( const BPlusTreeIterator &other ) const -> bool
+        {
+            return ((curr_id == other.curr_id) && (curr_index == other.curr_index));
         }
     };
 
@@ -120,7 +193,30 @@ class BPlusTreeIndex
         return std::make_pair( base_address, base_address + nodeSize() * last_id );
     }
 
+    /**
+     * @brief get the first leaf node of the B+ tree
+     * @return id of the first leaf node
+     */
+    auto begin( ) -> BPlusTreeIterator;
+
+    /**
+     * @brief get the end leaf node of the B+ tree
+     * @return id of the end leaf node that is -1
+     */
+    auto end( ) -> BPlusTreeIterator
+    {
+        return BPlusTreeIterator( this, -1 );
+    }
+
+    
     private:
+
+    /**
+     * @brief get the data of a leaf node
+     * @param id the id of the leaf node
+     * @return a vector of pairs of key and value
+     */
+    auto data ( node_id_t id ) -> std::vector< std::pair< KeyType, ValueType > >;
 
     //
     auto nodeSize () -> size_t;

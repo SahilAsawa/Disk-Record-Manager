@@ -6,6 +6,7 @@ lib/
 *.out
 *.exe
 *.cache
+*.bin
 test
 compile_commands.json
 .DS_Store
