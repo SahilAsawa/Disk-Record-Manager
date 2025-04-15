@@ -1,15 +1,15 @@
 #pragma once
-#ifndef _UTILS_HPP_
-#define _UTILS_HPP_
 
-#include <array>
-#include <string>
-#include <algorithm>
-#include <optional>
-#include <vector>
-#include <string>
-#include <sstream>
-#include <iomanip>
+	#ifndef _UTILS_HPP_
+	#define _UTILS_HPP_
+
+	#include <array>
+	#include <string>
+	#include <algorithm>
+	#include <optional>
+	#include <vector>
+	#include <string>
+	#include <sstream>
 
 using frame_id_t = unsigned long long;
 using page_id_t = unsigned long long;
@@ -17,6 +17,11 @@ using block_id_t = unsigned long long;
 using address_id_t = unsigned long long;
 using node_id_t = long long;
 using bucket_id_t = unsigned long long;
+using storage_t = unsigned long long;
+
+#define GB * 1024ll * 1024 * 1024
+#define MB * 1024ll * 1024
+#define KB * 1024ll
 
 const std::string BIN_DIR = "./bin/";
 const std::string CSV_DIR = "./files/";
@@ -121,13 +126,13 @@ static constexpr auto JoinedSize = sizeof(JoinEmployeeCompany);
 
 auto loadFileInDisk (BufferManager& buffer, std::string fileName, address_id_t startingAddress) -> std::optional<std::pair<address_id_t,address_id_t>>;
 
-auto getNextFreeFrame(int readBytes, block_id_t BLOCK_SIZE = 4096) -> int;
+auto getNextFreeFrame(int readBytes, block_id_t BLOCK_SIZE = (4 KB)) -> int;
 
 template <typename T>
 T extractData(const std::vector<std::byte> &data);
 
 
-auto loadData(block_id_t BLOCK_SIZE = 4096, size_t BLOCK_COUNT_DISK = 1024 * 1024, size_t BLOCK_COUNT_BUFFER = 16) -> std::tuple<address_id_t, address_id_t, address_id_t, address_id_t>;
+auto loadData(block_id_t BLOCK_SIZE = (4 KB), storage_t DISK_SIZE = (4 GB), storage_t BUFFER_SIZE = (64 KB)) -> std::tuple<address_id_t, address_id_t, address_id_t, address_id_t>;
 
 template <typename T>
 auto storeResult(BufferManager &buffer, address_id_t start, address_id_t end, std::string fileName) -> void;

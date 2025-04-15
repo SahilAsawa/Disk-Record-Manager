@@ -1,18 +1,15 @@
-#include <fstream>
 #include <iostream>
-#include <ranges>
 #include <vector>
 #include <algorithm>
 #include <queue>
 #include <cassert>
-#include <iomanip>
 #include <Storage/Disk.hpp>
 #include <Storage/BufferManager.hpp>
 #include <Utilities/Utils.hpp>
 
-block_id_t BLOCK_SIZE = 4096;
-size_t BLOCK_COUNT_DISK = 1024 * 1024;
-size_t BLOCK_COUNT_BUFFER = 16;
+block_id_t BLOCK_SIZE = (4 KB);
+storage_t DISK_SIZE = (4 GB);
+storage_t BUFFER_SIZE = (64 KB);
 
 template <typename T>
 auto mergeRuns(BufferManager &buffer, const std::vector<std::pair<address_id_t, address_id_t>> &Runs, address_id_t NextUsableAddress) -> std::pair<address_id_t, address_id_t>
@@ -63,7 +60,7 @@ auto externalSort(BufferManager &buffer, address_id_t StartAddress, address_id_t
     // Merging the Sorted Blocks
     size_t usedFrameCnt = (EndAddress - StartAddress + BLOCK_SIZE - 1) / BLOCK_SIZE;
     std::pair<address_id_t, address_id_t> result;
-    if (usedFrameCnt < BLOCK_COUNT_BUFFER - 1)
+    if (usedFrameCnt < buffer.getNumFrames() - 1)
     {
         //  Merged in a single Run
         result = mergeRuns<T>(buffer, Runs, NextUsableAddress);
@@ -72,13 +69,13 @@ auto externalSort(BufferManager &buffer, address_id_t StartAddress, address_id_t
     {
         std::vector<std::pair<address_id_t, address_id_t>> nextRuns;
         bool toUse = false; // if false use NextUsableAddress or use StartAddress replacably
-        while (Runs.size() > BLOCK_COUNT_BUFFER - 1)
+        while (Runs.size() > buffer.getNumFrames() - 1)
         {
             address_id_t toFillIndex = (toUse) ? StartAddress : NextUsableAddress;
-            for (size_t i = 0; i < Runs.size(); i += (BLOCK_COUNT_BUFFER - 1))
+            for (size_t i = 0; i < Runs.size(); i += (buffer.getNumFrames() - 1))
             {
                 std::vector<std::pair<address_id_t, address_id_t>> tempRuns;
-                for (size_t j = i; j < i + (BLOCK_COUNT_BUFFER - 1) && j < Runs.size(); ++j)
+                for (size_t j = i; j < i + (buffer.getNumFrames() - 1) && j < Runs.size(); ++j)
                 {
                     tempRuns.push_back(Runs[j]);
                 }
@@ -142,8 +139,8 @@ auto mergeJoin(BufferManager &buffer, address_id_t startEmployee, address_id_t e
 auto testing(bool DiskAccessStrategy, int BufferReplacementStategy) -> void
 {
     auto [StartAddressEmployee, EndAddressEmployee, StartAddressCompany, EndAddressCompany] = loadData();
-    Disk disk(DiskAccessStrategy, BLOCK_SIZE, BLOCK_COUNT_DISK);
-    BufferManager buffer(&disk, BufferReplacementStategy, BLOCK_COUNT_BUFFER);
+    Disk disk(DiskAccessStrategy, BLOCK_SIZE, DISK_SIZE);
+    BufferManager buffer(&disk, BufferReplacementStategy, BUFFER_SIZE);
 
     // External Sort the Employee and Company data
     address_id_t NextUsableAddress = getNextFreeFrame(EndAddressCompany);

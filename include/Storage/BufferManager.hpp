@@ -88,7 +88,7 @@ class BufferManager
     public:
 
     // Constructor
-    BufferManager (  Disk *_disk, int _replaceStrategy = LRU, unsigned int _numFrames = 1024);
+    BufferManager (  Disk *_disk, int _replaceStrategy = LRU, storage_t _bufferSize = (4 MB) );
 
     // Destructor
     ~BufferManager ();
@@ -99,7 +99,7 @@ class BufferManager
      * @param size The size of the data to read.
      * @returns The data read from the address.
      */
-    auto readAddress ( address_id_t address, size_t size ) -> std::vector< std::byte >;
+    auto readAddress ( address_id_t address, storage_t size ) -> std::vector< std::byte >;
 
     /**
      * @brief Write data to a given address.

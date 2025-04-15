@@ -46,10 +46,10 @@ template Employee extractData<Employee>(const std::vector<std::byte> &data);
 template Company extractData<Company>(const std::vector<std::byte> &data);
 template JoinEmployeeCompany extractData<JoinEmployeeCompany>(const std::vector<std::byte> &data);
 
-auto loadData(block_id_t BLOCK_SIZE, size_t BLOCK_COUNT_DISK, size_t BLOCK_COUNT_BUFFER) -> std::tuple<address_id_t, address_id_t, address_id_t, address_id_t>
+auto loadData(block_id_t BLOCK_SIZE, storage_t DISK_SIZE, storage_t BUFFER_SIZE) -> std::tuple<address_id_t, address_id_t, address_id_t, address_id_t>
 {
-    Disk disk(RANDOM, BLOCK_SIZE, BLOCK_COUNT_DISK);
-    BufferManager buffer(&disk, MRU, BLOCK_COUNT_BUFFER);
+    Disk disk(RANDOM, BLOCK_SIZE, DISK_SIZE);
+    BufferManager buffer(&disk, MRU, BUFFER_SIZE);
 
     auto locationEmployee = loadFileInDisk(buffer, BIN_DIR + "employee.bin", 0);
     if (!locationEmployee.has_value())

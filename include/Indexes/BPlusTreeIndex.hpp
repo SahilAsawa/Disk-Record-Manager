@@ -179,7 +179,7 @@ class BPlusTreeIndex
 
     /**
 	 * @brief prints the B+ tree by overloading the << operator
-	 * @param
+	 * @param 
 	 */
     template<typename K, typename V>
     friend std::ostream &operator<< ( std::ostream &os, const BPlusTreeIndex<K, V> &tree );

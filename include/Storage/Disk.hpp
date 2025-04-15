@@ -3,10 +3,11 @@
 #ifndef _DISK_HPP_
     #define _DISK_HPP_
 
-    #include <Utilities/Utils.hpp>
     #include <vector>
     #include <fstream>
-
+    
+    #include <Utilities/Utils.hpp>
+    
     #define SEQUENTIAL 1
     #define RANDOM 0
 
@@ -20,7 +21,7 @@ class Disk
     bool accessType;
 
     // Size of a block in bytes
-    size_t blockSize;
+    storage_t blockSize;
 
     // Number of blocks in the disk
     size_t blockCount;
@@ -54,7 +55,7 @@ class Disk
     public:
 
     // Constructor
-    Disk ( bool _accessType = SEQUENTIAL, size_t _blockSize = 4096, size_t _blockCount = 1024, std::string _diskFile = "disk.dat" );
+    Disk ( bool _accessType, storage_t _blockSize = (4 KB), storage_t _diskSize = (4 GB), std::string _diskFile = "disk.dat" );
 
     // Destructor
     ~Disk ();

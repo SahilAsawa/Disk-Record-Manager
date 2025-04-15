@@ -1,14 +1,14 @@
 #include <Utilities/Utils.hpp>
 #include <Storage/BufferManager.hpp>
 
-BufferManager::BufferManager ( Disk *_disk, int _replaceStrategy, unsigned int _numFrames )
+BufferManager::BufferManager ( Disk *_disk, int _replaceStrategy, storage_t _bufferSize )
     : disk( _disk ),
       replaceStrategy( _replaceStrategy ),
-      numFrames( _numFrames ),
-      bufferData( _numFrames,
+      numFrames( _bufferSize / disk->blockSize ),
+      bufferData( _bufferSize / disk->blockSize,
       std::vector< std::byte >( disk->blockSize ) ),
-      pinCount( _numFrames, 0 ),
-      isDirty( _numFrames, false )
+      pinCount( _bufferSize / disk->blockSize, 0 ),
+      isDirty( _bufferSize / disk->blockSize, false )
 {
     for ( frame_id_t i = 0; i < numFrames; ++i )
     {
@@ -157,7 +157,7 @@ auto BufferManager::writePage ( page_id_t pageNumber, const std::vector< std::by
     }
 }
 
-auto BufferManager::readAddress ( address_id_t address, size_t size ) -> std::vector< std::byte >
+auto BufferManager::readAddress ( address_id_t address, storage_t size ) -> std::vector< std::byte >
 {
     auto pageNumber = address / disk->blockSize;
     auto offset = address % disk->blockSize;
@@ -173,13 +173,13 @@ auto BufferManager::readAddress ( address_id_t address, size_t size ) -> std::ve
     {
         std::copy( firstFrame.begin() + offset, firstFrame.end(), data.begin() );
         
-        size_t remainingSize = size - ( disk->blockSize - offset );
+        storage_t remainingSize = size - ( disk->blockSize - offset );
 
         while( remainingSize > 0 )
         {
             pageNumber++;
             auto nextFrame = readPage( pageNumber );
-            size_t bytesToCopy = std::min( remainingSize, disk->blockSize );
+            storage_t bytesToCopy = std::min( remainingSize, disk->blockSize );
             std::copy( nextFrame.begin(), nextFrame.begin() + bytesToCopy, data.begin() + size - remainingSize );
             remainingSize -= bytesToCopy;
         }
@@ -204,13 +204,13 @@ auto BufferManager::writeAddress ( address_id_t address, const std::vector< std:
         std::copy( data.begin(), data.begin() + disk->blockSize - offset, firstFrame.begin() + offset );
         writePage( pageNumber, firstFrame );
         
-        size_t remainingSize = data.size() - ( disk->blockSize - offset );
+        storage_t remainingSize = data.size() - ( disk->blockSize - offset );
 
         while( remainingSize > 0 )
         {
             pageNumber++;
             auto nextFrame = readPage( pageNumber );
-            size_t bytesToCopy = std::min( remainingSize, disk->blockSize );
+            storage_t bytesToCopy = std::min( remainingSize, disk->blockSize );
             std::copy( data.begin() + data.size() - remainingSize, data.begin() + data.size() - remainingSize + bytesToCopy, nextFrame.begin() );
             remainingSize -= bytesToCopy;
             

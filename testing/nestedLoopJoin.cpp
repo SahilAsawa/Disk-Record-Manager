@@ -14,9 +14,9 @@
 #define EMPLOYEE 0
 #define COMPANY 1
 
-block_id_t BLOCK_SIZE = 4096;
-size_t BLOCK_COUNT_DISK = 1024 * 1024;
-size_t BLOCK_COUNT_BUFFER = 16;
+block_id_t BLOCK_SIZE = (4 KB);
+storage_t DISK_SIZE = (4 GB);
+storage_t BUFFER_SIZE = (64 KB);
 
 auto join(BufferManager &buffer, address_id_t StartAddressEmployee, address_id_t EndAddressEmployee, address_id_t StartAddressCompany, address_id_t EndAddressCompany, address_id_t NextUsableAddress, bool Outer) -> std::pair<address_id_t, address_id_t>
 {
@@ -71,8 +71,8 @@ auto join(BufferManager &buffer, address_id_t StartAddressEmployee, address_id_t
 auto testing(bool DiskAccessStrategy, int BufferReplacementStategy, bool Outer) -> void
 {
     auto [StartAddressEmployee, EndAddressEmployee, StartAddressCompany, EndAddressCompany] = loadData();
-    Disk disk(DiskAccessStrategy, BLOCK_SIZE, BLOCK_COUNT_DISK);
-    BufferManager buffer(&disk, BufferReplacementStategy, BLOCK_COUNT_BUFFER);
+    Disk disk(DiskAccessStrategy, BLOCK_SIZE, DISK_SIZE);
+    BufferManager buffer(&disk, BufferReplacementStategy, BUFFER_SIZE);
 
     address_id_t NextUsableAddress = getNextFreeFrame(EndAddressCompany);
     auto [StartJoin, EndJoin] = join(buffer, StartAddressEmployee, EndAddressEmployee, StartAddressCompany, EndAddressCompany, NextUsableAddress, Outer);
