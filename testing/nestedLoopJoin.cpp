@@ -15,8 +15,15 @@
 #define COMPANY 1
 
 block_id_t BLOCK_SIZE = (4 KB);
-storage_t DISK_SIZE = (4 GB);
+storage_t DISK_SIZE = (4 MB);
 storage_t BUFFER_SIZE = (64 KB);
+
+address_id_t StartAddressEmployee = 0;
+address_id_t EndAddressEmployee = 0;
+address_id_t StartAddressCompany = 0;
+address_id_t EndAddressCompany = 0;
+
+std::ofstream outFile(STAT_DIR + "nested_join_stats.txt", std::ios::out | std::ios::trunc);
 
 auto join(BufferManager &buffer, address_id_t StartAddressEmployee, address_id_t EndAddressEmployee, address_id_t StartAddressCompany, address_id_t EndAddressCompany, address_id_t NextUsableAddress, bool Outer) -> std::pair<address_id_t, address_id_t>
 {
@@ -70,30 +77,41 @@ auto join(BufferManager &buffer, address_id_t StartAddressEmployee, address_id_t
 
 auto testing(bool DiskAccessStrategy, int BufferReplacementStategy, bool Outer) -> void
 {
-    auto [StartAddressEmployee, EndAddressEmployee, StartAddressCompany, EndAddressCompany] = loadData();
     Disk disk(DiskAccessStrategy, BLOCK_SIZE, DISK_SIZE);
     BufferManager buffer(&disk, BufferReplacementStategy, BUFFER_SIZE);
+
+    auto stat = buffer.getStats();
 
     address_id_t NextUsableAddress = getNextFreeFrame(EndAddressCompany);
     auto [StartJoin, EndJoin] = join(buffer, StartAddressEmployee, EndAddressEmployee, StartAddressCompany, EndAddressCompany, NextUsableAddress, Outer);
     
     // print statistics
-    std::cout << "\nStatistics for Nested Join with " << (Outer == EMPLOYEE ? "Employee" : "Company") << " as outer relation" << std::endl;
-    std::cout << "\t========================================================" << std::endl;
-    std::cout << "\t\tDisk IO operations: " << buffer.getNumIO() << std::endl;
-    std::cout << "\t\tDisk IO cost: " << buffer.getCostIO() << std::endl;
-    std::cout << "\t\tBuffer Manager Size: " << buffer.getNumFrames() << std::endl;
-    std::cout << "\t\tBuffer Manager Replacement Strategy: " << (buffer.getReplaceStrategy() == LRU ? "LRU" : "MRU") << std::endl;
-    std::cout << "\t\tDisk Access Strategy: " << (DiskAccessStrategy == RANDOM ? "RANDOM" : "SEQUENTIAL") << std::endl;
+    std::string s = "Statistics for Nested Join with ";
+    s += (Outer == EMPLOYEE ? "Employee" : "Company");
+    s += " as outer relation";
+    buffer.printStats(outFile, stat, s);
+
 
     // store the result
-    storeResult<JoinEmployeeCompany>(buffer, StartJoin, EndJoin, RES_DIR + "nest_join_joined_result.csv");
+    storeResult<JoinEmployeeCompany>(buffer, StartJoin, EndJoin, RES_DIR + "nest_join_joined__data_" + (BufferReplacementStategy == LRU ? "lru_" : "mru_") + (DiskAccessStrategy == RANDOM ? "rand_" : "seq_") + (Outer == EMPLOYEE ? "emp" : "comp") + ".csv");
 
     return;
 }
 
 int main()
 {
+    auto [a,b,c,d] = loadData();
+    StartAddressEmployee = a;
+    EndAddressEmployee = b;
+    StartAddressCompany = c;
+    EndAddressCompany = d;
+
+    if(!outFile.is_open())
+    {
+        std::cerr << "Error opening file for writing statistics." << std::endl;
+        return 1;
+    }
+
     testing(RANDOM, LRU, EMPLOYEE);
     testing(RANDOM, MRU, EMPLOYEE);
     testing(SEQUENTIAL, LRU, EMPLOYEE);
@@ -102,6 +120,7 @@ int main()
     testing(RANDOM, MRU, COMPANY);
     testing(SEQUENTIAL, LRU, COMPANY);
     testing(SEQUENTIAL, MRU, COMPANY);
-    std::cout << "\t========================================================" << std::endl;
+
+    std::cout << "Statistics saved to " << RES_DIR + "nested_join_stats.txt" << std::endl;
     return 0;
 }

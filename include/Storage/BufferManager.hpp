@@ -27,6 +27,9 @@ class BufferManager
     // number of frames
     unsigned int numFrames;
 
+    // number of IO operations
+    unsigned long long numIO;
+
     // Global page table: Page ID -> Frame ID
     std::unordered_map< page_id_t, frame_id_t > pageTable {};
 
@@ -144,6 +147,25 @@ class BufferManager
     {
         return replaceStrategy;
     }
+
+    /**
+     * @brief Get the statistics related to IO operations.
+     * @returns A Stats object containing the number of IO operations, disk accesses, and cost of disk accesses.
+     * @note The statistics are updated after each IO operation.
+     */
+    auto getStats ( ) const -> Stats
+    {
+        return { numIO, disk->numIO, disk->costIO };
+    }
+
+    /**
+     * @brief Print the statistics of related to IO operations.
+     * @param os The output stream to print the statistics to.
+     * @param startStats The starting statistics to compare with.
+     * @param header The header to print before the statistics.
+     * @note You can store initial statistics in a Stats object using the getStats() method.
+     */
+    auto printStats ( std::ostream &os, Stats &startStats, std::string header = "" ) -> void;
 };
 
 #endif // _BUFFER_MANAGER_HPP_

@@ -8,38 +8,19 @@
 #include <optional>
 #include <string>
 
-std::string to_string(const std::array<char, 58>& arr)
-{
-    for(size_t i = 0; i < arr.size(); ++i)
-    {
-        if (arr[i] == '\0')
-        {
-            return std::string(arr.data(), i);
-        }
-    }
-    return std::string(arr.data(), arr.size());
-}
+address_id_t employeeStartAddress = 0;
+address_id_t employeeEndAddress = 0;
+address_id_t companyStartAddress = 0;
+address_id_t companyEndAddress = 0;
+
+std::ofstream outFile(STAT_DIR + "bplus_tree_stats.txt", std::ios::out | std::ios::trunc);
 
 int help(storage_t blockSize, storage_t diskSize, storage_t bufferSize, int replaceStrategy, int accessType)
 {
     Disk disk(accessType, blockSize, diskSize);
     BufferManager bm(&disk, replaceStrategy, bufferSize);
 
-    auto p = loadFileInDisk( bm, BIN_DIR + "employee.bin", 0);
-    if ( !p.has_value() )
-    {
-        std::cerr << "Error loading employee.bin" << std::endl;
-        return 1;
-    }
-    auto [employeeStartAddress, employeeEndAddress] = p.value();
-
-    p = loadFileInDisk( bm, BIN_DIR + "company.bin", employeeEndAddress );
-    if ( !p.has_value() )
-    {
-        std::cerr << "Error loading company.bin" << std::endl;
-        return 1;
-    }
-    auto [companyStartAddress, companyEndAddress] = p.value();
+    auto stat = bm.getStats();
 
     BPlusTreeIndex< unsigned long long, address_id_t > emp_index(&bm, 10, companyEndAddress);
     for ( int i = 0; i < 1000; ++i )
@@ -59,12 +40,8 @@ int help(storage_t blockSize, storage_t diskSize, storage_t bufferSize, int repl
     }
     auto [compStartIndex, compEndIndex] = comp_index.getAddressRange();
 
-    std::cout << "========================================================" << std::endl;
-    std::cout << "Statistics of the creation of Index (Before Join)" << std::endl;
-    std::cout << "\t\tDisk IO operations: " << bm.getNumIO() << std::endl;
-    std::cout << "\t\tDisk IO cost: " << bm.getCostIO() << std::endl;
-    std::cout << "\t\t(FrameSize: " << blockSize << ", FrameCount: " << bm.getNumFrames() << ")" << std::endl;
-    std::cout << "\t\t(ReplacementStrategy: " << (replaceStrategy == LRU ? "LRU" : "MRU") << ", DiskAccessStrategy: " << (accessType == RANDOM ? "RANDOM" : "SEQUENTIAL") << ")" << std::endl;
+    bm.printStats(outFile, stat, "Statistics for the creation of B+ Tree Index");
+    stat = bm.getStats();
 
     auto empBegin = emp_index.begin();
     auto compBegin = comp_index.begin();
@@ -88,23 +65,36 @@ int help(storage_t blockSize, storage_t diskSize, storage_t bufferSize, int repl
         else ++compBegin;
     }
 
-    // Store the result in a file
-    storeResult<JoinEmployeeCompany>(bm, compEndIndex, joinAddr, RES_DIR + "bplus_index_joined_data.csv");
+    bm.printStats(outFile, stat, "Statistics for the Join using Index operation");
 
-    std::cout << "\nStatistics of the Join using Index operation" << std::endl;
-    std::cout << "\t\tDisk IO operations: " << bm.getNumIO() << std::endl;
-    std::cout << "\t\tDisk IO cost: " << bm.getCostIO() << std::endl;
-    std::cout << "\t\t(FrameSize: " << blockSize << ", FrameCount: " << bm.getNumFrames() << ")" << std::endl;
-    std::cout << "\t\t(ReplacementStrategy: " << (replaceStrategy == LRU ? "LRU" : "MRU") << ", DiskAccessStrategy: " << (accessType == RANDOM ? "RANDOM" : "SEQUENTIAL") << ")" << std::endl;
+    // Store the result in a file
+    storeResult<JoinEmployeeCompany>(bm, compEndIndex, joinAddr, RES_DIR + "bplus_index_joined_data_" + (replaceStrategy == LRU ? "lru" : "mru") + "_" + (accessType == RANDOM ? "rand" : "seq") + ".csv");
 
     return 0;
 }
 
 int main()
 {
-    help((4 KB), (4 GB), (64 KB), LRU, RANDOM);
-    help((4 KB), (4 GB), (64 KB), LRU, SEQUENTIAL);
-    help((4 KB), (4 GB), (64 KB), MRU, RANDOM);
-    help((4 KB), (4 GB), (64 KB), MRU, SEQUENTIAL);
+    auto [a,b,c,d] = loadData();
+    employeeStartAddress = a;
+    employeeEndAddress = b;
+    companyStartAddress = c;
+    companyEndAddress = d;
+
+    if(!outFile.is_open())
+    {
+        std::cerr << "Error opening file for writing statistics." << std::endl;
+        return 1;
+    }
+
+    help((4 KB), (4 MB), (64 KB), LRU, RANDOM);
+    help((4 KB), (4 MB), (64 KB), LRU, SEQUENTIAL);
+    help((4 KB), (4 MB), (64 KB), MRU, RANDOM);
+    help((4 KB), (4 MB), (64 KB), MRU, SEQUENTIAL);
+
+    outFile.close();
+    outFile.clear();
+    std::cout << "Statistics saved to " << STAT_DIR + "bplus_tree_stats.txt" << std::endl;
+
     return 0;
 }

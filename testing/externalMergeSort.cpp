@@ -8,8 +8,10 @@
 #include <Utilities/Utils.hpp>
 
 block_id_t BLOCK_SIZE = (4 KB);
-storage_t DISK_SIZE = (4 GB);
+storage_t DISK_SIZE = (4 MB);
 storage_t BUFFER_SIZE = (64 KB);
+
+std::ofstream outFile(STAT_DIR + "external_sort_stats.txt", std::ios::out | std::ios::trunc);
 
 template <typename T>
 auto mergeRuns(BufferManager &buffer, const std::vector<std::pair<address_id_t, address_id_t>> &Runs, address_id_t NextUsableAddress) -> std::pair<address_id_t, address_id_t>
@@ -142,45 +144,45 @@ auto testing(bool DiskAccessStrategy, int BufferReplacementStategy) -> void
     Disk disk(DiskAccessStrategy, BLOCK_SIZE, DISK_SIZE);
     BufferManager buffer(&disk, BufferReplacementStategy, BUFFER_SIZE);
 
+    auto stat = buffer.getStats();
+
     // External Sort the Employee and Company data
     address_id_t NextUsableAddress = getNextFreeFrame(EndAddressCompany);
     auto [startEmployeeSorted, endEmployeeSorted] = externalSort<Employee>(buffer, StartAddressEmployee, EndAddressEmployee, NextUsableAddress);
     auto [startCompanySorted, endCompanySorted] = externalSort<Company>(buffer, StartAddressCompany, EndAddressCompany, NextUsableAddress);
 
-    std::cout << "\nStatistics of the External Sort" << std::endl;
-    std::cout << "\t========================================================" << std::endl;
-    std::cout << "\t\tDisk IO operations: " << buffer.getNumIO() << std::endl;
-    std::cout << "\t\tDisk IO cost: " << buffer.getCostIO() << std::endl;
-    std::cout << "\t\tBuffer Manager Size: " << buffer.getNumFrames() << std::endl;
-    std::cout << "\t\tBuffer Manager Replacement Strategy: " << (buffer.getReplaceStrategy() == LRU ? "LRU" : "MRU") << std::endl;
-    std::cout << "\t\tDisk Access Strategy: " << (DiskAccessStrategy == RANDOM ? "RANDOM" : "SEQUENTIAL") << std::endl;
+    buffer.printStats(outFile, stat, "Statistics of the External Sort");
     
     // Merge Join the Employee and Company data
     auto [startJoin, endJoin] = mergeJoin(buffer, startEmployeeSorted, endEmployeeSorted, startCompanySorted, endCompanySorted, NextUsableAddress);
 
     // print statistics
-    std::cout << "\nStatistics of the Merge Join (including sorting)" << std::endl;
-    std::cout << "\t========================================================" << std::endl;
-    std::cout << "\t\tDisk IO operations: " << buffer.getNumIO() << std::endl;
-    std::cout << "\t\tDisk IO cost: " << buffer.getCostIO() << std::endl;
-    std::cout << "\t\tBuffer Manager Size: " << buffer.getNumFrames() << std::endl;
-    std::cout << "\t\tBuffer Manager Replacement Strategy: " << (buffer.getReplaceStrategy() == LRU ? "LRU" : "MRU") << std::endl;
-    std::cout << "\t\tDisk Access Strategy: " << (DiskAccessStrategy == RANDOM ? "RANDOM" : "SEQUENTIAL") << std::endl;
-    
+    buffer.printStats(outFile, stat, "Statistics of the Merge Join (including sorting)"); 
+
+    std::string s = (BufferReplacementStategy == LRU ? "_lru" : "_mru");
+    s += (DiskAccessStrategy == RANDOM ? "_rand" : "_seq");
+    s += ".csv";
+
     // Storing the sorted files for Demonstration
-    storeResult<Employee>(buffer, startEmployeeSorted, endEmployeeSorted, RES_DIR + "merge_join_sorted_employee.csv");
-    storeResult<Company>(buffer, startCompanySorted, endCompanySorted, RES_DIR + "merge_join_sorted_company.csv");
-    storeResult<JoinEmployeeCompany>(buffer, startJoin, endJoin, RES_DIR + "merge_join_joined_result.csv");
+    storeResult<Employee>(buffer, startEmployeeSorted, endEmployeeSorted, RES_DIR + "merge_join_sorted_employee" + s);
+    storeResult<Company>(buffer, startCompanySorted, endCompanySorted, RES_DIR + "merge_join_sorted_company" + s);
+    storeResult<JoinEmployeeCompany>(buffer, startJoin, endJoin, RES_DIR + "merge_join_joined_result" + s);
 
     return;
 }
 
 int main()
 {
+    if(!outFile.is_open())
+    {
+        std::cerr << "Error opening file for writing statistics." << std::endl;
+        return 1;
+    }
+
     testing(RANDOM, LRU);
     testing(RANDOM, MRU);
     testing(SEQUENTIAL, LRU);
     testing(SEQUENTIAL, MRU);
-    std::cout << "\t========================================================\n" << std::endl;
+    std::cout << "Statistics saved to " << STAT_DIR + "external_sort_stats.txt" << std::endl;
     return 0;
 }

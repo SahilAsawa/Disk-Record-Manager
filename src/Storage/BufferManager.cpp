@@ -1,10 +1,12 @@
 #include <Utilities/Utils.hpp>
 #include <Storage/BufferManager.hpp>
+#include <ostream>
 
 BufferManager::BufferManager ( Disk *_disk, int _replaceStrategy, storage_t _bufferSize )
     : disk( _disk ),
       replaceStrategy( _replaceStrategy ),
       numFrames( _bufferSize / disk->blockSize ),
+      numIO( 0 ),
       bufferData( _bufferSize / disk->blockSize,
       std::vector< std::byte >( disk->blockSize ) ),
       pinCount( _bufferSize / disk->blockSize, 0 ),
@@ -159,6 +161,7 @@ auto BufferManager::writePage ( page_id_t pageNumber, const std::vector< std::by
 
 auto BufferManager::readAddress ( address_id_t address, storage_t size ) -> std::vector< std::byte >
 {
+    ++numIO;
     auto pageNumber = address / disk->blockSize;
     auto offset = address % disk->blockSize;
 
@@ -189,6 +192,7 @@ auto BufferManager::readAddress ( address_id_t address, storage_t size ) -> std:
 
 auto BufferManager::writeAddress ( address_id_t address, const std::vector< std::byte > &data ) -> void
 {
+    ++numIO;
     auto pageNumber = address / disk->blockSize;
     auto offset = address % disk->blockSize;
 
@@ -217,5 +221,27 @@ auto BufferManager::writeAddress ( address_id_t address, const std::vector< std:
             writePage( pageNumber, nextFrame );
         }
     }
+    return;
+}
+
+auto BufferManager::printStats ( std::ostream &os, Stats &startStats, std::string header ) -> void
+{
+    Stats endStats = getStats();
+    endStats.numIO -= startStats.numIO;
+    endStats.numDiskAccess -= startStats.numDiskAccess;
+    endStats.costDiskAccess -= startStats.costDiskAccess;
+    os << std::endl;
+    os << "\t================================================" << std::endl;
+    os << "\t" << header << std::endl;
+    os << "\t\tDisk Size: " << ((disk->blockCount * disk->blockSize) >> 20) << " MB" << std::endl;
+    os << "\t\tDisk Access: " << (disk->accessType == RANDOM ? "RANDOM" : "SEQUENTIAL") << std::endl;
+    os << "\t\tBuffer Size: " << ((numFrames * disk->blockSize) >> 10) << " KB" << std::endl;
+    os << "\t\tFrame Size: " << disk->blockSize << " B" << std::endl;
+    os << "\t\tReplace Strategy: " << (replaceStrategy == LRU ? "LRU" : "MRU") << std::endl;
+    os << "\tNumber of memory accesses: " << endStats.numIO << std::endl;
+    os << "\tNumber of block read/write: " << endStats.numDiskAccess << std::endl;
+    os << "\tCost of disk accesses: " << endStats.costDiskAccess << std::endl;
+    os << "\t================================================" << std::endl;
+    os << std::endl;
     return;
 }

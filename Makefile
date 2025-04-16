@@ -7,7 +7,7 @@ LIB_DIR = lib
 TESTING_DIR = testing
 BIN_DIR = bin
 RES_DIR = Results
-STATS_DIR = Stats
+STATS_DIR = Statistics
 
 # Source files
 BUFFER_SRC = src/Storage/BufferManager.cpp

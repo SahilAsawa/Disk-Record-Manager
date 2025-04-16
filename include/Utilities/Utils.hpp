@@ -120,6 +120,13 @@ struct JoinEmployeeCompany
     }
 };
 
+struct Stats
+{
+	unsigned long long numIO = 0;
+	unsigned long long numDiskAccess = 0;
+	unsigned long long costDiskAccess = 0;
+};
+
 static constexpr auto EmployeeSize = sizeof(Employee);
 static constexpr auto CompanySize = sizeof(Company);
 static constexpr auto JoinedSize = sizeof(JoinEmployeeCompany);
@@ -131,7 +138,7 @@ auto getNextFreeFrame(int readBytes, block_id_t BLOCK_SIZE = (4 KB)) -> int;
 template <typename T>
 T extractData(const std::vector<std::byte> &data);
 
-auto loadData(block_id_t BLOCK_SIZE = (4 KB), storage_t DISK_SIZE = (4 GB), storage_t BUFFER_SIZE = (64 KB)) -> std::tuple<address_id_t, address_id_t, address_id_t, address_id_t>;
+auto loadData(block_id_t BLOCK_SIZE = (4 KB), storage_t DISK_SIZE = (4 MB), storage_t BUFFER_SIZE = (64 KB)) -> std::tuple<address_id_t, address_id_t, address_id_t, address_id_t>;
 
 template <typename T>
 auto storeResult(BufferManager &buffer, address_id_t start, address_id_t end, std::string fileName) -> void;
