@@ -64,8 +64,11 @@ NEST_SRC = $(TESTING_DIR)/nestedLoopJoin.cpp
 HJOIN = hjoin
 HJOIN_SRC = $(TESTING_DIR)/hashJoin.cpp
 
+QUERY = query
+QUERY_SRC = $(TESTING_DIR)/query.cpp
+
 # Default target
-all: $(TEST) $(EMS) $(TABLE) $(ISORT) $(NEST) $(HJOIN)
+all: $(TEST) $(EMS) $(TABLE) $(ISORT) $(NEST) $(HJOIN) $(QUERY)
 
 # Compile test.cpp and link with shared libs
 $(TEST): $(TEST_SRC) $(STORAGE_LIB) $(INDEX_LIB) $(UTILS_LIB)
@@ -85,6 +88,9 @@ $(NEST): $(NEST_SRC) $(STORAGE_LIB) $(UTILS_LIB)
 
 $(HJOIN): $(HJOIN_SRC) $(STORAGE_LIB) $(INDEX_LIB) $(UTILS_LIB)
 	$(CXX) $(CXXFLAGS) -o $@ $(HJOIN_SRC) -L$(LIB_DIR) -Wl,-rpath,$(LIB_DIR) -lstorage -lindexes -lutils
+
+$(QUERY): $(QUERY_SRC) $(STORAGE_LIB) $(INDEX_LIB) $(UTILS_LIB)
+	$(CXX) $(CXXFLAGS) -o $@ $(QUERY_SRC) -L$(LIB_DIR) -Wl,-rpath,$(LIB_DIR) -lstorage -lindexes -lutils
 
 # Build object files
 $(BUILD_DIR)/%.o: src/Storage/%.cpp $(STORAGE_HEADERS)
@@ -114,6 +120,6 @@ $(INDEX_LIB): $(BPT_OBJ) $(HASH_OBJ)
 
 # Clean build artifacts
 clean:
-	rm -rf $(BUILD_DIR) $(LIB_DIR) $(TEST) $(EMS) $(TABLE) $(ISORT) $(NEST) $(HJOIN) $(BIN_DIR) $(RES_DIR) $(STATS_DIR)
+	rm -rf $(BUILD_DIR) $(LIB_DIR) $(TEST) $(EMS) $(TABLE) $(ISORT) $(NEST) $(HJOIN) $(QUERY) $(BIN_DIR) $(RES_DIR) $(STATS_DIR)
 
 .PHONY: all clean
