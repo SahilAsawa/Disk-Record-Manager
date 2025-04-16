@@ -22,6 +22,7 @@ using storage_t = unsigned long long;
 #define GB * 1024ll * 1024 * 1024
 #define MB * 1024ll * 1024
 #define KB * 1024ll
+#define B * 1ll
 
 const std::string BIN_DIR = "./bin/";
 const std::string CSV_DIR = "./files/";
@@ -131,15 +132,54 @@ static constexpr auto EmployeeSize = sizeof(Employee);
 static constexpr auto CompanySize = sizeof(Company);
 static constexpr auto JoinedSize = sizeof(JoinEmployeeCompany);
 
+/**
+ * @brief Loads a file into the disk in 128-byte chunks.
+ * @param buffer Reference to the BufferManager that handles writing data to disk.
+ * @param fileName Name (or path) of the file to be loaded.
+ * @param startingAddress The address in the buffer where writing should begin.
+ * @return On success, returns a pair of (startingAddress, endAddress) indicating the range written.
+ *         Returns std::nullopt if the file cannot be opened or an error occurs.
+ */
 auto loadFileInDisk (BufferManager& buffer, std::string fileName, address_id_t startingAddress) -> std::optional<std::pair<address_id_t,address_id_t>>;
 
+/**
+ * @brief Calculates the starting address of the next free frame given the current Address and the block size.
+ * @param readBytes The total number of bytes that have been used so far.
+ * @param BLOCK_SIZE The size of each block/frame.
+ * @return The starting address (offset) of the next free frame.
+ */
 auto getNextFreeFrame(int readBytes, block_id_t BLOCK_SIZE = (4 KB)) -> int;
 
+/**
+ * @brief Converts a byte vector to an object of type T via direct memory copy.
+ * @tparam T Type of the object to extract (e.g., `Employee`, `Company`).
+ * @param data Binary data to reinterpret as type `T`.
+ * @return T Deserialized object populated from `data`.
+ */
 template <typename T>
 T extractData(const std::vector<std::byte> &data);
 
+/**
+ * @brief Loads "employee.bin" and "company.bin" files into disk storage via a buffer manager.
+ * @param BLOCK_SIZE Size of each disk block (in bytes).
+ * @param DISK_SIZE Total capacity of the disk (in bytes).
+ * @param BUFFER_SIZE Maximum buffer cache size (in bytes).
+ * @return Contains four addresses in order:
+ *         - Start of employee data
+ *         - End of employee data
+ *         - Start of company data
+ *         - End of company data
+ */
 auto loadData(block_id_t BLOCK_SIZE = (4 KB), storage_t DISK_SIZE = (4 MB), storage_t BUFFER_SIZE = (64 KB)) -> std::tuple<address_id_t, address_id_t, address_id_t, address_id_t>;
 
+/**
+ * @brief Serializes data from the disk to a text file, converting binary data to objects of type `T`.
+ * @tparam T Type of object to extract (requires `T::size` and `T::toString()` methods).
+ * @param buffer BufferManager handling disk reads.
+ * @param start Starting address to read from (inclusive).
+ * @param end Ending address to read until (exclusive).
+ * @param fileName Output file name/path for text data.
+ */
 template <typename T>
 auto storeResult(BufferManager &buffer, address_id_t start, address_id_t end, std::string fileName) -> void;
 

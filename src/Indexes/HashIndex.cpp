@@ -32,11 +32,14 @@ auto Bucket::insert ( KeyType key, ValueType value ) -> bool
 
 auto Bucket::search ( KeyType key ) -> std::optional< ValueType >
 {
+    std::cout<<"Search Order->: ";
     for (auto &pair : bucketList)
     {
+        std::cout<<pair.first<<" ";
         if (pair.first == key)
             return pair.second;
     }
+    std::cout<<std::endl;
     return std::nullopt;
 }
 
@@ -95,7 +98,7 @@ auto Bucket::getMaxElementCount ( ) -> size_t
 auto Bucket::getMaxSize ( ) -> size_t
 {
     int keySize = sizeof(KeyType), valueSize = sizeof(ValueType);
-    return sizeof(bucketSize) + sizeof(localDepth) + sizeof(listSize) + sizeof(bucket_id) + bucketSize * (keySize + valueSize);
+    return sizeof(size_t) + sizeof(int) + sizeof(int) + sizeof(bucket_id_t) + bucketSize * (keySize + valueSize);
 }
 
 // ======================== ExtendableHashIndex ========================
@@ -171,6 +174,7 @@ auto ExtendableHashIndex::saveBucket ( bucket_id_t id, Bucket*bp ) -> void
 {
     std::vector<std::byte>data(bp->getMaxSize(),std::byte(0));
     size_t curr=0;
+    if(bp->bucketSize != bp->getMaxElementCount()) std::cerr<<"Bucket size mismatch: "<<bp->bucketSize<<" for bucket id: "<<bp->bucket_id<<std::endl;
     std::copy(reinterpret_cast<std::byte*>(&bp->bucketSize),reinterpret_cast<std::byte*>(&bp->bucketSize)+sizeof(size_t),data.data()+curr);
     curr+=sizeof(size_t);
 
@@ -215,8 +219,9 @@ auto ExtendableHashIndex::insert ( KeyType key, ValueType value ) -> bool
 
 auto ExtendableHashIndex::search ( KeyType key ) -> std::optional<ValueType>
 {
+    // std::cout<<"Tm  kc :"<<key<<std::endl; 
     Bucket*bptr=loadBucket(directory[getBucketNo(key)]);
-    std::cout<<"Searching "<<key<<" in bucket: "<<directory[getBucketNo(key)]<<std::endl;
+    std::cout<<"Searching "<<key<<" in bucket: "<<directory[getBucketNo(key)]<<" of size: "<<bptr->bucketList.size()<<std::endl;
     return bptr->search(key);
 }
 
