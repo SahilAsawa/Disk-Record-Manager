@@ -4,6 +4,11 @@
 #include <Storage/Disk.hpp>
 #include <Utilities/Utils.hpp>
 
+#define BLOCK_SIZE 4 KB
+#define DISK_SIZE 4 MB
+#define BUFFER_SIZE 8 KB
+
+
 address_id_t empStartAddr, empEndAddr, compStartAddr, compEndAddr;
 
 std::ofstream iterRes(RES_DIR + "queryiter_results.txt", std::ios::out | std::ios::trunc);
@@ -13,8 +18,8 @@ std::ofstream bptStats(STAT_DIR + "querybpt_stats.txt", std::ios::out | std::ios
 
 void usingBPT(int accessType, int replaceStrat, BPlusTreeIndex<int, int> &empIndex)
 {
-    Disk disk(accessType, 4 KB, 4 MB);
-    BufferManager bm(&disk, replaceStrat, 64 KB);
+    Disk disk(accessType, BLOCK_SIZE, DISK_SIZE);
+    BufferManager bm(&disk, replaceStrat, BUFFER_SIZE);
 
     auto stat = bm.getStats();
 
@@ -23,6 +28,8 @@ void usingBPT(int accessType, int replaceStrat, BPlusTreeIndex<int, int> &empInd
     auto result = empIndex.rangeSearch(low, high);
 
     // print results in a file depending on the access type and replace strategy
+    bptRes.clear();
+    bptRes.seekp(0, std::ios::beg);
     for (const auto &entry : result)
     {
         auto [key, addr] = entry;
@@ -35,13 +42,16 @@ void usingBPT(int accessType, int replaceStrat, BPlusTreeIndex<int, int> &empInd
 
 void usingIterating(int accessType, int replaceStrat)
 {
-    Disk disk(accessType, 4 KB, 4 MB);
-    BufferManager bm(&disk, replaceStrat, 64 KB);
+    Disk disk(accessType, BLOCK_SIZE, DISK_SIZE);
+    BufferManager bm(&disk, replaceStrat, BUFFER_SIZE);
 
     auto stat = bm.getStats();
 
     // print all employee id whose salary is between 40000 and 70000
     int low = 40000, high = 70000;
+
+    iterRes.clear();
+    iterRes.seekp(0, std::ios::beg);
     for (int i = 0; i < 1000; ++i)
     {
         address_id_t addr = empStartAddr + i * sizeof(Employee);
@@ -64,8 +74,8 @@ int main()
     compEndAddr = d;
 
     // create BPlusTree index
-    Disk disk(RANDOM, 4 KB, 4 MB);
-    BufferManager bm(&disk, LRU, 64 KB);
+    Disk disk(RANDOM, BLOCK_SIZE, DISK_SIZE);
+    BufferManager bm(&disk, LRU, BUFFER_SIZE);
     BPlusTreeIndex<int, int> empIndex(&bm, 7, compEndAddr);
     // create index on salary of employee
     for (int i = 0; i < 1000; ++i)
