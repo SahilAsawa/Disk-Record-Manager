@@ -8,7 +8,7 @@
 #include <Utilities/Utils.hpp>
 
 block_id_t BLOCK_SIZE = (4 KB);
-storage_t DISK_SIZE = (4 GB);
+storage_t DISK_SIZE = (4 MB);
 storage_t BUFFER_SIZE = (64 KB);
 
 template <typename T>

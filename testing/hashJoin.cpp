@@ -8,8 +8,8 @@
 #include <optional>
 
 const storage_t blockSize = (4 KB);
-const storage_t bufferSize = (4 MB);
-const storage_t diskSize = (4 GB);
+const storage_t bufferSize = (64 KB);
+const storage_t diskSize = (4 MB);
 const int replaceStrategy = LRU;
 const int accessType = RANDOM;
 

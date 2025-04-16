@@ -102,9 +102,9 @@ int help(storage_t blockSize, storage_t diskSize, storage_t bufferSize, int repl
 
 int main()
 {
-    help((4 KB), (4 GB), (64 KB), LRU, RANDOM);
-    help((4 KB), (4 GB), (64 KB), LRU, SEQUENTIAL);
-    help((4 KB), (4 GB), (64 KB), MRU, RANDOM);
-    help((4 KB), (4 GB), (64 KB), MRU, SEQUENTIAL);
+    help((4 KB), (4 MB), (64 KB), LRU, RANDOM);
+    help((4 KB), (4 MB), (64 KB), LRU, SEQUENTIAL);
+    help((4 KB), (4 MB), (64 KB), MRU, RANDOM);
+    help((4 KB), (4 MB), (64 KB), MRU, SEQUENTIAL);
     return 0;
 }

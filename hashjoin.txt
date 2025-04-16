@@ -1,0 +1,358 @@
+Employee Start Address: 0
+Employee End Address: 128000
+Company Start Address: 128000
+Company End Address: 153600
+Inserted company ID: 103 with record at address: 128000
+Inserted company ID: 25 with record at address: 128128
+Inserted company ID: 17 with record at address: 128256
+Inserted company ID: 11 with record at address: 128384
+Inserted company ID: 39 with record at address: 128512
+Inserted company ID: 12 with record at address: 128640
+Inserted company ID: 53 with record at address: 128768
+Inserted company ID: 134 with record at address: 128896
+Inserted company ID: 16 with record at address: 129024
+Inserted company ID: 82 with record at address: 129152
+Inserted company ID: 121 with record at address: 129280
+Inserted company ID: 7 with record at address: 129408
+Inserted company ID: 157 with record at address: 129536
+Inserted company ID: 163 with record at address: 129664
+Inserted company ID: 93 with record at address: 129792
+Inserted company ID: 88 with record at address: 129920
+Inserted company ID: 140 with record at address: 130048
+Inserted company ID: 191 with record at address: 130176
+Inserted company ID: 131 with record at address: 130304
+Inserted company ID: 136 with record at address: 130432
+Inserted company ID: 9 with record at address: 130560
+Inserted company ID: 50 with record at address: 130688
+Inserted company ID: 120 with record at address: 130816
+Inserted company ID: 5 with record at address: 130944
+Inserted company ID: 41 with record at address: 131072
+Inserted company ID: 72 with record at address: 131200
+Inserted company ID: 86 with record at address: 131328
+Inserted company ID: 132 with record at address: 131456
+Inserted company ID: 139 with record at address: 131584
+Inserted company ID: 31 with record at address: 131712
+Inserted company ID: 181 with record at address: 131840
+Inserted company ID: 172 with record at address: 131968
+Inserted company ID: 49 with record at address: 132096
+Inserted company ID: 169 with record at address: 132224
+Inserted company ID: 184 with record at address: 132352
+Inserted company ID: 22 with record at address: 132480
+Inserted company ID: 77 with record at address: 132608
+Inserted company ID: 147 with record at address: 132736
+Inserted company ID: 61 with record at address: 132864
+Inserted company ID: 189 with record at address: 132992
+Inserted company ID: 24 with record at address: 133120
+Inserted company ID: 44 with record at address: 133248
+Inserted company ID: 38 with record at address: 133376
+Inserted company ID: 94 with record at address: 133504
+Inserted company ID: 149 with record at address: 133632
+Inserted company ID: 116 with record at address: 133760
+Inserted company ID: 128 with record at address: 133888
+Inserted company ID: 26 with record at address: 134016
+Inserted company ID: 19 with record at address: 134144
+Inserted company ID: 6 with record at address: 134272
+Inserted company ID: 81 with record at address: 134400
+Inserted company ID: 148 with record at address: 134528
+Inserted company ID: 174 with record at address: 134656
+Inserted company ID: 68 with record at address: 134784
+Inserted company ID: 143 with record at address: 134912
+Inserted company ID: 159 with record at address: 135040
+Inserted company ID: 150 with record at address: 135168
+Inserted company ID: 65 with record at address: 135296
+Inserted company ID: 125 with record at address: 135424
+Inserted company ID: 98 with record at address: 135552
+Inserted company ID: 74 with record at address: 135680
+Inserted company ID: 197 with record at address: 135808
+Inserted company ID: 97 with record at address: 135936
+Inserted company ID: 154 with record at address: 136064
+Inserted company ID: 146 with record at address: 136192
+Inserted company ID: 158 with record at address: 136320
+Inserted company ID: 79 with record at address: 136448
+Inserted company ID: 152 with record at address: 136576
+Inserted company ID: 36 with record at address: 136704
+Inserted company ID: 105 with record at address: 136832
+Inserted company ID: 200 with record at address: 136960
+Inserted company ID: 108 with record at address: 137088
+Inserted company ID: 164 with record at address: 137216
+Inserted company ID: 153 with record at address: 137344
+Inserted company ID: 165 with record at address: 137472
+Inserted company ID: 69 with record at address: 137600
+Inserted company ID: 15 with record at address: 137728
+Inserted company ID: 119 with record at address: 137856
+Inserted company ID: 111 with record at address: 137984
+Inserted company ID: 4 with record at address: 138112
+Inserted company ID: 161 with record at address: 138240
+Inserted company ID: 100 with record at address: 138368
+Inserted company ID: 87 with record at address: 138496
+Inserted company ID: 70 with record at address: 138624
+Inserted company ID: 51 with record at address: 138752
+Inserted company ID: 66 with record at address: 138880
+Inserted company ID: 1 with record at address: 139008
+Inserted company ID: 63 with record at address: 139136
+Inserted company ID: 54 with record at address: 139264
+Inserted company ID: 3 with record at address: 139392
+Inserted company ID: 83 with record at address: 139520
+Inserted company ID: 133 with record at address: 139648
+Inserted company ID: 59 with record at address: 139776
+Inserted company ID: 127 with record at address: 139904
+Inserted company ID: 21 with record at address: 140032
+Inserted company ID: 76 with record at address: 140160
+Inserted company ID: 13 with record at address: 140288
+Inserted company ID: 183 with record at address: 140416
+Inserted company ID: 45 with record at address: 140544
+Inserted company ID: 10 with record at address: 140672
+Inserted company ID: 57 with record at address: 140800
+Inserted company ID: 104 with record at address: 140928
+Inserted company ID: 34 with record at address: 141056
+Inserted company ID: 195 with record at address: 141184
+Inserted company ID: 113 with record at address: 141312
+Inserted company ID: 168 with record at address: 141440
+Inserted company ID: 137 with record at address: 141568
+Inserted company ID: 198 with record at address: 141696
+Inserted company ID: 56 with record at address: 141824
+Inserted company ID: 130 with record at address: 141952
+Inserted company ID: 92 with record at address: 142080
+Inserted company ID: 30 with record at address: 142208
+Inserted company ID: 151 with record at address: 142336
+Inserted company ID: 102 with record at address: 142464
+Inserted company ID: 84 with record at address: 142592
+Inserted company ID: 43 with record at address: 142720
+Inserted company ID: 156 with record at address: 142848
+Inserted company ID: 107 with record at address: 142976
+Inserted company ID: 60 with record at address: 143104
+Inserted company ID: 179 with record at address: 143232
+Inserted company ID: 8 with record at address: 143360
+Inserted company ID: 190 with record at address: 143488
+Inserted company ID: 2 with record at address: 143616
+Inserted company ID: 173 with record at address: 143744
+Inserted company ID: 142 with record at address: 143872
+Inserted company ID: 73 with record at address: 144000
+Inserted company ID: 109 with record at address: 144128
+Inserted company ID: 144 with record at address: 144256
+Inserted company ID: 62 with record at address: 144384
+Inserted company ID: 48 with record at address: 144512
+Inserted company ID: 176 with record at address: 144640
+Inserted company ID: 29 with record at address: 144768
+Inserted company ID: 160 with record at address: 144896
+Inserted company ID: 196 with record at address: 145024
+Inserted company ID: 126 with record at address: 145152
+Inserted company ID: 199 with record at address: 145280
+Inserted company ID: 138 with record at address: 145408
+Inserted company ID: 180 with record at address: 145536
+Inserted company ID: 193 with record at address: 145664
+Inserted company ID: 99 with record at address: 145792
+Inserted company ID: 114 with record at address: 145920
+Inserted company ID: 117 with record at address: 146048
+Inserted company ID: 23 with record at address: 146176
+Inserted company ID: 112 with record at address: 146304
+Inserted company ID: 155 with record at address: 146432
+Inserted company ID: 90 with record at address: 146560
+Inserted company ID: 167 with record at address: 146688
+Inserted company ID: 33 with record at address: 146816
+Inserted company ID: 95 with record at address: 146944
+Inserted company ID: 18 with record at address: 147072
+Inserted company ID: 58 with record at address: 147200
+Inserted company ID: 89 with record at address: 147328
+Inserted company ID: 75 with record at address: 147456
+Inserted company ID: 192 with record at address: 147584
+Inserted company ID: 46 with record at address: 147712
+Inserted company ID: 32 with record at address: 147840
+Inserted company ID: 175 with record at address: 147968
+Inserted company ID: 55 with record at address: 148096
+Inserted company ID: 182 with record at address: 148224
+Inserted company ID: 47 with record at address: 148352
+Inserted company ID: 124 with record at address: 148480
+Inserted company ID: 78 with record at address: 148608
+Inserted company ID: 185 with record at address: 148736
+Inserted company ID: 194 with record at address: 148864
+Inserted company ID: 171 with record at address: 148992
+Inserted company ID: 71 with record at address: 149120
+Inserted company ID: 118 with record at address: 149248
+Inserted company ID: 64 with record at address: 149376
+Inserted company ID: 110 with record at address: 149504
+Inserted company ID: 67 with record at address: 149632
+Inserted company ID: 145 with record at address: 149760
+Inserted company ID: 27 with record at address: 149888
+Inserted company ID: 115 with record at address: 150016
+Inserted company ID: 101 with record at address: 150144
+Inserted company ID: 91 with record at address: 150272
+Inserted company ID: 166 with record at address: 150400
+Inserted company ID: 14 with record at address: 150528
+Inserted company ID: 35 with record at address: 150656
+Inserted company ID: 28 with record at address: 150784
+Inserted company ID: 80 with record at address: 150912
+Inserted company ID: 85 with record at address: 151040
+Inserted company ID: 178 with record at address: 151168
+Inserted company ID: 52 with record at address: 151296
+Inserted company ID: 20 with record at address: 151424
+Inserted company ID: 129 with record at address: 151552
+Inserted company ID: 162 with record at address: 151680
+Inserted company ID: 123 with record at address: 151808
+Inserted company ID: 170 with record at address: 151936
+Inserted company ID: 40 with record at address: 152064
+Inserted company ID: 141 with record at address: 152192
+Inserted company ID: 42 with record at address: 152320
+Inserted company ID: 106 with record at address: 152448
+Inserted company ID: 186 with record at address: 152576
+Inserted company ID: 37 with record at address: 152704
+Inserted company ID: 188 with record at address: 152832
+Inserted company ID: 96 with record at address: 152960
+Inserted company ID: 187 with record at address: 153088
+Inserted company ID: 122 with record at address: 153216
+Inserted company ID: 177 with record at address: 153344
+Inserted company ID: 135 with record at address: 153472
+Hash Index
+Global Depth: 7
+Directory Size: 128
+(128, 133888) 
+(1, 139008) (129, 151552) 
+(130, 141952) (2, 143616) 
+(131, 130304) (3, 139392) 
+(132, 131456) (4, 138112) 
+(5, 130944) (133, 139648) 
+(134, 128896) (6, 134272) 
+(7, 129408) (135, 153472) 
+(136, 130432) (8, 143360) 
+(9, 130560) (137, 141568) 
+(10, 140672) (138, 145408) 
+(11, 128384) (139, 131584) 
+(12, 128640) (140, 130048) 
+(13, 140288) (141, 152192) 
+(142, 143872) (14, 150528) 
+(143, 134912) (15, 137728) 
+(16, 129024) (144, 144256) 
+(17, 128256) (145, 149760) 
+(146, 136192) (18, 147072) 
+(147, 132736) (19, 134144) 
+(148, 134528) (20, 151424) 
+(149, 133632) (21, 140032) 
+(22, 132480) (150, 135168) 
+(151, 142336) (23, 146176) 
+(24, 133120) (152, 136576) 
+(25, 128128) (153, 137344) 
+(26, 134016) (154, 136064) 
+(155, 146432) (27, 149888) 
+(156, 142848) (28, 150784) 
+(157, 129536) (29, 144768) 
+(158, 136320) (30, 142208) 
+(31, 131712) (159, 135040) 
+(160, 144896) (32, 147840) 
+(161, 138240) (33, 146816) 
+(34, 141056) (162, 151680) 
+(163, 129664) (35, 150656) 
+(36, 136704) (164, 137216) 
+(165, 137472) (37, 152704) 
+(38, 133376) (166, 150400) 
+(39, 128512) (167, 146688) 
+(168, 141440) (40, 152064) 
+(41, 131072) (169, 132224) 
+(170, 151936) (42, 152320) 
+(43, 142720) (171, 148992) 
+(172, 131968) (44, 133248) 
+(45, 140544) (173, 143744) 
+(174, 134656) (46, 147712) 
+(175, 147968) (47, 148352) 
+(48, 144512) (176, 144640) 
+(49, 132096) (177, 153344) 
+(50, 130688) (178, 151168) 
+(51, 138752) (179, 143232) 
+(180, 145536) (52, 151296) 
+(53, 128768) (181, 131840) 
+(54, 139264) (182, 148224) 
+(183, 140416) (55, 148096) 
+(184, 132352) (56, 141824) 
+(57, 140800) (185, 148736) 
+(58, 147200) (186, 152576) 
+(59, 139776) (187, 153088) 
+(60, 143104) (188, 152832) 
+(61, 132864) (189, 132992) 
+(190, 143488) (62, 144384) 
+(191, 130176) (63, 139136) 
+(192, 147584) (64, 149376) 
+(65, 135296) (193, 145664) 
+(66, 138880) (194, 148864) 
+(195, 141184) (67, 149632) 
+(68, 134784) (196, 145024) 
+(197, 135808) (69, 137600) 
+(70, 138624) (198, 141696) 
+(199, 145280) (71, 149120) 
+(72, 131200) (200, 136960) 
+(73, 144000) 
+(74, 135680) 
+(75, 147456) 
+(76, 140160) 
+(77, 132608) 
+(78, 148608) 
+(79, 136448) 
+(80, 150912) 
+(81, 134400) 
+(82, 129152) 
+(83, 139520) 
+(84, 142592) 
+(85, 151040) 
+(86, 131328) 
+(87, 138496) 
+(88, 129920) 
+(89, 147328) 
+(90, 146560) 
+(91, 150272) 
+(92, 142080) 
+(93, 129792) 
+(94, 133504) 
+(95, 146944) 
+(96, 152960) 
+(97, 135936) 
+(98, 135552) 
+(99, 145792) 
+(100, 138368) 
+(101, 150144) 
+(102, 142464) 
+(103, 128000) 
+(104, 140928) 
+(105, 136832) 
+(106, 152448) 
+(107, 142976) 
+(108, 137088) 
+(109, 144128) 
+(110, 149504) 
+(111, 137984) 
+(112, 146304) 
+(113, 141312) 
+(114, 145920) 
+(115, 150016) 
+(116, 133760) 
+(117, 146048) 
+(118, 149248) 
+(119, 137856) 
+(120, 130816) 
+(121, 129280) 
+(122, 153216) 
+(123, 151808) 
+(124, 148480) 
+(125, 135424) 
+(126, 145152) 
+(127, 139904) 
+
+Company Index Start Address: 153600
+Company Index End Address: 153716
+========================================================
+Statistics of the creation of Hash Indices (Before Join)
+		Disk IO operations: 68
+		Disk IO cost: 68
+		(FrameSize: 4096, FrameCount: 16)
+		(ReplacementStrategy: LRU, DiskAccessStrategy: RANDOM)
+Searching 53 in bucket: 84 of size: 2
+Search Order->: 53 Joining Employee ID: 853 with Company ID: 53
+Searching 120 in bucket: 68 of size: 1
+Search Order->: 120 Joining Employee ID: 754 with Company ID: 120
+Searching 60 in bucket: 19 of size: 2
+Search Order->: 60 Joining Employee ID: 995 with Company ID: 60
+Searching 14 in bucket: 96 of size: 2
+Search Order->: 142 14 Joining Employee ID: 355 with Company ID: 14
+Searching 132 in bucket: 44 of size: 2
+Search Order->: 132 Joining Employee ID: 330 with Company ID: 132
+Searching 116 in bucket: 116 of size: 1
+Search Order->: 116 Joining Employee ID: 824 with Company ID: 116
+Searching 41 in bucket: 45 of size: 2
+Search Order->: 41 Joining Employee ID: 287 with Company ID: 41

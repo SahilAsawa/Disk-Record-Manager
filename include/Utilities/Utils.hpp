@@ -163,7 +163,7 @@ T extractData(const std::vector<std::byte> &data);
  *         - Start of company data
  *         - End of company data
  */
-auto loadData(block_id_t BLOCK_SIZE = (4 KB), storage_t DISK_SIZE = (4 GB), storage_t BUFFER_SIZE = (64 KB)) -> std::tuple<address_id_t, address_id_t, address_id_t, address_id_t>;
+auto loadData(block_id_t BLOCK_SIZE = (4 KB), storage_t DISK_SIZE = (4 MB), storage_t BUFFER_SIZE = (64 KB)) -> std::tuple<address_id_t, address_id_t, address_id_t, address_id_t>;
 
 /**
  * @brief Serializes data from the disk to a text file, converting binary data to objects of type `T`.

@@ -55,7 +55,7 @@ class Disk
     public:
 
     // Constructor
-    Disk ( bool _accessType, storage_t _blockSize = (4 KB), storage_t _diskSize = (4 GB), std::string _diskFile = "disk.dat" );
+    Disk ( bool _accessType, storage_t _blockSize = (4 KB), storage_t _diskSize = (4 MB), std::string _diskFile = "disk.dat" );
 
     // Destructor
     ~Disk ();

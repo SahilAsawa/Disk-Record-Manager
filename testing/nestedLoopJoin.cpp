@@ -15,7 +15,7 @@
 #define COMPANY 1
 
 block_id_t BLOCK_SIZE = (4 KB);
-storage_t DISK_SIZE = (4 GB);
+storage_t DISK_SIZE = (4 MB);
 storage_t BUFFER_SIZE = (64 KB);
 
 auto join(BufferManager &buffer, address_id_t StartAddressEmployee, address_id_t EndAddressEmployee, address_id_t StartAddressCompany, address_id_t EndAddressCompany, address_id_t NextUsableAddress, bool Outer) -> std::pair<address_id_t, address_id_t>
