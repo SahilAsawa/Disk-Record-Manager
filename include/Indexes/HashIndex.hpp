@@ -240,7 +240,7 @@ class ExtendableHashIndex
     auto getAddressRange  ( ) -> std::pair< address_id_t, address_id_t >
     {
         Bucket b(order, globalDepth);
-        address_id_t end_address = base_address + b.getMaxSize();
+        address_id_t end_address = base_address + b.getMaxSize() * lastIDUsed;
         return std::make_pair( base_address, end_address );
     }
     
