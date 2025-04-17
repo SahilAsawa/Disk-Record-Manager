@@ -38,15 +38,15 @@ int main() {
     std::cout << "Company Start Address: " << companyStartAddress << std::endl;
     std::cout << "Company End Address: " << companyEndAddress << std::endl;
 
-    ExtendableHashIndex comp_index(&bm, 2, 0, companyEndAddress);
+    ExtendableHashIndex<int,int> comp_index(&bm, 2, 0, companyEndAddress);
     for( int i = 0; i < 200; ++i )
     {
         address_id_t addr = companyStartAddress + i * sizeof(Company);
         Company comp = extractData<Company>(bm.readAddress(addr, sizeof(Company)));
         comp_index.insert( comp.id, addr );
-        std::cout << "Inserted company ID: " << comp.id << " with record at address: " << addr << std::endl;
+        // std::cout << "Inserted company ID: " << comp.id << " with record at address: " << addr << std::endl;
     }
-    comp_index.display();
+    std::cout<<comp_index<<std::endl;
     auto [compStartIndex, compEndIndex] = comp_index.getAddressRange();
 
     std::cout << "Company Index Start Address: " << compStartIndex << std::endl;
