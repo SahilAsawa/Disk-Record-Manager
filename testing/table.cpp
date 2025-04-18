@@ -62,6 +62,7 @@ int main()
 
         // shuffleOuterVector(data);
         // std::ofstream file1(CSV_DIR + "employee_random.csv");
+        // file1 << Employee::getTitle() << '\n';
         // for (const auto &row : data)
         // {
         //     for (size_t i = 0; i < row.size(); ++i)
@@ -107,6 +108,7 @@ int main()
 
         // shuffleOuterVector(data);
         // std::ofstream file2(CSV_DIR + "company_random.csv");
+        // file2 << Company::getTitle() << '\n';
         // for (const auto &row : data)
         // {
         //     for (size_t i = 0; i < row.size(); ++i)
