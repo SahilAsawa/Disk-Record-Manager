@@ -7,10 +7,6 @@
 #include <Storage/BufferManager.hpp>
 #include <Utilities/Utils.hpp>
 
-block_id_t BLOCK_SIZE = (4 KB);
-storage_t DISK_SIZE = (4 MB);
-storage_t BUFFER_SIZE = (64 KB);
-
 std::ofstream outFile(STAT_DIR + "external_sort_stats.txt", std::ios::out | std::ios::trunc);
 
 template <typename T>
@@ -49,11 +45,11 @@ auto externalSort(BufferManager &buffer, address_id_t StartAddress, address_id_t
     // Sorting the Data and storing it in the same Blocks in Disk
     std::vector<T> dataInBlock;
     std::vector<std::pair<address_id_t, address_id_t>> Runs;
-    for (address_id_t i = StartAddress; i < EndAddress; i += BLOCK_SIZE)
+    for (address_id_t i = StartAddress; i < EndAddress; i += BUFFER_SIZE)
     {
-        Runs.push_back({i, std::min(EndAddress, i + BLOCK_SIZE)});
-        auto data = buffer.readAddress(i, std::min(EndAddress, i + BLOCK_SIZE));
-        dataInBlock.insert(dataInBlock.end(), reinterpret_cast<T *>(data.data()), reinterpret_cast<T *>(data.data() + std::min(BLOCK_SIZE, EndAddress - i)));
+        Runs.push_back({i, std::min(EndAddress, i + BUFFER_SIZE)});
+        auto data = buffer.readAddress(i, std::min(EndAddress, i + BUFFER_SIZE));
+        dataInBlock.insert(dataInBlock.end(), reinterpret_cast<T *>(data.data()), reinterpret_cast<T *>(data.data() + std::min((storage_t) BUFFER_SIZE, EndAddress - i)));
         std::ranges::sort(dataInBlock.begin(), dataInBlock.end()); // Merge Sort each Block
         buffer.writeAddress(i, std::vector<std::byte>(reinterpret_cast<std::byte *>(dataInBlock.data()), reinterpret_cast<std::byte *>(dataInBlock.data() + dataInBlock.size())));
         dataInBlock.clear();
@@ -152,13 +148,13 @@ auto testing(bool DiskAccessStrategy, int BufferReplacementStategy) -> void
     auto [startCompanySorted, endCompanySorted] = externalSort<Company>(buffer, StartAddressCompany, EndAddressCompany, NextUsableAddress);
 
     buffer.printStats(outFile, stat, "Statistics of the External Sort");
+    stat = buffer.getStats();
     
     // Merge Join the Employee and Company data
     auto [startJoin, endJoin] = mergeJoin(buffer, startEmployeeSorted, endEmployeeSorted, startCompanySorted, endCompanySorted, NextUsableAddress);
 
     // print statistics
-    buffer.printStats(outFile, stat, "Statistics of the Merge Join (including sorting)"); 
-
+    buffer.printStats(outFile, stat, "Statistics of the Merge Join (excluding sorting)"); 
     std::string s = (BufferReplacementStategy == LRU ? "_lru" : "_mru");
     s += (DiskAccessStrategy == RANDOM ? "_rand" : "_seq");
     s += ".csv";

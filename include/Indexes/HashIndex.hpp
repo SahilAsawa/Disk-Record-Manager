@@ -7,16 +7,18 @@
     #include <string>
     #include <optional>
     #include <list>
-    #include <iostream>
+    // #include <iostream>
 
     #include <Utilities/Utils.hpp>
     #include <Storage/BufferManager.hpp>
 
+template<typename KeyType, typename ValueType>
 class ExtendableHashIndex;
 
-using KeyType = int;
-using ValueType = int;
+// using KeyType = int;
+// using ValueType = int;
 
+template<typename KeyType, typename ValueType>
 class Bucket
 {
     private:
@@ -49,7 +51,7 @@ class Bucket
 
     
     // overloaded assignment operator
-    Bucket& operator= ( const Bucket& other )
+    Bucket<KeyType, ValueType>& operator= ( const Bucket<KeyType, ValueType>& other )
     {
         if( this != &other )
         {
@@ -63,7 +65,7 @@ class Bucket
     }
 
     // overloaded copy constructor
-    Bucket ( const Bucket& other )
+    Bucket ( const Bucket<KeyType, ValueType>& other )
     {
         this->bucketSize = other.bucketSize;
         this->localDepth = other.localDepth;
@@ -139,7 +141,7 @@ class Bucket
     /**
      * @brief Prints the contents of the bucket
      */
-    auto display ( ) -> void;
+    auto display ( std::ostream &os ) const -> void;
 
     /**
      * @brief Get the maximum number of elements in the bucket
@@ -152,11 +154,12 @@ class Bucket
      * @return The maximum possible size of the bucket
      */
     auto getMaxSize ( ) -> size_t;
-
-    friend class ExtendableHashIndex;
+    friend class ExtendableHashIndex<KeyType, ValueType>;
+    template<typename K, typename V>
+    friend std::ostream& operator<<(std::ostream& os, const ExtendableHashIndex<K, V>& index);
 };
 
-
+template<typename KeyType, typename ValueType>
 class ExtendableHashIndex
 {
     // Denotes the ID of the bucket
@@ -231,7 +234,7 @@ class ExtendableHashIndex
     /**
      * @brief Display the contents of the hash index
      */
-    auto display ( ) -> void;
+    auto display ( std::ostream &os) const -> void;
 
     /**
      * @brief Get the address range of the hash index occupied in the disk
@@ -239,10 +242,13 @@ class ExtendableHashIndex
      */
     auto getAddressRange  ( ) -> std::pair< address_id_t, address_id_t >
     {
-        Bucket b(order, globalDepth);
+        Bucket<KeyType, ValueType> b(order, globalDepth);
         address_id_t end_address = base_address + b.getMaxSize() * lastIDUsed;
         return std::make_pair( base_address, end_address );
     }
+
+    template<typename K, typename V>
+    friend std::ostream& operator<<(std::ostream& os, const ExtendableHashIndex<K, V>& index);
     
     private:
 
@@ -251,7 +257,7 @@ class ExtendableHashIndex
      * @param n The bucket number
      * @return A string of length equal to the local depth of the bucket, representing the bucket number in binary
      */
-    auto bucket_string ( int n ) -> std::string;
+    auto bucket_string ( int n ) const -> std::string;
 
     /**
      * @brief Create a new bucket
@@ -264,14 +270,14 @@ class ExtendableHashIndex
      * @param id The ID of the bucket to load
      * @return A pointer to the loaded bucket
      */
-    auto loadBucket ( bucket_id_t id ) -> Bucket *;
+    auto loadBucket ( bucket_id_t id ) const -> Bucket<KeyType,ValueType> *;
 
     /**
      * @brief Save a bucket to the disk
      * @param id The ID of the bucket to save
      * @param bp A pointer to the bucket to save
      */
-    auto saveBucket ( bucket_id_t id, Bucket *bp ) -> void;
+    void saveBucket ( bucket_id_t id, Bucket<KeyType, ValueType> *bp );
 
     /**
      * @brief Destroy a bucket
@@ -307,6 +313,8 @@ class ExtendableHashIndex
      * @param index The index of the bucket to merge
      */
     auto mergeBucket ( int index ) -> void;
+
+    auto keyToInt( KeyType key ) -> unsigned long long int;
 };
 
 #endif      // _HASH_INDEX_HPP_

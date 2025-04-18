@@ -28,7 +28,7 @@ auto loadFileInDisk (BufferManager& buffer, std::string fileName, address_id_t s
 	return std::make_pair(startingAddress, endAddress);
 }
 
-auto getNextFreeFrame(int readBytes, block_id_t BLOCK_SIZE) -> int
+auto getNextFreeFrame(int readBytes, block_id_t blockSize) -> int
 {
     int usedFrameCnt = (readBytes + BLOCK_SIZE - 1) / BLOCK_SIZE;
     return usedFrameCnt * BLOCK_SIZE;
@@ -46,10 +46,10 @@ template Employee extractData<Employee>(const std::vector<std::byte> &data);
 template Company extractData<Company>(const std::vector<std::byte> &data);
 template JoinEmployeeCompany extractData<JoinEmployeeCompany>(const std::vector<std::byte> &data);
 
-auto loadData(block_id_t BLOCK_SIZE, storage_t DISK_SIZE, storage_t BUFFER_SIZE) -> std::tuple<address_id_t, address_id_t, address_id_t, address_id_t>
+auto loadData(block_id_t blockSize, storage_t diskSize, storage_t bufferSize) -> std::tuple<address_id_t, address_id_t, address_id_t, address_id_t>
 {
-    Disk disk(RANDOM, BLOCK_SIZE, DISK_SIZE);
-    BufferManager buffer(&disk, MRU, BUFFER_SIZE);
+    Disk disk(RANDOM, blockSize, diskSize);
+    BufferManager buffer(&disk, MRU, bufferSize);
 
     auto locationEmployee = loadFileInDisk(buffer, BIN_DIR + "employee.bin", 0);
     if (!locationEmployee.has_value())
@@ -80,6 +80,7 @@ auto storeResult(BufferManager &buffer, address_id_t start, address_id_t end, st
         std::cerr << "Error opening file" << '\n';
         return;
     }
+    file << T::getTitle() << std::endl;
     for (address_id_t i = start; i < end; i += size)
     {
         auto data = buffer.readAddress(i, size);

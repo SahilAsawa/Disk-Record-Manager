@@ -56,12 +56,13 @@ int main()
 
     try
     {
-        auto data = readCSV(CSV_DIR + "employee.csv", ',');
+        auto data = readCSV(CSV_DIR + "employee.csv", ';');
         std::cout << "employee.csv size : " << data.size() << '\n';
         std::cout << "Total Attributes : " << data[0].size() << '\n';
 
         // shuffleOuterVector(data);
         // std::ofstream file1(CSV_DIR + "employee_random.csv");
+        // file1 << Employee::getTitle() << '\n';
         // for (const auto &row : data)
         // {
         //     for (size_t i = 0; i < row.size(); ++i)
@@ -75,7 +76,7 @@ int main()
         // file1.close();
 
         std::vector<Employee> employees{};
-
+        
         for (auto &&row : data)
         {
             Employee employee{};
@@ -84,10 +85,10 @@ int main()
             std::strcpy(employee.lname.data(), row[2].c_str());
             employee.salary = std::stoi(row[3]);
             employee.company_id = std::stoi(row[4]);
-
+            
             employees.emplace_back(employee);
         }
-
+        
         std::ofstream file{BIN_DIR + "employee.bin", std::ios::binary};
 
         for (const auto &employee : employees)
@@ -107,6 +108,7 @@ int main()
 
         // shuffleOuterVector(data);
         // std::ofstream file2(CSV_DIR + "company_random.csv");
+        // file2 << Company::getTitle() << '\n';
         // for (const auto &row : data)
         // {
         //     for (size_t i = 0; i < row.size(); ++i)
@@ -142,6 +144,7 @@ int main()
     }
     catch (const std::exception &e)
     {
-        std::cerr << e.what() << '\n';
+        // print error message in detail
+        std::cerr << "Error: " << e.what() << '\n';
     }
 }

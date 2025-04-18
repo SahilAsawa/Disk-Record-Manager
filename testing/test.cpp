@@ -227,17 +227,18 @@ BufferManager bm( &disk, LRU, 1024 );
 
 
 
-void testInsertSearch(ExtendableHashIndex &index)
+void testInsertSearch(ExtendableHashIndex<int,int> &index)
 {
     std::cout << "\n=== Insert & Search Test ===\n";
     index.insert(1, 100);
-    index.display();
+    std::cout<<index<<std::endl;
 
     index.insert(5, 500);
-    index.display();
+    std::cout<<index<<std::endl;
+
 
     index.insert(9, 900);
-    index.display(); // View current directory
+    std::cout<<index<<std::endl;  // View current directory
 
     auto res1 = index.search(5);
     std::cout << "Search key 5: " << (res1.has_value() ? std::to_string(res1.value()) : "Not Found") << std::endl;
@@ -246,17 +247,17 @@ void testInsertSearch(ExtendableHashIndex &index)
     std::cout << "Search key 99: " << (res2.has_value() ? std::to_string(res2.value()) : "Not Found") << std::endl;
 }
 
-void testDelete(ExtendableHashIndex &index)
+void testDelete(ExtendableHashIndex<int,int> &index)
 {
     std::cout << "\n=== Delete Test ===\n";
     index.deleteKey(5);
-    index.display(); // View structure after deletion
+    std::cout<<index<<std::endl; // View structure after deletion
 
     auto res = index.search(5);
     std::cout << "Search key 5 after delete: " << (res.has_value() ? std::to_string(res.value()) : "Not Found") << std::endl;
 }
 
-void testSplitAndMerge(ExtendableHashIndex &index)
+void testSplitAndMerge(ExtendableHashIndex<int,int> &index)
 {
     std::cout << "\n=== Split & Merge Test ===\n";
 
@@ -265,7 +266,7 @@ void testSplitAndMerge(ExtendableHashIndex &index)
     {
         index.insert(i, i * 10);
         std::cout << "\nInserted " << i << std::endl;
-        index.display();
+        std::cout<<index<<std::endl;
     }
     // index.display(); // After multiple inserts
 
@@ -274,7 +275,7 @@ void testSplitAndMerge(ExtendableHashIndex &index)
     {
         index.deleteKey(i);
     }
-    index.display(); // After deletes
+    std::cout<<index<<std::endl; // After deletes
 
     std::cout << "Global Depth After Deletes: " << index.getGlobalDepth() << std::endl;
 }
@@ -283,7 +284,7 @@ int main()
 {
     Disk disk( RANDOM, 4096, 1024 );
     BufferManager bm( &disk, LRU, 1024 );
-    ExtendableHashIndex index(&bm); // Start with global depth 2
+    ExtendableHashIndex<int,int> index(&bm); // Start with global depth 2
 
     testInsertSearch(index);
     testDelete(index);
