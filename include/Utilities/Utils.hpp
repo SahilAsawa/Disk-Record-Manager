@@ -32,7 +32,7 @@ using storage_t = unsigned long long;
 #define BUFFER_SIZE (64 KB)
 
 const std::string BIN_DIR = "./bin/";
-const std::string CSV_DIR = "./files/";
+const std::string CSV_DIR = "./files_large/";
 const std::string RES_DIR = "./Results/";
 const std::string STAT_DIR = "./Statistics/";
 
