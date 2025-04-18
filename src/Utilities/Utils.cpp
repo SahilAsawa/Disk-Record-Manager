@@ -80,6 +80,7 @@ auto storeResult(BufferManager &buffer, address_id_t start, address_id_t end, st
         std::cerr << "Error opening file" << '\n';
         return;
     }
+    file << T::getTitle() << std::endl;
     for (address_id_t i = start; i < end; i += size)
     {
         auto data = buffer.readAddress(i, size);

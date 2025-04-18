@@ -152,13 +152,13 @@ auto testing(bool DiskAccessStrategy, int BufferReplacementStategy) -> void
     auto [startCompanySorted, endCompanySorted] = externalSort<Company>(buffer, StartAddressCompany, EndAddressCompany, NextUsableAddress);
 
     buffer.printStats(outFile, stat, "Statistics of the External Sort");
+    stat = buffer.getStats();
     
     // Merge Join the Employee and Company data
     auto [startJoin, endJoin] = mergeJoin(buffer, startEmployeeSorted, endEmployeeSorted, startCompanySorted, endCompanySorted, NextUsableAddress);
 
     // print statistics
-    buffer.printStats(outFile, stat, "Statistics of the Merge Join (including sorting)"); 
-
+    buffer.printStats(outFile, stat, "Statistics of the Merge Join (excluding sorting)"); 
     std::string s = (BufferReplacementStategy == LRU ? "_lru" : "_mru");
     s += (DiskAccessStrategy == RANDOM ? "_rand" : "_seq");
     s += ".csv";

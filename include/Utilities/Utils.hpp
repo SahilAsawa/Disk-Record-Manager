@@ -54,6 +54,10 @@ struct Employee
 	{
 		return lhs.company_id <=> rhs.company_id;
 	}
+	
+	static std::string getTitle() {
+		return "id;company_id;salary;fname;lname";
+	}
 
 	std::string toString() const {
 		std::stringstream ss;
@@ -79,6 +83,10 @@ struct Company
 		-> std::strong_ordering
 	{
 		return lhs.id <=> rhs.id;
+	}
+
+	static std::string getTitle() {
+		return "id;name;slogan";
 	}
 
 	std::string toString() const {
@@ -110,6 +118,10 @@ struct JoinEmployeeCompany
 		lname = employee.lname;
 		std::copy_n(company.name.begin(), 62, name.begin());
 		std::copy_n(company.slogan.begin(), 62, slogan.begin());
+	}
+
+	static std::string getTitle() {
+		return "employee_id;company_id;salary;fname;lname;name;slogan";
 	}
 
 	std::string toString() const {
