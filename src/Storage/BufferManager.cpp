@@ -224,6 +224,30 @@ auto BufferManager::writeAddress ( address_id_t address, const std::vector< std:
     return;
 }
 
+auto BufferManager::clearCache() -> void
+{
+    for ( frame_id_t i = 0; i < numFrames; ++i )
+    {
+        if ( isDirty[i] )
+        {
+            disk->writeBlock( invPageTable[i], bufferData[i] );
+            isDirty[i] = false;
+        }
+    }
+    busyFrames.clear();
+    freeFrames = std::stack<frame_id_t>();
+    for ( frame_id_t i = 0; i < numFrames; ++i )
+    {
+        freeFrames.push( i );
+    }
+    pageTable.clear();
+    invPageTable.clear();
+    framePos.clear();
+
+    disk->diskFileStream.seekg( 0, std::ios::beg );
+    disk->diskFileStream.seekp( 0, std::ios::end );
+}
+
 auto BufferManager::printStats ( std::ostream &os, Stats &startStats, std::string header ) -> void
 {
     Stats endStats = getStats();

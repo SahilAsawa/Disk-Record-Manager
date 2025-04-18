@@ -142,9 +142,36 @@ struct JoinEmployeeCompany
 
 struct Stats
 {
-	unsigned long long numIO = 0;
-	unsigned long long numDiskAccess = 0;
-	unsigned long long costDiskAccess = 0;
+	long long numIO = 0;
+	long long numDiskAccess = 0;
+	long long costDiskAccess = 0;
+
+	//overload + operator
+	friend auto operator+(const Stats &lhs, const Stats &rhs) -> Stats
+	{
+		return {lhs.numIO + rhs.numIO, lhs.numDiskAccess + rhs.numDiskAccess, lhs.costDiskAccess + rhs.costDiskAccess};
+	}
+	//overload += operator
+	friend auto operator+=(Stats &lhs, const Stats &rhs) -> Stats &
+	{
+		lhs.numIO += rhs.numIO;
+		lhs.numDiskAccess += rhs.numDiskAccess;
+		lhs.costDiskAccess += rhs.costDiskAccess;
+		return lhs;
+	}
+	//overload - operator
+	friend auto operator-(const Stats &lhs, const Stats &rhs) -> Stats
+	{
+		return {lhs.numIO - rhs.numIO, lhs.numDiskAccess - rhs.numDiskAccess, lhs.costDiskAccess - rhs.costDiskAccess};
+	}
+	//overload -= operator
+	friend auto operator-=(Stats &lhs, const Stats &rhs) -> Stats &
+	{
+		lhs.numIO -= rhs.numIO;
+		lhs.numDiskAccess -= rhs.numDiskAccess;
+		lhs.costDiskAccess -= rhs.costDiskAccess;
+		return lhs;
+	}
 };
 
 static constexpr auto EmployeeSize = sizeof(Employee);

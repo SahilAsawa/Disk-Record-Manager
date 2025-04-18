@@ -149,13 +149,19 @@ class BufferManager
     }
 
     /**
+     * @brief Clear the buffer
+     * @note This function clears the buffer and writes all dirty pages to the disk.
+     */
+    auto clearCache( ) -> void;
+
+    /**
      * @brief Get the statistics related to IO operations.
      * @returns A Stats object containing the number of IO operations, disk accesses, and cost of disk accesses.
      * @note The statistics are updated after each IO operation.
      */
     auto getStats ( ) const -> Stats
     {
-        return { numIO, disk->numIO, disk->costIO };
+        return { (long long) numIO, (long long) disk->numIO, (long long) disk->costIO };
     }
 
     /**

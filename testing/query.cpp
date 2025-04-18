@@ -11,16 +11,35 @@ std::ofstream bptRes(RES_DIR + "querybpt_results.txt", std::ios::out | std::ios:
 std::ofstream iterStats(STAT_DIR + "queryiter_stats.txt", std::ios::out | std::ios::trunc);
 std::ofstream bptStats(STAT_DIR + "querybpt_stats.txt", std::ios::out | std::ios::trunc);
 
-void usingBPT(int accessType, int replaceStrat, BPlusTreeIndex<int, int> &empIndex)
+void usingBPT(int accessType, int replaceStrat, address_id_t compEndAddr)
 {
     Disk disk(accessType, BLOCK_SIZE, DISK_SIZE);
     BufferManager bm(&disk, replaceStrat, BUFFER_SIZE);
 
-    auto stat = bm.getStats();
+    // create BPlusTree index
+    BPlusTreeIndex<int, int> empIndex(&bm, 7, compEndAddr);
+    // create index on salary of employee
+    for (int i = 0; i < EMP_SIZE; ++i)
+    {
+        address_id_t addr = empStartAddr + i * sizeof(Employee);
+        Employee emp = extractData<Employee>(bm.readAddress(addr, sizeof(Employee)));
+        empIndex.insert(emp.salary * (EMP_SIZE + 1) + emp.id, addr);
+    }
 
+    Stats stat = {0, 0, 0};
+    bm.printStats(bptStats, stat, "Statistics for the creation of B+ Tree Index");
+    
     // print all employee id whose salary is between 40000 and 70000
-    int low = 40000 * EMP_SIZE, high = 70001 * EMP_SIZE;
+    stat = bm.getStats();
+    int low = 40000 * (EMP_SIZE + 1), high = 42001 * (EMP_SIZE + 1);
     auto result = empIndex.rangeSearch(low, high);
+    
+    bm.clearCache();
+
+    // sort the range so that access is sequential of the records
+    std::sort(result.begin(), result.end(), [](const auto &a, const auto &b) {
+        return a.second < b.second;
+    });
 
     // print results in a file depending on the access type and replace strategy
     bptRes.clear();
@@ -43,7 +62,7 @@ void usingIterating(int accessType, int replaceStrat)
     auto stat = bm.getStats();
 
     // print all employee id whose salary is between 40000 and 70000
-    int low = 40000, high = 70000;
+    int low = 40000, high = 42001;
 
     iterRes.clear();
     iterRes.seekp(0, std::ios::beg);
@@ -51,7 +70,7 @@ void usingIterating(int accessType, int replaceStrat)
     {
         address_id_t addr = empStartAddr + i * sizeof(Employee);
         Employee emp = extractData<Employee>(bm.readAddress(addr, sizeof(Employee)));
-        if (emp.salary >= low && emp.salary <= high)
+        if (emp.salary >= low && emp.salary < high)
         {
             iterRes << emp.toString() << std::endl;
         }
@@ -68,25 +87,10 @@ int main()
     compStartAddr = c;
     compEndAddr = d;
 
-    // create BPlusTree index
-    Disk disk(RANDOM, BLOCK_SIZE, DISK_SIZE);
-    BufferManager bm(&disk, LRU, BUFFER_SIZE);
-    BPlusTreeIndex<int, int> empIndex(&bm, 7, compEndAddr);
-    // create index on salary of employee
-    for (int i = 0; i < EMP_SIZE; ++i)
-    {
-        address_id_t addr = empStartAddr + i * sizeof(Employee);
-        Employee emp = extractData<Employee>(bm.readAddress(addr, sizeof(Employee)));
-        empIndex.insert(emp.salary * EMP_SIZE + emp.id, addr);
-    }
-
-    Stats stat = {0, 0, 0};
-    bm.printStats(bptStats, stat, "Statistics for the creation of B+ Tree Index");
-
-    usingBPT(RANDOM, LRU, empIndex);
-    usingBPT(SEQUENTIAL, LRU, empIndex);
-    usingBPT(RANDOM, MRU, empIndex);
-    usingBPT(SEQUENTIAL, MRU, empIndex);
+    usingBPT(RANDOM, LRU, compEndAddr);
+    usingBPT(SEQUENTIAL, LRU, compEndAddr);
+    usingBPT(RANDOM, MRU, compEndAddr);
+    usingBPT(SEQUENTIAL, MRU, compEndAddr);
     usingIterating(RANDOM, LRU);
     usingIterating(SEQUENTIAL, LRU);
     usingIterating(RANDOM, MRU);
