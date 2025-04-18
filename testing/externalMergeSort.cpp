@@ -7,10 +7,6 @@
 #include <Storage/BufferManager.hpp>
 #include <Utilities/Utils.hpp>
 
-block_id_t BLOCK_SIZE = (4 KB);
-storage_t DISK_SIZE = (4 MB);
-storage_t BUFFER_SIZE = (64 KB);
-
 std::ofstream outFile(STAT_DIR + "external_sort_stats.txt", std::ios::out | std::ios::trunc);
 
 template <typename T>
@@ -53,7 +49,7 @@ auto externalSort(BufferManager &buffer, address_id_t StartAddress, address_id_t
     {
         Runs.push_back({i, std::min(EndAddress, i + BUFFER_SIZE)});
         auto data = buffer.readAddress(i, std::min(EndAddress, i + BUFFER_SIZE));
-        dataInBlock.insert(dataInBlock.end(), reinterpret_cast<T *>(data.data()), reinterpret_cast<T *>(data.data() + std::min(BUFFER_SIZE, EndAddress - i)));
+        dataInBlock.insert(dataInBlock.end(), reinterpret_cast<T *>(data.data()), reinterpret_cast<T *>(data.data() + std::min((storage_t) BUFFER_SIZE, EndAddress - i)));
         std::ranges::sort(dataInBlock.begin(), dataInBlock.end()); // Merge Sort each Block
         buffer.writeAddress(i, std::vector<std::byte>(reinterpret_cast<std::byte *>(dataInBlock.data()), reinterpret_cast<std::byte *>(dataInBlock.data() + dataInBlock.size())));
         dataInBlock.clear();

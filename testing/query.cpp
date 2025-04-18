@@ -4,11 +4,6 @@
 #include <Storage/Disk.hpp>
 #include <Utilities/Utils.hpp>
 
-#define BLOCK_SIZE 4 KB
-#define DISK_SIZE 4 MB
-#define BUFFER_SIZE 8 KB
-
-
 address_id_t empStartAddr, empEndAddr, compStartAddr, compEndAddr;
 
 std::ofstream iterRes(RES_DIR + "queryiter_results.txt", std::ios::out | std::ios::trunc);
@@ -24,7 +19,7 @@ void usingBPT(int accessType, int replaceStrat, BPlusTreeIndex<int, int> &empInd
     auto stat = bm.getStats();
 
     // print all employee id whose salary is between 40000 and 70000
-    int low = 40000 * 1000, high = 70001 * 1000;
+    int low = 40000 * EMP_SIZE, high = 70001 * EMP_SIZE;
     auto result = empIndex.rangeSearch(low, high);
 
     // print results in a file depending on the access type and replace strategy
@@ -52,7 +47,7 @@ void usingIterating(int accessType, int replaceStrat)
 
     iterRes.clear();
     iterRes.seekp(0, std::ios::beg);
-    for (int i = 0; i < 1000; ++i)
+    for (int i = 0; i < EMP_SIZE; ++i)
     {
         address_id_t addr = empStartAddr + i * sizeof(Employee);
         Employee emp = extractData<Employee>(bm.readAddress(addr, sizeof(Employee)));
@@ -78,11 +73,11 @@ int main()
     BufferManager bm(&disk, LRU, BUFFER_SIZE);
     BPlusTreeIndex<int, int> empIndex(&bm, 7, compEndAddr);
     // create index on salary of employee
-    for (int i = 0; i < 1000; ++i)
+    for (int i = 0; i < EMP_SIZE; ++i)
     {
         address_id_t addr = empStartAddr + i * sizeof(Employee);
         Employee emp = extractData<Employee>(bm.readAddress(addr, sizeof(Employee)));
-        empIndex.insert(emp.salary * 1000 + emp.id, addr);
+        empIndex.insert(emp.salary * EMP_SIZE + emp.id, addr);
     }
 
     Stats stat = {0, 0, 0};

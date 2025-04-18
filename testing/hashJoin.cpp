@@ -12,9 +12,6 @@ address_id_t employeeEndAddress = 0;
 address_id_t companyStartAddress = 0;
 address_id_t companyEndAddress = 0;
 
-const storage_t blockSize = (4 KB);
-const storage_t bufferSize = (64 KB);
-const storage_t diskSize = (4 MB);
 const int replaceStrategy = LRU;
 const int accessType = RANDOM;
 
@@ -27,7 +24,7 @@ int help(storage_t blockSize, storage_t diskSize, storage_t bufferSize, int repl
     auto stat = bm.getStats();
 
     ExtendableHashIndex<int, address_id_t> comp_index(&bm, 2, 0, companyEndAddress);
-    for( int i = 0; i < 200; ++i )
+    for( int i = 0; i < COMP_SIZE; ++i )
     {
         address_id_t addr = companyStartAddress + i * sizeof(Company);
         Company comp = extractData<Company>(bm.readAddress(addr, sizeof(Company)));
@@ -76,10 +73,10 @@ int main() {
         return 1;
     }
 
-    help((4 KB), (4 MB), (64 KB), LRU, RANDOM);
-    help((4 KB), (4 MB), (64 KB), LRU, SEQUENTIAL);
-    help((4 KB), (4 MB), (64 KB), MRU, RANDOM);
-    help((4 KB), (4 MB), (64 KB), MRU, SEQUENTIAL);
+    help(BLOCK_SIZE, DISK_SIZE, BUFFER_SIZE, LRU, RANDOM);
+    help(BLOCK_SIZE, DISK_SIZE, BUFFER_SIZE, LRU, SEQUENTIAL);
+    help(BLOCK_SIZE, DISK_SIZE, BUFFER_SIZE, MRU, RANDOM);
+    help(BLOCK_SIZE, DISK_SIZE, BUFFER_SIZE, MRU, SEQUENTIAL);
 
     outFile.close();
     outFile.clear();

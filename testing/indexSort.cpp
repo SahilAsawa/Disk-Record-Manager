@@ -5,7 +5,6 @@
 
 #include <iostream>
 #include <vector>
-#include <optional>
 #include <string>
 
 address_id_t employeeStartAddress = 0;
@@ -23,7 +22,7 @@ int help(storage_t blockSize, storage_t diskSize, storage_t bufferSize, int repl
     auto stat = bm.getStats();
 
     BPlusTreeIndex< unsigned long long, address_id_t > emp_index(&bm, 10, companyEndAddress);
-    for ( int i = 0; i < 1000; ++i )
+    for ( int i = 0; i < EMP_SIZE; ++i )
     {
         address_id_t addr = employeeStartAddress + i * sizeof(Employee);
         Employee emp = extractData<Employee>(bm.readAddress(addr, sizeof(Employee)));
@@ -32,7 +31,7 @@ int help(storage_t blockSize, storage_t diskSize, storage_t bufferSize, int repl
     auto [empStartIndex, empEndIndex] = emp_index.getAddressRange();
 
     BPlusTreeIndex< unsigned long long, address_id_t > comp_index(&bm, 10, empEndIndex);
-    for( int i = 0; i < 200; ++i )
+    for( int i = 0; i < COMP_SIZE; ++i )
     {
         address_id_t addr = companyStartAddress + i * sizeof(Company);
         Company comp = extractData<Company>(bm.readAddress(addr, sizeof(Company)));
@@ -87,10 +86,10 @@ int main()
         return 1;
     }
 
-    help((4 KB), (4 MB), (64 KB), LRU, RANDOM);
-    help((4 KB), (4 MB), (64 KB), LRU, SEQUENTIAL);
-    help((4 KB), (4 MB), (64 KB), MRU, RANDOM);
-    help((4 KB), (4 MB), (64 KB), MRU, SEQUENTIAL);
+    help(BLOCK_SIZE, DISK_SIZE, BUFFER_SIZE, LRU, RANDOM);
+    help(BLOCK_SIZE, DISK_SIZE, BUFFER_SIZE, LRU, SEQUENTIAL);
+    help(BLOCK_SIZE, DISK_SIZE, BUFFER_SIZE, MRU, RANDOM);
+    help(BLOCK_SIZE, DISK_SIZE, BUFFER_SIZE, MRU, SEQUENTIAL);
 
     outFile.close();
     outFile.clear();

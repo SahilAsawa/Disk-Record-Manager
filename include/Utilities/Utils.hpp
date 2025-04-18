@@ -24,6 +24,13 @@ using storage_t = unsigned long long;
 #define KB * 1024ll
 #define B * 1ll
 
+#define EMP_SIZE 5000
+#define COMP_SIZE 1000
+
+#define BLOCK_SIZE (4 KB)
+#define DISK_SIZE (4 MB)
+#define BUFFER_SIZE (64 KB)
+
 const std::string BIN_DIR = "./bin/";
 const std::string CSV_DIR = "./files/";
 const std::string RES_DIR = "./Results/";
@@ -160,7 +167,7 @@ auto loadFileInDisk (BufferManager& buffer, std::string fileName, address_id_t s
  * @param BLOCK_SIZE The size of each block/frame.
  * @return The starting address (offset) of the next free frame.
  */
-auto getNextFreeFrame(int readBytes, block_id_t BLOCK_SIZE = (4 KB)) -> int;
+auto getNextFreeFrame(int readBytes, block_id_t blockSize = (4 KB)) -> int;
 
 /**
  * @brief Converts a byte vector to an object of type T via direct memory copy.
@@ -182,7 +189,7 @@ T extractData(const std::vector<std::byte> &data);
  *         - Start of company data
  *         - End of company data
  */
-auto loadData(block_id_t BLOCK_SIZE = (4 KB), storage_t DISK_SIZE = (4 MB), storage_t BUFFER_SIZE = (64 KB)) -> std::tuple<address_id_t, address_id_t, address_id_t, address_id_t>;
+auto loadData(block_id_t blockSize = (4 KB), storage_t diskSize = (4 MB), storage_t bufferSize = (64 KB)) -> std::tuple<address_id_t, address_id_t, address_id_t, address_id_t>;
 
 /**
  * @brief Serializes data from the disk to a text file, converting binary data to objects of type `T`.

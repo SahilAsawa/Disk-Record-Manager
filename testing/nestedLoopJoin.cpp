@@ -1,22 +1,14 @@
 #include <fstream>
 #include <iostream>
-#include <ranges>
 #include <vector>
-#include <algorithm>
-#include <queue>
 #include <cassert>
 #include <cstring>
-#include <iomanip>
 #include <Storage/Disk.hpp>
 #include <Storage/BufferManager.hpp>
 #include <Utilities/Utils.hpp>
 
 #define EMPLOYEE 0
 #define COMPANY 1
-
-block_id_t BLOCK_SIZE = (4 KB);
-storage_t DISK_SIZE = (4 MB);
-storage_t BUFFER_SIZE = (64 KB);
 
 address_id_t StartAddressEmployee = 0;
 address_id_t EndAddressEmployee = 0;
