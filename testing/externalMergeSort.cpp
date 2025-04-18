@@ -49,11 +49,11 @@ auto externalSort(BufferManager &buffer, address_id_t StartAddress, address_id_t
     // Sorting the Data and storing it in the same Blocks in Disk
     std::vector<T> dataInBlock;
     std::vector<std::pair<address_id_t, address_id_t>> Runs;
-    for (address_id_t i = StartAddress; i < EndAddress; i += BLOCK_SIZE)
+    for (address_id_t i = StartAddress; i < EndAddress; i += BUFFER_SIZE)
     {
-        Runs.push_back({i, std::min(EndAddress, i + BLOCK_SIZE)});
-        auto data = buffer.readAddress(i, std::min(EndAddress, i + BLOCK_SIZE));
-        dataInBlock.insert(dataInBlock.end(), reinterpret_cast<T *>(data.data()), reinterpret_cast<T *>(data.data() + std::min(BLOCK_SIZE, EndAddress - i)));
+        Runs.push_back({i, std::min(EndAddress, i + BUFFER_SIZE)});
+        auto data = buffer.readAddress(i, std::min(EndAddress, i + BUFFER_SIZE));
+        dataInBlock.insert(dataInBlock.end(), reinterpret_cast<T *>(data.data()), reinterpret_cast<T *>(data.data() + std::min(BUFFER_SIZE, EndAddress - i)));
         std::ranges::sort(dataInBlock.begin(), dataInBlock.end()); // Merge Sort each Block
         buffer.writeAddress(i, std::vector<std::byte>(reinterpret_cast<std::byte *>(dataInBlock.data()), reinterpret_cast<std::byte *>(dataInBlock.data() + dataInBlock.size())));
         dataInBlock.clear();
