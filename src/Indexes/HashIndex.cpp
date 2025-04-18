@@ -516,7 +516,16 @@ template class ExtendableHashIndex<int, int>;
 template class ExtendableHashIndex<int, std::string>;
 template class ExtendableHashIndex<std::string, int>;
 template class ExtendableHashIndex<std::string, std::string>;
+template class ExtendableHashIndex<unsigned long long, std::string>;
 template class ExtendableHashIndex<unsigned long long, unsigned long long>;
+template class ExtendableHashIndex<std::string, unsigned long long>;
+template class ExtendableHashIndex<int, unsigned long long>;
+template class ExtendableHashIndex<unsigned long long, int>;
+
+template class Bucket<int, unsigned long long>;
+template class Bucket<unsigned long long, int>;
+template class Bucket<unsigned long long, std::string>;
+template class Bucket<std::string, unsigned long long>;
 template class Bucket<int, int>;
 template class Bucket<int, std::string>;
 template class Bucket<std::string, int>;
@@ -527,9 +536,19 @@ template std::ostream &operator<< (std::ostream &os, const ExtendableHashIndex<i
 template std::ostream &operator<< (std::ostream &os, const ExtendableHashIndex<int, std::string> &hashIndex);
 template std::ostream &operator<< (std::ostream &os, const ExtendableHashIndex<std::string, int> &hashIndex);
 template std::ostream &operator<< (std::ostream &os, const ExtendableHashIndex<std::string, std::string> &hashIndex);
+template std::ostream &operator<< (std::ostream &os, const ExtendableHashIndex<unsigned long long, std::string> &hashIndex);
+template std::ostream &operator<< (std::ostream &os, const ExtendableHashIndex<std::string, unsigned long long> &hashIndex);
+template std::ostream &operator<< (std::ostream &os, const ExtendableHashIndex<int, unsigned long long> &hashIndex);
+template std::ostream &operator<< (std::ostream &os, const ExtendableHashIndex<unsigned long long, int> &hashIndex);
 template std::ostream &operator<< (std::ostream &os, const ExtendableHashIndex<unsigned long long, unsigned long long> &hashIndex);
+
 template std::ostream &operator<< (std::ostream &os, const Bucket<int, int> &bucket);
 template std::ostream &operator<< (std::ostream &os, const Bucket<int, std::string> &bucket);
 template std::ostream &operator<< (std::ostream &os, const Bucket<std::string, int> &bucket);
 template std::ostream &operator<< (std::ostream &os, const Bucket<std::string, std::string> &bucket);
+template std::ostream &operator<< (std::ostream &os, const Bucket<unsigned long long, std::string> &bucket);
+template std::ostream &operator<< (std::ostream &os, const Bucket<std::string, unsigned long long> &bucket);
+template std::ostream &operator<< (std::ostream &os, const Bucket<int, unsigned long long> &bucket);
+template std::ostream &operator<< (std::ostream &os, const Bucket<unsigned long long, int> &bucket);
 template std::ostream &operator<< (std::ostream &os, const Bucket<unsigned long long, unsigned long long> &bucket);
+
