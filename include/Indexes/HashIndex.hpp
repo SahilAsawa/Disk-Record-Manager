@@ -162,27 +162,26 @@ class Bucket
 template<typename KeyType, typename ValueType>
 class ExtendableHashIndex
 {
-    // Denotes the ID of the bucket
+    // Denotes the global depth of the hash index
     size_t globalDepth;
 
     // Denotes the maximum number of elements in a bucket
     const unsigned int order;
 
-    // Denotes the maximum number of elements in a bucket
+    // Denotes the list of buckets in the hash index. Each bucket is represented by its ID
     std::vector<bucket_id_t> directory;
 
-    // Denotes the maximum number of elements in a bucket
+    // Denotes the list of free bucket IDs. This is used to reuse bucket IDs when buckets are deleted
     std::vector<bucket_id_t> free_ids;
 
-    // Denotes the maximum number of elements in a bucket
+    // Denotes the base address of the hash index in the disk
     address_id_t base_address;
 
-    // Denotes the maximum number of elements in a bucket
+    // Denotes the last bucket ID used. This is used to keep track of the next available bucket ID
     bucket_id_t lastIDUsed;
 
-    // Denotes the maximum number of elements in a bucket
+    // Denotes the buffer manager used to manage the disk
     BufferManager* buffer_manager;
-
 
     public:
 
